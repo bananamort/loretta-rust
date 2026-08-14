@@ -24,6 +24,7 @@ if (!MSBuildLocator.IsRegistered)
 }
 
 var droppedDirFragments = new[] { "/Parser/", "/Syntax/", "/Generated/", "/obj/", "/InternalSyntax/" };
+var droppedFiles = new[] { "/Portable/LuaExtensions.cs" }; // AGENTS.md: Portable/LuaExtensions.cs is syntax helpers over dropped nodes — DROP; Experimental/LuaExtensions.cs is PORT
 var allNodes = new List<NodeRecord>();
 var symbolRecords = new List<(ISymbol Symbol, NodeRecord Record)>();
 var perDocumentCounts = new List<(string doc, int memberDecls, int nodes)>(); 
@@ -67,7 +68,8 @@ if (includedDirs.Count == 0)
 }
 
 var allCsFiles = includedDirs.SelectMany(d => Directory.GetFiles(d, "*.cs", SearchOption.AllDirectories))
-    .Where(f => !droppedDirFragments.Any(frag => f.Replace('\\', '/').Contains(frag, StringComparison.Ordinal)))
+    .Where(f => !droppedDirFragments.Any(frag => f.Replace('\\', '/').Contains(frag, StringComparison.Ordinal))
+                && !droppedFiles.Any(df => f.Replace('\\', '/').EndsWith(df, StringComparison.Ordinal)))
     .ToList();
 
 Console.WriteLine($"Found {allCsFiles.Count} C# files in included dirs (after dropping {string.Join(", ", droppedDirFragments)}):");

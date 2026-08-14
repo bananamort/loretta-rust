@@ -4,9 +4,9 @@ Parses the C# codebase into a typed semantic graph. One node per distinct `ISymb
 
 - Input: `references/Loretta/src/Compilers/Lua/Portable` etc. (auto-found via repo root)
 - Output:
-  - `loretta-rs/nodes.json` — `772` distinct `NodeRecord` (`833` `MemberDeclarationSyntax`, `53` files, deduped 9 partials)
-  - `loretta-rs/edges.json` — `1220` edges (`declares`/`inherits`/`implements`/`type-uses`/`contains-nested`)
-  - `loretta-rs/topo.json` — bottom-up order (`430` leaves sorted, `342` in SCC withheld as clusters per `docs/PLAN.md`)
+  - `loretta-rs/nodes.json` — `744` distinct `NodeRecord` (`803` `MemberDeclarationSyntax`, `52` files, deduped 9 partials, `Portable/LuaExtensions.cs` DROP)
+  - `loretta-rs/edges.json` — `1194` edges (`declares`/`inherits`/`implements`/`type-uses`/`contains-nested`)
+  - `loretta-rs/topo.json` — bottom-up order (`402` leaves sorted, `342` in SCC withheld as clusters per `docs/PLAN.md`)
 
 ## Build
 
@@ -19,7 +19,7 @@ dotnet build --no-restore
 
 ```sh
 dotnet run --no-build
-# writes loretta-rs/nodes.json (459K, 772 nodes), edges.json, topo.json
+# writes loretta-rs/nodes.json (447K, 744 nodes), edges.json, topo.json
 # or explicit:
 dotnet run --no-build -- /path/to/nodes.json
 ```
