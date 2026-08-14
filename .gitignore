@@ -1,0 +1,29 @@
+# Rust
+/target/
+loretta-rs/target/
+loretta-rs/.scratch/
+loretta-rs/.packages/
+loretta-rs/.tools/
+loretta-rs/.scratch
+fuzz/target/
+fuzz/corpus/
+fuzz/artifacts/
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# Editors
+.DS_Store
+*.swp
+*.swo
+*~
+
+# References (contain their own git, read-only)
+references/
+
+# Secrets
+.env
