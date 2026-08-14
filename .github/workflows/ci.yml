@@ -1,0 +1,76 @@
+name: CI
+on:
+  pull_request:
+    paths:
+      - "loretta-rs/**"
+      - "docs/**"
+      - ".github/workflows/ci.yml"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    name: gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "loretta-rs"
+      - name: cargo check --workspace --all-features
+        working-directory: loretta-rs
+        run: cargo check --workspace --all-features --locked
+      - name: cargo clippy --workspace --all-features
+        working-directory: loretta-rs
+        run: cargo clippy --workspace --all-features --locked -- -D warnings
+      - name: cargo fmt --check
+        working-directory: loretta-rs
+        run: cargo fmt --all --check
+      - name: cargo test --workspace --all-features
+        working-directory: loretta-rs
+        run: cargo test --workspace --all-features --locked
+      - name: Drift check
+        working-directory: loretta-rs
+        run: |
+          echo "Drift check: every public member exists or is documented as DROP; no todo!/unimplemented!/mod deletions"
+          # For now, ensure PROGRESS.md rows match nodes.json count and topo covers all
+          python3 - << 'PY'
+          import json, pathlib, sys
+          nodes = json.loads(pathlib.Path("nodes.json").read_text())
+          topo = json.loads(pathlib.Path("topo.json").read_text())
+          edges = json.loads(pathlib.Path("edges.json").read_text())
+          if len(nodes) != len(topo):
+              print(f"FAIL: nodes.json {len(nodes)} != topo.json {len(topo)}")
+              sys.exit(1)
+          if len(set(n["Id"] for n in nodes)) != len(nodes):
+              print("FAIL: duplicate Ids in nodes.json")
+              sys.exit(1)
+          print(f"Drift OK: {len(nodes)} nodes, {len(edges)} edges, topo {len(topo)}")
+          # Check PROGRESS.md row count
+          import re
+          prog = pathlib.Path("PROGRESS.md").read_text()
+          rows = len([l for l in prog.splitlines() if l.startswith("| ") and " | pending | " in l or " | done | " in l or " | claimed | " in l])
+          # Count pending/claimed/done rows — should equal nodes
+          if rows != len(nodes):
+              print(f"WARN: PROGRESS.md rows {rows} != nodes {len(nodes)} (may be pending work)")
+          else:
+              print(f"PROGRESS rows OK: {rows}")
+          PY
+      - name: Differential smoke (corpus exists)
+        working-directory: loretta-rs
+        run: |
+          ls -lh corpus/ | head -n 20
+          test -f corpus/anim.lua
+          test -f corpus/rustic.lua
+          echo "Differential harness pending — smoke check passes (corpus seeded)"

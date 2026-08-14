@@ -1,6 +1,6 @@
 # Translation Rules
 
-How to translate C# to Rust for this port. Apply mechanically. If a case is not covered, mark `blocked` instead of inventing a mapping.
+How to translate C# to Rust for this port. Apply mechanically. If a case is not covered, revert and re-queue with evidence instead of inventing a mapping; if the spec is wrong, open a `spec:` PR.
 
 ## Source Protocol
 
@@ -36,7 +36,7 @@ Violating any of these is a revert.
 
 1. No stubs: `todo!()`, `unimplemented!()`, dummy returns, `// Logic elided`.
 2. No skipped surface: every member lands or is documented as intentionally dropped.
-3. No test tampering: never edit or ignore a ported test to pass; never edit golden files.
+3. No test tampering: never edit or ignore a ported test to pass; never edit reference outputs.
 4. No warning suppression: no `#[allow(...)]`, no `unsafe`.
 5. No redesign: no renames beyond snake_case, no new dependencies.
 6. No scope creep: never port anything marked DROP; never edit `references/`.

@@ -5,6 +5,8 @@ loretta-rs/.scratch/
 loretta-rs/.packages/
 loretta-rs/.tools/
 loretta-rs/.scratch
+.packages/
+.tools/
 fuzz/target/
 fuzz/corpus/
 fuzz/artifacts/
@@ -17,6 +19,7 @@ obj/
 .vs/
 
 # Editors
+.mimocode/
 .DS_Store
 *.swp
 *.swo

@@ -8,7 +8,7 @@ description = "Fuzz targets for Loretta-RS (standalone, nightly soak)"
 [workspace]
 
 [dependencies]
-full-moon = { path = "../references/full-moon/full-moon", features = ["luau", "lua52", "lua53", "lua54", "luajit", "cfxlua"] }
+full_moon = { path = "../references/full-moon/full-moon", features = ["luau", "lua52", "lua53", "lua54", "luajit", "cfxlua"] }
 
 [features]
 default = []

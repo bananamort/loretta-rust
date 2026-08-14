@@ -50,9 +50,8 @@ flowchart TD
 
 ### Stage 1: Codebase Dependency Graph Extraction
 
-- Roslyn tool parses `../references/Loretta/src/`.
-- Extracts every declaration and member from §1. Nested types become discrete nodes.
-- Builds edges: `declares`, `calls`, `type-uses`, `inherits`, `implements`, `overrides`, `contains-nested`.
+- The C# codebase is parsed into a typed semantic graph — one node per class, interface, enum, record, delegate, method, property, field, etc. — with `declares`, `calls`, `type-uses`, `inherits`, `implements`, `overrides`, `contains-nested` edges. The graph, not the file tree, is the unit of work.
+- Roslyn tool parses `../references/Loretta/src/` and extracts every declaration and member from §1. Nested types become discrete nodes.
 - Excludes dropped subsystems (`Compilers/Core/`, `Parser/`, `Syntax/`, GLua). See `AGENTS.md` Port Boundary.
 
 ### Stage 2: Topological Scheduling (Bottom-Up)
@@ -81,16 +80,16 @@ For each scheduled symbol, assemble:
 
 1. `cargo check --workspace --all-features` clean.
 2. `cargo clippy --workspace --all-features` — no new warnings. `#[allow]` forbidden.
-3. **Drift check:** every public member exists or has an `EXCLUSIONS.md` entry; no `todo!()`, `unimplemented!()`, or `mod` deletions. Drift is checked immediately after every change, not at the end.
+3. **Drift check:** every public member exists or is documented as intentionally dropped; no `todo!()`, `unimplemented!()`, or `mod` deletions. Drift is checked immediately after every change, not at the end.
 
-Failures after 3 genuine attempts: revert, mark `blocked` with a diagnosis, and take the next item. Never land red.
+Failures after 3 genuine attempts: revert, re-queue at end of topo order with richer context, and take the next item. Never land red. No `blocked` status — every node stays `pending`/`claimed`/`done` until it lands. If the spec is wrong, open a `spec:` PR with evidence (see `COMMIT.md`).
 
 #### Oracles (also on every landing)
 
 1. **Oracle 1 — Ported Unit Suite.** `cargo test --workspace --all-features` green. 637 TUnit tests translated to `#[test]` case tables. Covers each ported subsystem (see §3).
    - `GreenNodeTests`/`RedNodeTests` test dropped infrastructure and are not ported.
 
-2. **Oracle 2 — Differential / Conformance Suite.** `loretta-rs/tools/golden-dumper` vs Rust, compared byte-for-byte on `corpus/`:
+2. **Oracle 2 — Differential / Conformance Suite.** `loretta-rs/tools/differential` (C# reference) vs Rust, compared byte-for-byte on `corpus/`:
    - diagnostics, normalized AST dump, scope tree, constant-folded output, minified output, symbol-display samples.
    - CLI commands are covered by `loretta-cli` integration tests.
    - Where the harness covers the item, byte-identical output on the corpus. A mismatch is a bug in Rust.
@@ -115,7 +114,7 @@ Failures after 3 genuine attempts: revert, mark `blocked` with a diagnosis, and 
 ### Dialect Support
 
 - **Supported:** `full-moon` feature set: `Lua 5.1`, `Lua 5.2`, `Lua 5.3`, `Lua 5.4`, `LuaJIT`, `Luau`, `CfxLua`.
-- **Dropped:** GLua operators (`&&`, `||`, `!=`, `!`) and C-style comments (`//`, `/* */`). Recorded in `EXCLUSIONS.md`.
+- **Dropped:** GLua operators (`&&`, `||`, `!=`, `!`) and C-style comments (`//`, `/* */`). Documented as dropped per `AGENTS.md` Locked Decision 2.
 
 ### Subsystem Disposition
 

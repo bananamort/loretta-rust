@@ -27,7 +27,7 @@ We are using `full-moon` because it is maintained on crates.io and stays automat
 
 4. **Two oracles prove correctness.** See Oracles below.
 
-5. **Port lives in `loretta-rs/`.** Workspace with `loretta` lib, `loretta-cli` bin, `tests/`, `corpus/`, `tools/golden-dumper`.
+5. **Port lives in `loretta-rs/`.** Workspace with `loretta` lib, `loretta-cli` bin, `tests/`, `corpus/`, `tools/differential`.
 
 6. **`references/` is read-only.** Never edit sources under `references/`.
 
@@ -60,22 +60,22 @@ C# paths are under `../references/Loretta/src/`.
 
 ## The Method
 
-1. **A codebase as a graph.** Parse C# into a typed graph. One node per type, method, property, field, enum, etc. Edges: `declares`, `calls`, `type-uses`, `inherits`, `implements`, `overrides`, `contains-nested`. The graph is the unit of work, not the file tree.
+1. **A codebase as a graph.** The C# codebase is parsed into a typed semantic graph — one node per class, interface, enum, record, delegate, method, property, field, etc. — with `declares`, `calls`, `type-uses`, `inherits`, `implements`, `overrides`, `contains-nested` edges. The graph, not the file tree, is the unit of work.
 
-2. **One item per file, bottom-up.** Each node becomes one Rust file with an explicit `use` header. Nodes are topo-sorted. A node is translated only after its dependencies exist, so the prompt sees the real Rust types, not guesses. Cycles are withheld as hand-designed clusters whose stub shape is a contract.
+2. **One item per file, bottom-up.** Each node becomes its own Rust file with an explicit `use` header. Nodes are topo-sorted and translated only once their dependencies exist, so each prompt sees the real translated types it depends on — not guesses. Cycles are withheld as hand-designed clusters whose stub shape is a contract.
 
-3. **Gate every landing.** A node must compile in-tree and pass a drift check before it lands. Drift means no dropped declarations, no fake green `mod` deletions, and no stubs. Failures are reverted and re-queued. Drift is checked immediately after every change, not at the end.
+3. **Gate every landing.** A translated node must compile in-tree and pass a drift check — it may not silently drop declarations, fake green by deleting `mod` entries, or stub out logic — before it lands. Failures are reverted and re-queued. Drift is checked immediately after every change, not at the end.
 
-4. **Two oracles, not spot checks.** Equivalence is proven twice. The same inputs must produce identical results in C# and Rust.
+4. **Two oracles, not spot checks.** Equivalence is proven twice: Loretta's own test suite, ported to 637 Rust `#[test]`s, plus a byte-exact differential — the same inputs run on the C# reference and on the Rust port must produce identical results.
 
 Details for each step, including the C# constructs covered and the per-node prompt layout, are in `PLAN.md` §2. The full pipeline diagram is there.
 
 ## Oracles
 
 - **Oracle 1 — Ported test suite.** 637 `[Test]`s translated to `#[test]` case tables. See `PLAN.md` §3 for the subsystem breakdown.
-- **Oracle 2 — Byte-exact differential.** `loretta-rs/tools/golden-dumper` (C#) and the Rust port dump the same outputs per input and per `LuaVersion` preset. Compared byte-for-byte on `corpus/`. Outputs: diagnostics, normalized AST dump, scope tree, constant-folded output, minified output, symbol-display samples. CLI is covered by `loretta-cli` integration tests.
+- **Oracle 2 — Byte-exact differential.** `loretta-rs/tools/differential` (C# reference) and the Rust port produce the same outputs per input and per `LuaVersion` preset. Compared byte-for-byte on `corpus/`. Outputs: diagnostics, normalized AST dump, scope tree, constant-folded output, minified output, symbol-display samples. CLI is covered by `loretta-cli` integration tests.
 
-A mismatch is a bug in Rust. Never edit golden files.
+A mismatch is a bug in Rust. Never edit reference outputs to match Rust.
 
 - **Rule:** Compiling is not correct. Oracles decide correctness.
 

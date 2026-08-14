@@ -1,0 +1,11 @@
+[package]
+name = "loretta-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Loretta CLI — ported from Compilers/Lua/CommandLine (b767b4e)"
+publish = false
+
+[dependencies]
+loretta = { path = "../loretta" }
+full_moon.workspace = true

@@ -1,0 +1,14 @@
+[workspace]
+members = ["loretta", "loretta-cli"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MPL-2.0"
+repository = "https://github.com/anomalyco/Loretta"
+authors = ["Loretta Contributors"]
+rust-version = "1.78"
+
+[workspace.dependencies]
+full_moon = { path = "../references/full-moon/full-moon", features = ["luau", "lua52", "lua53", "lua54", "luajit", "cfxlua"] }
