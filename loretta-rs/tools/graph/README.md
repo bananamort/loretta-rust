@@ -5,7 +5,7 @@ Parses the C# codebase into a typed semantic graph. One node per distinct `ISymb
 - Input: `references/Loretta/src/Compilers/Lua/Portable` etc. (auto-found via repo root)
 - Output:
   - `loretta-rs/nodes.json` — `744` distinct `NodeRecord` (`803` `MemberDeclarationSyntax`, `52` files, deduped 9 partials, `Portable/LuaExtensions.cs` DROP)
-  - `loretta-rs/edges.json` — `1194` edges (`declares`/`inherits`/`implements`/`type-uses`/`contains-nested`)
+  - `loretta-rs/edges.json` — `1335` edges (`declares`/`calls`/`type-uses`/`inherits`/`implements`/`overrides`/`contains-nested` per `docs/AGENTS.md`)
   - `loretta-rs/topo.json` — bottom-up order (`402` leaves sorted, `342` in SCC withheld as clusters per `docs/PLAN.md`)
 
 ## Build

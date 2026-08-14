@@ -100,9 +100,19 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.LuaParseOptions.WithSyntaxOptions(Loretta.CodeAnalysis.Lua.LuaSyntaxOptions):Method@LuaParseOptions.cs:88",
+    "To": "Loretta.CodeAnalysis.Lua.LuaSyntaxOptions.Equals(Loretta.CodeAnalysis.Lua.LuaSyntaxOptions?):Method@LuaSyntaxOptions.cs:660",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.LuaParseOptions.CommonWithDocumentationMode(DocumentationMode):Method@LuaParseOptions.cs:96",
     "To": "Loretta.CodeAnalysis.Lua.LuaParseOptions:NamedType@LuaParseOptions.cs:10",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.LuaParseOptions.CommonWithDocumentationMode(DocumentationMode):Method@LuaParseOptions.cs:96",
+    "To": "Loretta.CodeAnalysis.Lua.LuaParseOptions.WithDocumentationMode(DocumentationMode):Method@LuaParseOptions.cs:65",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.LuaParseOptions.CommonWithFeatures(IEnumerable\u003CKeyValuePair\u003Cstring, string\u003E\u003E):Method@LuaParseOptions.cs:100",
@@ -125,9 +135,19 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.LuaParseOptions.Equals(Loretta.CodeAnalysis.Lua.LuaParseOptions?):Method@LuaParseOptions.cs:107",
+    "To": "Loretta.CodeAnalysis.Lua.LuaSyntaxOptions.Equals(Loretta.CodeAnalysis.Lua.LuaSyntaxOptions?):Method@LuaSyntaxOptions.cs:660",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.LuaParseOptions.Equals(object?):Method@LuaParseOptions.cs:112",
     "To": "Loretta.CodeAnalysis.Lua.LuaParseOptions:NamedType@LuaParseOptions.cs:10",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.LuaParseOptions.Equals(object?):Method@LuaParseOptions.cs:112",
+    "To": "Loretta.CodeAnalysis.Lua.LuaParseOptions.Equals(Loretta.CodeAnalysis.Lua.LuaParseOptions?):Method@LuaParseOptions.cs:107",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.LuaParseOptions.GetHashCode():Method@LuaParseOptions.cs:115",
@@ -890,6 +910,11 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.LuaSyntaxOptions.Equals(object?):Method@LuaSyntaxOptions.cs:657",
+    "To": "Loretta.CodeAnalysis.Lua.LuaSyntaxOptions.Equals(Loretta.CodeAnalysis.Lua.LuaSyntaxOptions?):Method@LuaSyntaxOptions.cs:660",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.LuaSyntaxOptions.Equals(Loretta.CodeAnalysis.Lua.LuaSyntaxOptions?):Method@LuaSyntaxOptions.cs:660",
     "To": "Loretta.CodeAnalysis.Lua.LuaSyntaxOptions:NamedType@LuaSyntaxOptions.cs:12",
     "Kind": "declares"
@@ -918,6 +943,11 @@
     "From": "Loretta.CodeAnalysis.Lua.LuaSyntaxOptions.operator ==(Loretta.CodeAnalysis.Lua.LuaSyntaxOptions?, Loretta.CodeAnalysis.Lua.LuaSyntaxOptions?):Method@LuaSyntaxOptions.cs:748",
     "To": "Loretta.CodeAnalysis.Lua.LuaSyntaxOptions:NamedType@LuaSyntaxOptions.cs:12",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.LuaSyntaxOptions.operator ==(Loretta.CodeAnalysis.Lua.LuaSyntaxOptions?, Loretta.CodeAnalysis.Lua.LuaSyntaxOptions?):Method@LuaSyntaxOptions.cs:748",
+    "To": "Loretta.CodeAnalysis.Lua.LuaSyntaxOptions.Equals(Loretta.CodeAnalysis.Lua.LuaSyntaxOptions?):Method@LuaSyntaxOptions.cs:660",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.LuaSyntaxOptions.operator !=(Loretta.CodeAnalysis.Lua.LuaSyntaxOptions?, Loretta.CodeAnalysis.Lua.LuaSyntaxOptions?):Method@LuaSyntaxOptions.cs:760",
@@ -1005,6 +1035,36 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatPrimitive(object?, ObjectDisplayOptions):Method@ObjectDisplay.cs:34",
+    "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(string, ObjectDisplayOptions):Method@ObjectDisplay.cs:256",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatPrimitive(object?, ObjectDisplayOptions):Method@ObjectDisplay.cs:34",
+    "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(bool):Method@ObjectDisplay.cs:69",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatPrimitive(object?, ObjectDisplayOptions):Method@ObjectDisplay.cs:34",
+    "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(double, ObjectDisplayOptions, System.Globalization.CultureInfo?):Method@ObjectDisplay.cs:365",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatPrimitive(object?, ObjectDisplayOptions):Method@ObjectDisplay.cs:34",
+    "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(long, ObjectDisplayOptions, System.Globalization.CultureInfo?):Method@ObjectDisplay.cs:384",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatPrimitive(object?, ObjectDisplayOptions):Method@ObjectDisplay.cs:34",
+    "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(ulong, ObjectDisplayOptions, System.Globalization.CultureInfo?):Method@ObjectDisplay.cs:403",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatPrimitive(object?, ObjectDisplayOptions):Method@ObjectDisplay.cs:34",
+    "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(Complex, ObjectDisplayOptions, System.Globalization.CultureInfo?):Method@ObjectDisplay.cs:422",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(bool):Method@ObjectDisplay.cs:69",
     "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay:NamedType@ObjectDisplay.cs:13",
     "Kind": "declares"
@@ -1015,14 +1075,39 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.TryReplaceChar(char, out string?, bool):Method@ObjectDisplay.cs:76",
+    "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.NeedsEscaping(char):Method@ObjectDisplay.cs:124",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.TryReplaceChar(char, out string?, bool):Method@ObjectDisplay.cs:76",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.EncodeCharToUtf8(char):Method@CharUtils.cs:195",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.NeedsEscaping(char):Method@ObjectDisplay.cs:124",
     "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay:NamedType@ObjectDisplay.cs:13",
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.NeedsEscaping(char):Method@ObjectDisplay.cs:124",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsCategoryInSet(uint, System.Globalization.UnicodeCategory):Method@CharUtils.cs:84",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(string, ObjectDisplayOptions):Method@ObjectDisplay.cs:256",
     "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay:NamedType@ObjectDisplay.cs:13",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(string, ObjectDisplayOptions):Method@ObjectDisplay.cs:256",
+    "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.ContainsNewLine(string):Method@ObjectDisplay.cs:312",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(string, ObjectDisplayOptions):Method@ObjectDisplay.cs:256",
+    "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.SlowGetVerbatimEquals(string):Method@ObjectDisplay.cs:340",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.s_newLineChars:Field@ObjectDisplay.cs:311",
@@ -1050,14 +1135,34 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(double, ObjectDisplayOptions, System.Globalization.CultureInfo?):Method@ObjectDisplay.cs:365",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.HexFloat.DoubleToHexString(double):Method@HexFloat.cs:32",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(double, ObjectDisplayOptions, System.Globalization.CultureInfo?):Method@ObjectDisplay.cs:365",
+    "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.GetFormatCulture(System.Globalization.CultureInfo?):Method@ObjectDisplay.cs:425",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(long, ObjectDisplayOptions, System.Globalization.CultureInfo?):Method@ObjectDisplay.cs:384",
     "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay:NamedType@ObjectDisplay.cs:13",
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(long, ObjectDisplayOptions, System.Globalization.CultureInfo?):Method@ObjectDisplay.cs:384",
+    "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.GetFormatCulture(System.Globalization.CultureInfo?):Method@ObjectDisplay.cs:425",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(ulong, ObjectDisplayOptions, System.Globalization.CultureInfo?):Method@ObjectDisplay.cs:403",
     "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay:NamedType@ObjectDisplay.cs:13",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(ulong, ObjectDisplayOptions, System.Globalization.CultureInfo?):Method@ObjectDisplay.cs:403",
+    "To": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.GetFormatCulture(System.Globalization.CultureInfo?):Method@ObjectDisplay.cs:425",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.SymbolDisplay.ObjectDisplay.FormatLiteral(Complex, ObjectDisplayOptions, System.Globalization.CultureInfo?):Method@ObjectDisplay.cs:422",
@@ -1270,6 +1375,11 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.FunctionScope.AddParameter(string, SyntaxNode?):Method@IFunctionScope.cs:48",
+    "To": "Loretta.CodeAnalysis.Lua.Scope.CreateVariable(Loretta.CodeAnalysis.Lua.VariableKind, string, SyntaxNode?):Method@IScope.cs:192",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.FunctionScope.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IFunctionScope.cs:55",
     "To": "Loretta.CodeAnalysis.Lua.FunctionScope:NamedType@IFunctionScope.cs:29",
     "Kind": "declares"
@@ -1278,6 +1388,21 @@
     "From": "Loretta.CodeAnalysis.Lua.FunctionScope.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IFunctionScope.cs:55",
     "To": "Loretta.CodeAnalysis.Lua.IVariableInternal:NamedType@IVariable.cs:63",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.FunctionScope.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IFunctionScope.cs:55",
+    "To": "Loretta.CodeAnalysis.Lua.Scope.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IScope.cs:203",
+    "Kind": "overrides"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.FunctionScope.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IFunctionScope.cs:55",
+    "To": "Loretta.CodeAnalysis.Lua.IVariableInternal.AddCapturingScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@IVariable.cs:66",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.FunctionScope.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IFunctionScope.cs:55",
+    "To": "Loretta.CodeAnalysis.Lua.Scope.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IScope.cs:203",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.IGotoLabel.Name:Property@IGotoLabel.cs:15",
@@ -1805,6 +1930,16 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Scope.FindVariable(string, Loretta.CodeAnalysis.Lua.ScopeKind):Method@IScope.cs:164",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.StringUtils.IsIdentifier(string):Method@StringUtils.cs:36",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Scope.FindVariable(string, Loretta.CodeAnalysis.Lua.ScopeKind):Method@IScope.cs:164",
+    "To": "Loretta.CodeAnalysis.Lua.IScope.FindVariable(string, Loretta.CodeAnalysis.Lua.ScopeKind):Method@IScope.cs:96",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Scope.TryGetVariable(string, out Loretta.CodeAnalysis.Lua.IVariableInternal?):Method@IScope.cs:176",
     "To": "Loretta.CodeAnalysis.Lua.Scope:NamedType@IScope.cs:120",
     "Kind": "declares"
@@ -1813,6 +1948,11 @@
     "From": "Loretta.CodeAnalysis.Lua.Scope.TryGetVariable(string, out Loretta.CodeAnalysis.Lua.IVariableInternal?):Method@IScope.cs:176",
     "To": "Loretta.CodeAnalysis.Lua.IVariableInternal:NamedType@IVariable.cs:63",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Scope.TryGetVariable(string, out Loretta.CodeAnalysis.Lua.IVariableInternal?):Method@IScope.cs:176",
+    "To": "Loretta.CodeAnalysis.Lua.IScopeInternal.TryGetVariable(string, out Loretta.CodeAnalysis.Lua.IVariableInternal?):Method@IScope.cs:108",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Scope.GetOrCreateVariable(Loretta.CodeAnalysis.Lua.VariableKind, string, SyntaxNode?):Method@IScope.cs:179",
@@ -1828,6 +1968,16 @@
     "From": "Loretta.CodeAnalysis.Lua.Scope.GetOrCreateVariable(Loretta.CodeAnalysis.Lua.VariableKind, string, SyntaxNode?):Method@IScope.cs:179",
     "To": "Loretta.CodeAnalysis.Lua.VariableKind:NamedType@VariableKind.cs:6",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Scope.GetOrCreateVariable(Loretta.CodeAnalysis.Lua.VariableKind, string, SyntaxNode?):Method@IScope.cs:179",
+    "To": "Loretta.CodeAnalysis.Lua.Scope.TryGetVariable(string, out Loretta.CodeAnalysis.Lua.IVariableInternal?):Method@IScope.cs:176",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Scope.GetOrCreateVariable(Loretta.CodeAnalysis.Lua.VariableKind, string, SyntaxNode?):Method@IScope.cs:179",
+    "To": "Loretta.CodeAnalysis.Lua.Scope.CreateVariable(Loretta.CodeAnalysis.Lua.VariableKind, string, SyntaxNode?):Method@IScope.cs:192",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Scope.CreateVariable(Loretta.CodeAnalysis.Lua.VariableKind, string, SyntaxNode?):Method@IScope.cs:192",
@@ -1855,6 +2005,11 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Scope.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IScope.cs:203",
+    "To": "Loretta.CodeAnalysis.Lua.IScopeInternal.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IScope.cs:111",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Scope.TryGetLabel(string, out Loretta.CodeAnalysis.Lua.IGotoLabelInternal?):Method@IScope.cs:211",
     "To": "Loretta.CodeAnalysis.Lua.Scope:NamedType@IScope.cs:120",
     "Kind": "declares"
@@ -1865,6 +2020,11 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Scope.TryGetLabel(string, out Loretta.CodeAnalysis.Lua.IGotoLabelInternal?):Method@IScope.cs:211",
+    "To": "Loretta.CodeAnalysis.Lua.IScopeInternal.TryGetLabel(string, out Loretta.CodeAnalysis.Lua.IGotoLabelInternal?):Method@IScope.cs:113",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Scope.GetOrCreateLabel(string, GotoLabelStatementSyntax?):Method@IScope.cs:215",
     "To": "Loretta.CodeAnalysis.Lua.Scope:NamedType@IScope.cs:120",
     "Kind": "declares"
@@ -1873,6 +2033,16 @@
     "From": "Loretta.CodeAnalysis.Lua.Scope.GetOrCreateLabel(string, GotoLabelStatementSyntax?):Method@IScope.cs:215",
     "To": "Loretta.CodeAnalysis.Lua.IGotoLabelInternal:NamedType@IGotoLabel.cs:28",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Scope.GetOrCreateLabel(string, GotoLabelStatementSyntax?):Method@IScope.cs:215",
+    "To": "Loretta.CodeAnalysis.Lua.Scope.TryGetLabel(string, out Loretta.CodeAnalysis.Lua.IGotoLabelInternal?):Method@IScope.cs:211",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Scope.GetOrCreateLabel(string, GotoLabelStatementSyntax?):Method@IScope.cs:215",
+    "To": "Loretta.CodeAnalysis.Lua.Scope.CreateLabel(string, GotoLabelStatementSyntax?):Method@IScope.cs:226",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Scope.CreateLabel(string, GotoLabelStatementSyntax?):Method@IScope.cs:226",
@@ -2008,6 +2178,11 @@
     "From": "Loretta.CodeAnalysis.Lua.FileScope.FileScope(SyntaxNode, Loretta.CodeAnalysis.Lua.IScopeInternal?):Method@IFileScope.cs:28",
     "To": "Loretta.CodeAnalysis.Lua.IScopeInternal:NamedType@IScope.cs:106",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.FileScope.FileScope(SyntaxNode, Loretta.CodeAnalysis.Lua.IScopeInternal?):Method@IFileScope.cs:28",
+    "To": "Loretta.CodeAnalysis.Lua.Scope.CreateVariable(Loretta.CodeAnalysis.Lua.VariableKind, string, SyntaxNode?):Method@IScope.cs:192",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.FileScope.ArgVariable:Property@IFileScope.cs:34",
@@ -2910,6 +3085,16 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.GetVariableOrCreateGlobal(string):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:64",
+    "To": "Loretta.CodeAnalysis.Lua.IScopeInternal.TryGetVariable(string, out Loretta.CodeAnalysis.Lua.IVariableInternal?):Method@IScope.cs:108",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.GetVariableOrCreateGlobal(string):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:64",
+    "To": "Loretta.CodeAnalysis.Lua.Scope.CreateVariable(Loretta.CodeAnalysis.Lua.VariableKind, string, SyntaxNode?):Method@IScope.cs:192",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.CreateParameter(Loretta.CodeAnalysis.Lua.FunctionScope, ParameterSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:71",
     "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker:NamedType@ScopeAndVariableManager.ScopeAndVariableWalker.cs:7",
     "Kind": "declares"
@@ -2938,6 +3123,11 @@
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.CreateParameter(Loretta.CodeAnalysis.Lua.FunctionScope, string):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:83",
     "To": "Loretta.CodeAnalysis.Lua.FunctionScope:NamedType@IFunctionScope.cs:29",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.CreateParameter(Loretta.CodeAnalysis.Lua.FunctionScope, string):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:83",
+    "To": "Loretta.CodeAnalysis.Lua.FunctionScope.AddParameter(string, SyntaxNode?):Method@IFunctionScope.cs:48",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitCompilationUnit(CompilationUnitSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:88",
@@ -2945,9 +3135,19 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitCompilationUnit(CompilationUnitSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:88",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.PopScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:57",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitAnonymousFunctionExpression(AnonymousFunctionExpressionSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:101",
     "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker:NamedType@ScopeAndVariableManager.ScopeAndVariableWalker.cs:7",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitAnonymousFunctionExpression(AnonymousFunctionExpressionSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:101",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.PopScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:57",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitVarArgExpression(VarArgExpressionSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:117",
@@ -2955,9 +3155,34 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitVarArgExpression(VarArgExpressionSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:117",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.GetVariableOrCreateGlobal(string):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:64",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitVarArgExpression(VarArgExpressionSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:117",
+    "To": "Loretta.CodeAnalysis.Lua.IVariableInternal.AddReferencingScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@IVariable.cs:65",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitVarArgExpression(VarArgExpressionSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:117",
+    "To": "Loretta.CodeAnalysis.Lua.IScopeInternal.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IScope.cs:111",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitIdentifierName(IdentifierNameSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:126",
     "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker:NamedType@ScopeAndVariableManager.ScopeAndVariableWalker.cs:7",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitIdentifierName(IdentifierNameSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:126",
+    "To": "Loretta.CodeAnalysis.Lua.IVariableInternal.AddReferencingScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@IVariable.cs:65",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitIdentifierName(IdentifierNameSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:126",
+    "To": "Loretta.CodeAnalysis.Lua.IScopeInternal.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IScope.cs:111",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitAssignmentStatement(AssignmentStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:137",
@@ -2965,9 +3190,29 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitAssignmentStatement(AssignmentStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:137",
+    "To": "Loretta.CodeAnalysis.Lua.IVariableInternal.AddReferencingScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@IVariable.cs:65",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitAssignmentStatement(AssignmentStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:137",
+    "To": "Loretta.CodeAnalysis.Lua.IScopeInternal.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IScope.cs:111",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitCompoundAssignmentStatement(CompoundAssignmentStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:161",
     "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker:NamedType@ScopeAndVariableManager.ScopeAndVariableWalker.cs:7",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitCompoundAssignmentStatement(CompoundAssignmentStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:161",
+    "To": "Loretta.CodeAnalysis.Lua.IVariableInternal.AddReferencingScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@IVariable.cs:65",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitCompoundAssignmentStatement(CompoundAssignmentStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:161",
+    "To": "Loretta.CodeAnalysis.Lua.IScopeInternal.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IScope.cs:111",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitNumericForStatement(NumericForStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:182",
@@ -2975,9 +3220,19 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitNumericForStatement(NumericForStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:182",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.PopScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:57",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitGenericForStatement(GenericForStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:205",
     "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker:NamedType@ScopeAndVariableManager.ScopeAndVariableWalker.cs:7",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitGenericForStatement(GenericForStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:205",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.PopScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:57",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitWhileStatement(WhileStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:229",
@@ -2985,9 +3240,19 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitWhileStatement(WhileStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:229",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.PopScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:57",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitRepeatUntilStatement(RepeatUntilStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:243",
     "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker:NamedType@ScopeAndVariableManager.ScopeAndVariableWalker.cs:7",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitRepeatUntilStatement(RepeatUntilStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:243",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.PopScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:57",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitIfStatement(IfStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:257",
@@ -2995,9 +3260,24 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitIfStatement(IfStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:257",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.PopScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:57",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitLocalVariableDeclarationStatement(LocalVariableDeclarationStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:298",
     "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker:NamedType@ScopeAndVariableManager.ScopeAndVariableWalker.cs:7",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitLocalVariableDeclarationStatement(LocalVariableDeclarationStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:298",
+    "To": "Loretta.CodeAnalysis.Lua.IVariableInternal.AddReferencingScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@IVariable.cs:65",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitLocalVariableDeclarationStatement(LocalVariableDeclarationStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:298",
+    "To": "Loretta.CodeAnalysis.Lua.IScopeInternal.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IScope.cs:111",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitLocalFunctionDeclarationStatement(LocalFunctionDeclarationStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:315",
@@ -3005,9 +3285,34 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitLocalFunctionDeclarationStatement(LocalFunctionDeclarationStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:315",
+    "To": "Loretta.CodeAnalysis.Lua.IVariableInternal.AddReferencingScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@IVariable.cs:65",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitLocalFunctionDeclarationStatement(LocalFunctionDeclarationStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:315",
+    "To": "Loretta.CodeAnalysis.Lua.IScopeInternal.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IScope.cs:111",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitLocalFunctionDeclarationStatement(LocalFunctionDeclarationStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:315",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.PopScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:57",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitSimpleFunctionName(SimpleFunctionNameSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:339",
     "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker:NamedType@ScopeAndVariableManager.ScopeAndVariableWalker.cs:7",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitSimpleFunctionName(SimpleFunctionNameSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:339",
+    "To": "Loretta.CodeAnalysis.Lua.IVariableInternal.AddReferencingScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@IVariable.cs:65",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitSimpleFunctionName(SimpleFunctionNameSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:339",
+    "To": "Loretta.CodeAnalysis.Lua.IScopeInternal.AddReferencedVariable(Loretta.CodeAnalysis.Lua.IVariableInternal):Method@IScope.cs:111",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitFunctionDeclarationStatement(FunctionDeclarationStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:352",
@@ -3015,14 +3320,34 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitFunctionDeclarationStatement(FunctionDeclarationStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:352",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.CreateParameter(Loretta.CodeAnalysis.Lua.FunctionScope, string):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:83",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitFunctionDeclarationStatement(FunctionDeclarationStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:352",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.PopScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:57",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitTypeFunctionDeclarationStatement(TypeFunctionDeclarationStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:371",
     "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker:NamedType@ScopeAndVariableManager.ScopeAndVariableWalker.cs:7",
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitTypeFunctionDeclarationStatement(TypeFunctionDeclarationStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:371",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.PopScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:57",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitDoStatement(DoStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:386",
     "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker:NamedType@ScopeAndVariableManager.ScopeAndVariableWalker.cs:7",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.VisitDoStatement(DoStatementSyntax):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:386",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.ScopeAndVariableWalker.PopScope(Loretta.CodeAnalysis.Lua.IScopeInternal):Method@ScopeAndVariableManager.ScopeAndVariableWalker.cs:57",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.State:NamedType@ScopeAndVariableManager.State.cs:5",
@@ -3133,6 +3458,11 @@
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.GetLazyState():Method@ScopeAndVariableManager.cs:13",
     "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.State:NamedType@ScopeAndVariableManager.State.cs:5",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.GetLazyState():Method@ScopeAndVariableManager.cs:13",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.CalculateState(ImmutableArray\u003CSyntaxTree\u003E):Method@ScopeAndVariableManager.cs:23",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.CalculateState(ImmutableArray\u003CSyntaxTree\u003E):Method@ScopeAndVariableManager.cs:23",
@@ -3275,6 +3605,11 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Script.GetScope(SyntaxNode):Method@Script.cs:55",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.GetLazyState():Method@ScopeAndVariableManager.cs:13",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Script.FindScope(SyntaxNode, Loretta.CodeAnalysis.Lua.ScopeKind):Method@Script.cs:96",
     "To": "Loretta.CodeAnalysis.Lua.Script:NamedType@Script.RenameRewriter.cs:5",
     "Kind": "declares"
@@ -3290,6 +3625,11 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Script.FindScope(SyntaxNode, Loretta.CodeAnalysis.Lua.ScopeKind):Method@Script.cs:96",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.GetLazyState():Method@ScopeAndVariableManager.cs:13",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Script.GetVariable(SyntaxNode):Method@Script.cs:114",
     "To": "Loretta.CodeAnalysis.Lua.Script:NamedType@Script.RenameRewriter.cs:5",
     "Kind": "declares"
@@ -3300,6 +3640,11 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Script.GetVariable(SyntaxNode):Method@Script.cs:114",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.GetLazyState():Method@ScopeAndVariableManager.cs:13",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Script.GetLabel(SyntaxNode):Method@Script.cs:125",
     "To": "Loretta.CodeAnalysis.Lua.Script:NamedType@Script.RenameRewriter.cs:5",
     "Kind": "declares"
@@ -3308,6 +3653,11 @@
     "From": "Loretta.CodeAnalysis.Lua.Script.GetLabel(SyntaxNode):Method@Script.cs:125",
     "To": "Loretta.CodeAnalysis.Lua.IGotoLabel:NamedType@IGotoLabel.cs:9",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Script.GetLabel(SyntaxNode):Method@Script.cs:125",
+    "To": "Loretta.CodeAnalysis.Lua.ScopeAndVariableManager.GetLazyState():Method@ScopeAndVariableManager.cs:13",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Script.RenameVariable(Loretta.CodeAnalysis.Lua.IVariable, string):Method@Script.cs:141",
@@ -3328,6 +3678,16 @@
     "From": "Loretta.CodeAnalysis.Lua.Script.RenameVariable(Loretta.CodeAnalysis.Lua.IVariable, string):Method@Script.cs:141",
     "To": "Loretta.CodeAnalysis.Lua.IVariable:NamedType@IVariable.cs:8",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Script.RenameVariable(Loretta.CodeAnalysis.Lua.IVariable, string):Method@Script.cs:141",
+    "To": "Loretta.CodeAnalysis.Lua.Script.FindScope(SyntaxNode, Loretta.CodeAnalysis.Lua.ScopeKind):Method@Script.cs:96",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Script.RenameVariable(Loretta.CodeAnalysis.Lua.IVariable, string):Method@Script.cs:141",
+    "To": "Loretta.CodeAnalysis.Lua.IScope.FindVariable(string, Loretta.CodeAnalysis.Lua.ScopeKind):Method@IScope.cs:96",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.IdentifierNameNotSupportedError:NamedType@RenameErrors.cs:14",
@@ -3460,9 +3820,24 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.StringUtils.IsIdentifier(string):Method@StringUtils.cs:36",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsValidFirstIdentifierChar(char):Method@CharUtils.cs:176",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.StringUtils.IsIdentifier(string):Method@StringUtils.cs:36",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsValidTrailingIdentifierChar(char):Method@CharUtils.cs:186",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Utilities.StringUtils.Trim(string):Method@StringUtils.cs:53",
     "To": "Loretta.CodeAnalysis.Lua.Utilities.StringUtils:NamedType@StringUtils.cs:6",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.StringUtils.Trim(string):Method@StringUtils.cs:53",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsWhitespace(char):Method@CharUtils.cs:154",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Utilities.StringUtils.Trim(ReadOnlySpan\u003Cchar\u003E):Method@StringUtils.cs:64",
@@ -3530,14 +3905,29 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsBinary(char):Method@CharUtils.cs:92",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsInRange(char, char, char):Method@CharUtils.cs:19",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsOctal(char):Method@CharUtils.cs:101",
     "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils:NamedType@CharUtils.cs:9",
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsOctal(char):Method@CharUtils.cs:101",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsInRange(char, char, char):Method@CharUtils.cs:19",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsDecimal(char):Method@CharUtils.cs:110",
     "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils:NamedType@CharUtils.cs:9",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsDecimal(char):Method@CharUtils.cs:110",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsInRange(char, char, char):Method@CharUtils.cs:19",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.DecimalValue(char):Method@CharUtils.cs:117",
@@ -3550,9 +3940,34 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsHexadecimal(char):Method@CharUtils.cs:126",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsDecimal(char):Method@CharUtils.cs:110",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsHexadecimal(char):Method@CharUtils.cs:126",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsInRange(char, char, char):Method@CharUtils.cs:19",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsHexadecimal(char):Method@CharUtils.cs:126",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.AsciiLowerCase(char):Method@CharUtils.cs:28",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsAlpha(char):Method@CharUtils.cs:136",
     "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils:NamedType@CharUtils.cs:9",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsAlpha(char):Method@CharUtils.cs:136",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsInRange(char, char, char):Method@CharUtils.cs:19",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsAlpha(char):Method@CharUtils.cs:136",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.AsciiLowerCase(char):Method@CharUtils.cs:28",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsAlphaNumeric(char):Method@CharUtils.cs:145",
@@ -3560,9 +3975,24 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsAlphaNumeric(char):Method@CharUtils.cs:145",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsDecimal(char):Method@CharUtils.cs:110",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsAlphaNumeric(char):Method@CharUtils.cs:145",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsAlpha(char):Method@CharUtils.cs:136",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsWhitespace(char):Method@CharUtils.cs:154",
     "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils:NamedType@CharUtils.cs:9",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsWhitespace(char):Method@CharUtils.cs:154",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsInRange(char, char, char):Method@CharUtils.cs:19",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsNewLine(char):Method@CharUtils.cs:166",
@@ -3575,9 +4005,24 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsValidFirstIdentifierChar(char):Method@CharUtils.cs:176",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsAlpha(char):Method@CharUtils.cs:136",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsValidTrailingIdentifierChar(char):Method@CharUtils.cs:186",
     "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils:NamedType@CharUtils.cs:9",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsValidTrailingIdentifierChar(char):Method@CharUtils.cs:186",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsValidFirstIdentifierChar(char):Method@CharUtils.cs:176",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsValidTrailingIdentifierChar(char):Method@CharUtils.cs:186",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.IsDecimal(char):Method@CharUtils.cs:110",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Utilities.CharUtils.EncodeCharToUtf8(char):Method@CharUtils.cs:195",
@@ -3680,6 +4125,21 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.ErrorFacts.GetSeverity(Loretta.CodeAnalysis.Lua.ErrorCode):Method@ErrorFacts.cs:27",
+    "To": "Loretta.CodeAnalysis.Lua.ErrorFacts.IsWarning(Loretta.CodeAnalysis.Lua.ErrorCode):Method@ErrorFacts.cs:22",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ErrorFacts.GetSeverity(Loretta.CodeAnalysis.Lua.ErrorCode):Method@ErrorFacts.cs:27",
+    "To": "Loretta.CodeAnalysis.Lua.ErrorFacts.IsInfo(Loretta.CodeAnalysis.Lua.ErrorCode):Method@ErrorFacts.cs:24",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.ErrorFacts.GetSeverity(Loretta.CodeAnalysis.Lua.ErrorCode):Method@ErrorFacts.cs:27",
+    "To": "Loretta.CodeAnalysis.Lua.ErrorFacts.IsHidden(Loretta.CodeAnalysis.Lua.ErrorCode):Method@ErrorFacts.cs:25",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.ErrorFacts.GetMessage(Loretta.CodeAnalysis.Lua.ErrorCode, System.Globalization.CultureInfo?):Method@ErrorFacts.cs:55",
     "To": "Loretta.CodeAnalysis.Lua.ErrorFacts:NamedType@ErrorFacts.cs:5",
     "Kind": "declares"
@@ -3775,9 +4235,19 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.MessageProvider.GetSeverity(int):Method@MessageProvider.cs:25",
+    "To": "Loretta.CodeAnalysis.Lua.ErrorFacts.GetSeverity(Loretta.CodeAnalysis.Lua.ErrorCode):Method@ErrorFacts.cs:27",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.MessageProvider.LoadMessage(int, System.Globalization.CultureInfo?):Method@MessageProvider.cs:27",
     "To": "Loretta.CodeAnalysis.Lua.MessageProvider:NamedType@MessageProvider.cs:5",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.MessageProvider.LoadMessage(int, System.Globalization.CultureInfo?):Method@MessageProvider.cs:27",
+    "To": "Loretta.CodeAnalysis.Lua.ErrorFacts.GetMessage(Loretta.CodeAnalysis.Lua.ErrorCode, System.Globalization.CultureInfo?):Method@ErrorFacts.cs:55",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.MessageProvider.GetMessageFormat(int):Method@MessageProvider.cs:30",
@@ -3785,14 +4255,29 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.MessageProvider.GetMessageFormat(int):Method@MessageProvider.cs:30",
+    "To": "Loretta.CodeAnalysis.Lua.ErrorFacts.GetMessageFormat(Loretta.CodeAnalysis.Lua.ErrorCode):Method@ErrorFacts.cs:62",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.MessageProvider.GetDescription(int):Method@MessageProvider.cs:32",
     "To": "Loretta.CodeAnalysis.Lua.MessageProvider:NamedType@MessageProvider.cs:5",
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.MessageProvider.GetDescription(int):Method@MessageProvider.cs:32",
+    "To": "Loretta.CodeAnalysis.Lua.ErrorFacts.GetDescription(Loretta.CodeAnalysis.Lua.ErrorCode):Method@ErrorFacts.cs:68",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.MessageProvider.GetTitle(int):Method@MessageProvider.cs:34",
     "To": "Loretta.CodeAnalysis.Lua.MessageProvider:NamedType@MessageProvider.cs:5",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.MessageProvider.GetTitle(int):Method@MessageProvider.cs:34",
+    "To": "Loretta.CodeAnalysis.Lua.ErrorFacts.GetTitle(Loretta.CodeAnalysis.Lua.ErrorCode):Method@ErrorFacts.cs:65",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.MessageProvider.GetHelpLink(int):Method@MessageProvider.cs:36",
@@ -3803,6 +4288,11 @@
     "From": "Loretta.CodeAnalysis.Lua.MessageProvider.GetCategory(int):Method@MessageProvider.cs:38",
     "To": "Loretta.CodeAnalysis.Lua.MessageProvider:NamedType@MessageProvider.cs:5",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.MessageProvider.GetCategory(int):Method@MessageProvider.cs:38",
+    "To": "Loretta.CodeAnalysis.Lua.ErrorFacts.GetCategory(Loretta.CodeAnalysis.Lua.ErrorCode):Method@ErrorFacts.cs:71",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.MessageProvider.CodePrefix:Property@MessageProvider.cs:40",
@@ -4755,11 +5245,51 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetFlags(SyntaxNode):Method@ConstantFolder.ExpressionFlags.cs:31",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetInnerExpression(SyntaxNode):Method@ConstantFolder.cs:447",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetFlags(SyntaxNode):Method@ConstantFolder.ExpressionFlags.cs:31",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryParseNumberInString(string, out dynamic?):Method@ConstantFolder.NumberParsing.cs:20",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetFlags(SyntaxNode):Method@ConstantFolder.ExpressionFlags.cs:31",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetValue\u003CT\u003E(SyntaxNode):Method@ConstantFolder.cs:496",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetFlags(SyntaxNode):Method@ConstantFolder.ExpressionFlags.cs:31",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.CanConvertToBoolean(SyntaxNode):Method@ConstantFolder.cs:458",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetFlags(SyntaxNode):Method@ConstantFolder.ExpressionFlags.cs:31",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.IsFalsey(SyntaxNode):Method@ConstantFolder.cs:477",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetFlags(SyntaxNode):Method@ConstantFolder.ExpressionFlags.cs:31",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.IsConstTable(TableConstructorExpressionSyntax):Method@ConstantFolder.ExpressionFlags.cs:79",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.IsConstTable(TableConstructorExpressionSyntax):Method@ConstantFolder.ExpressionFlags.cs:79",
     "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder:NamedType@ConstantFolder.ExpressionFlags.cs:5",
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.IsConstTable(TableConstructorExpressionSyntax):Method@ConstantFolder.ExpressionFlags.cs:79",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.HasEFlag(Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags, Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags):Method@ConstantFolder.ExpressionFlags.cs:120",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.IsConstTable(TableConstructorExpressionSyntax):Method@ConstantFolder.ExpressionFlags.cs:79",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetFlags(SyntaxNode):Method@ConstantFolder.ExpressionFlags.cs:31",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.HasEFlag(Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags, Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags):Method@ConstantFolder.ExpressionFlags.cs:120",
     "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder:NamedType@ConstantFolder.ExpressionFlags.cs:5",
     "Kind": "declares"
@@ -4778,6 +5308,16 @@
     "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.HasEFlag(SyntaxNode, Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags):Method@ConstantFolder.ExpressionFlags.cs:122",
     "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags:NamedType@ConstantFolder.ExpressionFlags.cs:7",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.HasEFlag(SyntaxNode, Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags):Method@ConstantFolder.ExpressionFlags.cs:122",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.HasEFlag(Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags, Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags):Method@ConstantFolder.ExpressionFlags.cs:120",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.HasEFlag(SyntaxNode, Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags):Method@ConstantFolder.ExpressionFlags.cs:122",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetFlags(SyntaxNode):Method@ConstantFolder.ExpressionFlags.cs:31",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder._options:Field@ConstantFolder.cs:10",
@@ -4810,9 +5350,29 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.VisitUnaryExpression(UnaryExpressionSyntax):Method@ConstantFolder.cs:25",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.HasEFlag(Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags, Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags):Method@ConstantFolder.ExpressionFlags.cs:120",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.VisitUnaryExpression(UnaryExpressionSyntax):Method@ConstantFolder.cs:25",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryConvertToDouble(long, out double):Method@ConstantFolder.cs:562",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.VisitBinaryExpression(BinaryExpressionSyntax):Method@ConstantFolder.cs:48",
     "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder:NamedType@ConstantFolder.ExpressionFlags.cs:5",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.VisitBinaryExpression(BinaryExpressionSyntax):Method@ConstantFolder.cs:48",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.HasEFlag(Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags, Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags):Method@ConstantFolder.ExpressionFlags.cs:120",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.VisitBinaryExpression(BinaryExpressionSyntax):Method@ConstantFolder.cs:48",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryConvertToDouble(long, out double):Method@ConstantFolder.cs:562",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.VisitMemberAccessExpression(MemberAccessExpressionSyntax):Method@ConstantFolder.cs:336",
@@ -4870,9 +5430,19 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.IsFalsey(SyntaxNode):Method@ConstantFolder.cs:477",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.CanConvertToBoolean(SyntaxNode):Method@ConstantFolder.cs:458",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetValue(SyntaxNode):Method@ConstantFolder.cs:483",
     "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder:NamedType@ConstantFolder.ExpressionFlags.cs:5",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetValue(SyntaxNode):Method@ConstantFolder.cs:483",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetInnerExpression(SyntaxNode):Method@ConstantFolder.cs:447",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetValue\u003CT\u003E(SyntaxNode):Method@ConstantFolder.cs:496",
@@ -4880,9 +5450,24 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetValue\u003CT\u003E(SyntaxNode):Method@ConstantFolder.cs:496",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetValue(SyntaxNode):Method@ConstantFolder.cs:483",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryGetNumValue(SyntaxNode, out dynamic?):Method@ConstantFolder.cs:498",
     "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder:NamedType@ConstantFolder.ExpressionFlags.cs:5",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryGetNumValue(SyntaxNode, out dynamic?):Method@ConstantFolder.cs:498",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.HasEFlag(SyntaxNode, Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.ExpressionFlags):Method@ConstantFolder.ExpressionFlags.cs:122",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryGetNumValue(SyntaxNode, out dynamic?):Method@ConstantFolder.cs:498",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetValue(SyntaxNode):Method@ConstantFolder.cs:483",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryGetInt32(SyntaxNode, out int):Method@ConstantFolder.cs:517",
@@ -4890,14 +5475,39 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryGetInt32(SyntaxNode, out int):Method@ConstantFolder.cs:517",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryGetInt64(SyntaxNode, out long):Method@ConstantFolder.cs:528",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryGetInt64(SyntaxNode, out long):Method@ConstantFolder.cs:528",
     "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder:NamedType@ConstantFolder.ExpressionFlags.cs:5",
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryGetInt64(SyntaxNode, out long):Method@ConstantFolder.cs:528",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryGetNumValue(SyntaxNode, out dynamic?):Method@ConstantFolder.cs:498",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryConvertToBool(SyntaxNode, out bool):Method@ConstantFolder.cs:549",
     "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder:NamedType@ConstantFolder.ExpressionFlags.cs:5",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryConvertToBool(SyntaxNode, out bool):Method@ConstantFolder.cs:549",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.GetInnerExpression(SyntaxNode):Method@ConstantFolder.cs:447",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryConvertToBool(SyntaxNode, out bool):Method@ConstantFolder.cs:549",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.CanConvertToBoolean(SyntaxNode):Method@ConstantFolder.cs:458",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryConvertToBool(SyntaxNode, out bool):Method@ConstantFolder.cs:549",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.IsFalsey(SyntaxNode):Method@ConstantFolder.cs:477",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryConvertToDouble(long, out double):Method@ConstantFolder.cs:562",
@@ -4950,6 +5560,16 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryParseNumberInString(string, out dynamic?):Method@ConstantFolder.NumberParsing.cs:20",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.StringUtils.Trim(string):Method@StringUtils.cs:53",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder.TryParseNumberInString(string, out dynamic?):Method@ConstantFolder.NumberParsing.cs:20",
+    "To": "Loretta.CodeAnalysis.Lua.Utilities.HexFloat.DoubleFromHexString(string):Method@HexFloat.cs:97",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFoldingOptions.Default:Field@ConstantFoldingOptions.cs:12",
     "To": "Loretta.CodeAnalysis.Lua.Experimental.ConstantFoldingOptions:NamedType@ConstantFoldingOptions.cs:6",
     "Kind": "declares"
@@ -5000,6 +5620,11 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.LuaExtensions.Minify(SyntaxTree):Method@LuaExtensions.cs:18",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.LuaExtensions.Minify(SyntaxTree, Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategy):Method@LuaExtensions.cs:22",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.LuaExtensions.Minify(SyntaxTree, Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategy):Method@LuaExtensions.cs:22",
     "To": "Loretta.CodeAnalysis.Lua.Experimental.LuaExtensions:NamedType@LuaExtensions.cs:6",
     "Kind": "declares"
@@ -5008,6 +5633,11 @@
     "From": "Loretta.CodeAnalysis.Lua.Experimental.LuaExtensions.Minify(SyntaxTree, Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategy):Method@LuaExtensions.cs:22",
     "To": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategy:NamedType@NamingStrategy.cs:12",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.LuaExtensions.Minify(SyntaxTree, Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategy):Method@LuaExtensions.cs:22",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.LuaExtensions.Minify(SyntaxTree, Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategy, Loretta.CodeAnalysis.Lua.Experimental.Minifying.ISlotAllocator):Method@LuaExtensions.cs:42",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.LuaExtensions.Minify(SyntaxTree, Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategy, Loretta.CodeAnalysis.Lua.Experimental.Minifying.ISlotAllocator):Method@LuaExtensions.cs:42",
@@ -5180,6 +5810,16 @@
     "Kind": "declares"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.RenamingRewriter.RenameTable.GetNewVariableName(SyntaxNode):Method@RenamingRewriter.RenameTable.cs:51",
+    "To": "Loretta.CodeAnalysis.Lua.Script.GetVariable(SyntaxNode):Method@Script.cs:114",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.RenamingRewriter.RenameTable.GetNewVariableName(SyntaxNode):Method@RenamingRewriter.RenameTable.cs:51",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.ISlotAllocator.AllocateSlot():Method@ISlotAllocator.cs:12",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies:NamedType@NamingStrategies.cs:8",
     "To": "Loretta.CodeAnalysis.Lua.IScope:NamedType@IScope.cs:12",
     "Kind": "type-uses"
@@ -5205,6 +5845,11 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies.StringSequentialCore(int, IEnumerable\u003CLoretta.CodeAnalysis.Lua.IScope\u003E, char, string, int):Method@NamingStrategies.cs:13",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.MinifyingUtils.GetUnavailableNames(IEnumerable\u003CLoretta.CodeAnalysis.Lua.IScope\u003E):Method@MinifyingUtils.cs:25",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies.Sequential(char, ImmutableArray\u003Cstring\u003E):Method@NamingStrategies.cs:80",
     "To": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies:NamedType@NamingStrategies.cs:8",
     "Kind": "declares"
@@ -5215,6 +5860,11 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies.Sequential(char, ImmutableArray\u003Cstring\u003E):Method@NamingStrategies.cs:80",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.MinifyingUtils.GetUnavailableNames(IEnumerable\u003CLoretta.CodeAnalysis.Lua.IScope\u003E):Method@MinifyingUtils.cs:25",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies.Alphabetical(int, IEnumerable\u003CLoretta.CodeAnalysis.Lua.IScope\u003E):Method@NamingStrategies.cs:119",
     "To": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies:NamedType@NamingStrategies.cs:8",
     "Kind": "declares"
@@ -5223,6 +5873,11 @@
     "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies.Alphabetical(int, IEnumerable\u003CLoretta.CodeAnalysis.Lua.IScope\u003E):Method@NamingStrategies.cs:119",
     "To": "Loretta.CodeAnalysis.Lua.IScope:NamedType@IScope.cs:12",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies.Alphabetical(int, IEnumerable\u003CLoretta.CodeAnalysis.Lua.IScope\u003E):Method@NamingStrategies.cs:119",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies.StringSequentialCore(int, IEnumerable\u003CLoretta.CodeAnalysis.Lua.IScope\u003E, char, string, int):Method@NamingStrategies.cs:13",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies.Numerical(int, IEnumerable\u003CLoretta.CodeAnalysis.Lua.IScope\u003E):Method@NamingStrategies.cs:134",
@@ -5235,6 +5890,11 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies.Numerical(int, IEnumerable\u003CLoretta.CodeAnalysis.Lua.IScope\u003E):Method@NamingStrategies.cs:134",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies.StringSequentialCore(int, IEnumerable\u003CLoretta.CodeAnalysis.Lua.IScope\u003E, char, string, int):Method@NamingStrategies.cs:13",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies.ZeroWidth(int, IEnumerable\u003CLoretta.CodeAnalysis.Lua.IScope\u003E):Method@NamingStrategies.cs:148",
     "To": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies:NamedType@NamingStrategies.cs:8",
     "Kind": "declares"
@@ -5243,6 +5903,11 @@
     "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies.ZeroWidth(int, IEnumerable\u003CLoretta.CodeAnalysis.Lua.IScope\u003E):Method@NamingStrategies.cs:148",
     "To": "Loretta.CodeAnalysis.Lua.IScope:NamedType@IScope.cs:12",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies.ZeroWidth(int, IEnumerable\u003CLoretta.CodeAnalysis.Lua.IScope\u003E):Method@NamingStrategies.cs:148",
+    "To": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategies.StringSequentialCore(int, IEnumerable\u003CLoretta.CodeAnalysis.Lua.IScope\u003E, char, string, int):Method@NamingStrategies.cs:13",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CodeAnalysis.Lua.Experimental.Minifying.NamingStrategy:NamedType@NamingStrategy.cs:12",
@@ -5775,6 +6440,11 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CLI.Program.Lex(Loretta.CLI.Program.LuaSyntaxOptionsPreset, string, bool):Method@Program.cs:159",
+    "To": "Loretta.CLI.Program.PresetEnumToPresetOptions(Loretta.CLI.Program.LuaSyntaxOptionsPreset):Method@Program.cs:139",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CLI.Program.Parse(Loretta.CLI.Program.LuaSyntaxOptionsPreset, string, bool, bool, bool):Method@Program.cs:182",
     "To": "Loretta.CLI.Program:NamedType@Program.cs:16",
     "Kind": "declares"
@@ -5783,6 +6453,11 @@
     "From": "Loretta.CLI.Program.Parse(Loretta.CLI.Program.LuaSyntaxOptionsPreset, string, bool, bool, bool):Method@Program.cs:182",
     "To": "Loretta.CLI.Program.LuaSyntaxOptionsPreset:NamedType@Program.cs:124",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CLI.Program.Parse(Loretta.CLI.Program.LuaSyntaxOptionsPreset, string, bool, bool, bool):Method@Program.cs:182",
+    "To": "Loretta.CLI.Program.PresetEnumToPresetOptions(Loretta.CLI.Program.LuaSyntaxOptionsPreset):Method@Program.cs:139",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CLI.Program.ParseExpression(string):Method@Program.cs:235",
@@ -5798,6 +6473,11 @@
     "From": "Loretta.CLI.Program.MassParse(Loretta.CLI.Program.LuaSyntaxOptionsPreset, params string[]):Method@Program.cs:262",
     "To": "Loretta.CLI.Program.LuaSyntaxOptionsPreset:NamedType@Program.cs:124",
     "Kind": "type-uses"
+  },
+  {
+    "From": "Loretta.CLI.Program.MassParse(Loretta.CLI.Program.LuaSyntaxOptionsPreset, params string[]):Method@Program.cs:262",
+    "To": "Loretta.CLI.Program.PresetEnumToPresetOptions(Loretta.CLI.Program.LuaSyntaxOptionsPreset):Method@Program.cs:139",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CLI.Program.NamingStrategy:NamedType@Program.cs:284",
@@ -5910,9 +6590,29 @@
     "Kind": "type-uses"
   },
   {
+    "From": "Loretta.CLI.Program.Minify(string, Loretta.CLI.Program.LuaSyntaxOptionsPreset, Loretta.CLI.Program.NamingStrategy, Loretta.CLI.Program.SlotAllocator, bool):Method@Program.cs:318",
+    "To": "Loretta.CLI.Program.PresetEnumToPresetOptions(Loretta.CLI.Program.LuaSyntaxOptionsPreset):Method@Program.cs:139",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CLI.Program.Minify(string, Loretta.CLI.Program.LuaSyntaxOptionsPreset, Loretta.CLI.Program.NamingStrategy, Loretta.CLI.Program.SlotAllocator, bool):Method@Program.cs:318",
+    "To": "Loretta.CLI.Program.GetNamingStrategy(Loretta.CLI.Program.NamingStrategy):Method@Program.cs:291",
+    "Kind": "calls"
+  },
+  {
+    "From": "Loretta.CLI.Program.Minify(string, Loretta.CLI.Program.LuaSyntaxOptionsPreset, Loretta.CLI.Program.NamingStrategy, Loretta.CLI.Program.SlotAllocator, bool):Method@Program.cs:318",
+    "To": "Loretta.CLI.Program.GetSlotAllocator(Loretta.CLI.Program.SlotAllocator):Method@Program.cs:308",
+    "Kind": "calls"
+  },
+  {
     "From": "Loretta.CLI.Program.MultiLua(string):Method@Program.cs:364",
     "To": "Loretta.CLI.Program:NamedType@Program.cs:16",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CLI.Program.MultiLua(string):Method@Program.cs:364",
+    "To": "Loretta.CLI.Program.RunMultiLua(params string[]):Method@Program.cs:380",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CLI.Program.MultiLuaExpression(string):Method@Program.cs:366",
@@ -5958,6 +6658,11 @@
     "From": "Loretta.CLI.Program.PopMemoryUsage():Method@Program.cs:483",
     "To": "Loretta.CLI.Program:NamedType@Program.cs:16",
     "Kind": "declares"
+  },
+  {
+    "From": "Loretta.CLI.Program.PopMemoryUsage():Method@Program.cs:483",
+    "To": "Loretta.CLI.Program.CompareMemoryUsage():Method@Program.cs:462",
+    "Kind": "calls"
   },
   {
     "From": "Loretta.CLI.Program.InvokeGc(int):Method@Program.cs:497",

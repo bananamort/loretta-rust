@@ -191,15 +191,19 @@ if (nodeTotal == 0)
     return 4;
 }
 
-// Build edges: declares / inherits / implements / type-uses / contains-nested
-// Map named types to node Id for quick lookup
+// Build edges: declares / inherits / implements / type-uses / contains-nested / calls / overrides
+// Map named types to node Id for quick lookup (for type-uses/inherits)
 var typeIdBySymbol = new Dictionary<ISymbol, string>(SymbolEqualityComparer.Default);
+// General map for all symbols (for calls/overrides)
+var symbolIdBySymbol = new Dictionary<ISymbol, string>(SymbolEqualityComparer.Default);
 foreach (var (sym, rec) in symbolRecords)
 {
+    symbolIdBySymbol[sym.OriginalDefinition] = rec.Id;
+    if (!symbolIdBySymbol.ContainsKey(sym))
+        symbolIdBySymbol[sym] = rec.Id;
     if (sym is INamedTypeSymbol nt)
     {
         typeIdBySymbol[nt.OriginalDefinition] = rec.Id;
-        // Also map the non-original for lookup
         if (!typeIdBySymbol.ContainsKey(nt))
             typeIdBySymbol[nt] = rec.Id;
     }
@@ -366,10 +370,46 @@ foreach (var (sym, rec) in symbolRecords)
                 }
             }
         }
+        // overrides (method/property/event overrides base)
+        ISymbol? overridden = null;
+        if (sym is IMethodSymbol mOver) overridden = mOver.OverriddenMethod;
+        else if (sym is IPropertySymbol pOver) overridden = pOver.OverriddenProperty;
+        else if (sym is IEventSymbol eOver) overridden = eOver.OverriddenEvent;
+        if (overridden != null)
+        {
+            var key = overridden.OriginalDefinition;
+            if (symbolIdBySymbol.TryGetValue(key, out var overId) && overId != fromId)
+                AddEdge(fromId, overId, "overrides");
+            else if (symbolIdBySymbol.TryGetValue(overridden, out var overId2) && overId2 != fromId)
+                AddEdge(fromId, overId2, "overrides");
+        }
+        // calls (method body invocations) — for ordering callees before callers
+        if (sym is IMethodSymbol)
+        {
+            var syntaxRef = sym.DeclaringSyntaxReferences.FirstOrDefault();
+            if (syntaxRef != null)
+            {
+                var syntax = syntaxRef.GetSyntax();
+                var tree = syntax.SyntaxTree;
+                var model = compilation.GetSemanticModel(tree);
+                foreach (var invoc in syntax.DescendantNodes().OfType<InvocationExpressionSyntax>())
+                {
+                    var called = model.GetSymbolInfo(invoc).Symbol;
+                    if (called != null)
+                    {
+                        var key = called.OriginalDefinition;
+                        if (symbolIdBySymbol.TryGetValue(key, out var calleeId) && calleeId != fromId)
+                            AddEdge(fromId, calleeId, "calls");
+                        else if (symbolIdBySymbol.TryGetValue(called, out var calleeId2) && calleeId2 != fromId)
+                            AddEdge(fromId, calleeId2, "calls");
+                    }
+                }
+            }
+        }
     }
 }
 
-Console.WriteLine($"Edges total: {edges.Count} (declares/inherits/implements/type-uses/contains-nested)");
+Console.WriteLine($"Edges total: {edges.Count} (declares/inherits/implements/type-uses/contains-nested/calls/overrides)");
 foreach (var g in edges.GroupBy(e => e.Kind).OrderBy(g => g.Key))
     Console.WriteLine($"  {g.Key}: {g.Count()}");
 
