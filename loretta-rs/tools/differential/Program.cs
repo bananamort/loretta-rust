@@ -34,7 +34,7 @@ if (operation == "all" && File.Exists(inputArg) && outDir != null)
         var parseOpts = new LuaParseOptions(opts);
         var dir = Path.Combine(outDir, preset, Path.GetFileNameWithoutExtension(inputArg));
         Directory.CreateDirectory(dir);
-        var ops = code.Length > 500_000 ? new[] { "diagnostics", "parse" } : new[] { "diagnostics", "lex", "parse", "scope", "constantfold", "minify", "charutils", "objectdisplay", "messageprovider" };
+        var ops = code.Length > 500_000 ? new[] { "diagnostics", "parse" } : new[] { "diagnostics", "lex", "parse", "scope", "constantfold", "minify", "charutils", "objectdisplay", "messageprovider", "gotolabel" };
         foreach (var op in ops)
         {
             try
@@ -95,6 +95,7 @@ static async Task<object> RunOperation(string operation, LuaParseOptions parseOp
         "objectdisplay" => ObjectDisplayOp(),
         "operator" => new { note = "covered via parse/constantfold" },
         "messageprovider" => MessageProviderOp(),
+        "gotolabel" => await GotoLabelOp(),
         _ => new { error = $"unknown operation {operation}" }
     };
 }
@@ -146,6 +147,28 @@ static object MessageProviderOp()
     var getMessageFormat = messageProviderType.GetMethod("GetMessageFormat", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)!;
     var getSeverity = messageProviderType.GetMethod("GetSeverity", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)!;
     return new { results = Enum.GetValues(errorCodeType).Cast<object>().Select(code => new { code = (int) code, severity = (int) getSeverity.Invoke(instance, new object[] { (int) code })!, category = (string) getCategory.Invoke(instance, new object[] { (int) code })!, description = getDescription.Invoke(instance, new object[] { (int) code })!.ToString(), message = (string) loadMessage.Invoke(instance, new object[] { (int) code, null })!, messageFormat = getMessageFormat.Invoke(instance, new object[] { (int) code })!.ToString() }).ToArray() };
+}
+
+// GotoLabel (internal) oracle: builds a GotoLabel from a fixed Lua 5.2 sample
+// (label + two gotos), adds the jumps, and dumps name/labelText/jumps.
+static async Task<object> GotoLabelOp()
+{
+    const string sample = "::top::\ngoto top\ngoto top\n";
+    var text = SourceText.From(sample, Encoding.UTF8);
+    var tree = SyntaxFactory.ParseSyntaxTree(text, new LuaParseOptions(LuaSyntaxOptions.Lua52), "");
+    var root = await tree.GetRootAsync();
+    var label = root.DescendantNodesAndSelf().OfType<GotoLabelStatementSyntax>().First();
+    var gotos = root.DescendantNodes().OfType<GotoStatementSyntax>().ToArray();
+    var assembly = typeof(SyntaxFactory).Assembly;
+    var gotoLabelType = assembly.GetType("Loretta.CodeAnalysis.Lua.GotoLabel")!;
+    var ctor = gotoLabelType.GetConstructor(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public, null, new[] { typeof(string), typeof(GotoLabelStatementSyntax) }, null)!;
+    var addJump = gotoLabelType.GetMethod("AddJump", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)!;
+    var labelName = label.Identifier.ValueText;
+    var labelObj = ctor.Invoke(new object?[] { labelName, label });
+    foreach (var g in gotos) addJump.Invoke(labelObj, new object[] { g });
+    var name = (string) gotoLabelType.GetProperty("Name", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)!.GetValue(labelObj)!;
+    var jumps = ((System.Collections.IEnumerable) gotoLabelType.GetProperty("JumpSyntaxes", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)!.GetValue(labelObj)!).Cast<GotoStatementSyntax>();
+    return new { name, labelText = label.ToFullString(), jumps = jumps.Select(j => j.ToFullString()).ToArray() };
 }
 
 static async Task<object> DiagnosticsOp(LuaParseOptions opts, string code)

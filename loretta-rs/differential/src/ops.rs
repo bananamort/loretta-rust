@@ -95,6 +95,47 @@ pub fn parse(code: &str) -> Result<Json, String> {
     ]))
 }
 
+/// GotoLabel oracle: builds a GotoLabel from a fixed Lua 5.2 sample
+/// ("::top::" + two gotos), adds the jumps, and dumps name/labelText/jumps —
+/// mirroring the C# reference's GotoLabelOp.
+pub fn gotolabel() -> Result<Json, String> {
+    use full_moon::ast::lua52::{Goto, Label};
+    use full_moon::ast::Stmt;
+    use loretta::scoping::igotolabel::{GotoLabel, IGotoLabelInternal};
+
+    const SAMPLE: &str = "::top::\ngoto top\ngoto top\n";
+    let ast = full_moon::parse_fallible(SAMPLE, full_moon::LuaVersion::lua52())
+        .into_result()
+        .map_err(|errors| format!("parse failed: {errors:?}"))?;
+    let mut label: Option<Label> = None;
+    let mut gotos: Vec<Goto> = Vec::new();
+    for stmt in ast.nodes().stmts() {
+        match stmt {
+            Stmt::Label(l) => {
+                if label.is_none() {
+                    label = Some(l.clone());
+                }
+            }
+            Stmt::Goto(g) => gotos.push(g.clone()),
+            _ => {}
+        }
+    }
+    let label = label.expect("sample contains a label");
+    let name = label.name().token().to_string();
+    let mut goto_label = GotoLabel::new(name.clone(), Some(label.clone()));
+    for g in &gotos {
+        goto_label.add_jump(g.clone());
+    }
+    Ok(Json::Object(vec![
+        ("name".into(), Json::String(name)),
+        ("labelText".into(), Json::String(label.to_string())),
+        (
+            "jumps".into(),
+            Json::Array(gotos.iter().map(|g| Json::String(g.to_string())).collect()),
+        ),
+    ]))
+}
+
 /// MessageProvider oracle: the category of every ErrorCode in declaration
 /// order, mirroring the C# reference's MessageProviderOp.
 pub fn messageprovider() -> Result<Json, String> {
