@@ -103,7 +103,8 @@ static object CharUtilsOp(string code)
 {
     var charUtilsType = typeof(SyntaxFactory).Assembly.GetType("Loretta.CodeAnalysis.Lua.Utilities.CharUtils")!;
     var isBinary = charUtilsType.GetMethod("IsBinary", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!;
-    return new { results = code.EnumerateRunes().Select(r => new { ch = r.ToString(), isBinary = r.Value <= char.MaxValue && (bool) isBinary.Invoke(null, new object[] { (char) r.Value })! }).ToArray() };
+    var isDecimal = charUtilsType.GetMethod("IsDecimal", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!;
+    return new { results = code.EnumerateRunes().Select(r => new { ch = r.ToString(), isBinary = r.Value <= char.MaxValue && (bool) isBinary.Invoke(null, new object[] { (char) r.Value })!, isDecimal = r.Value <= char.MaxValue && (bool) isDecimal.Invoke(null, new object[] { (char) r.Value })! }).ToArray() };
 }
 
 static async Task<object> DiagnosticsOp(LuaParseOptions opts, string code)
