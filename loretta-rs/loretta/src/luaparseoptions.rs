@@ -33,6 +33,12 @@ impl LuaParseOptions {
         "Lua"
     }
 
+    /// Validates the options, appending diagnostics to the builder.
+    /// C# delegates to the Core ParseOptions.ValidateOptions; with
+    /// DocumentationMode = Parse (fixed by the ctor) and empty features it
+    /// adds nothing — the docs say the options "don't do anything currently".
+    pub fn validate_options(&self, _builder: &mut Vec<String>) {}
+
     /// Creates a new set of parse options.
     pub fn new(syntax_options: LuaSyntaxOptions) -> Self {
         Self {
