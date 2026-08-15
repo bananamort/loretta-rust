@@ -6,6 +6,7 @@ using Loretta.CodeAnalysis;
 using Loretta.CodeAnalysis.Lua;
 using Loretta.CodeAnalysis.Lua.Experimental;
 using Loretta.CodeAnalysis.Lua.Experimental.Minifying;
+using Loretta.CodeAnalysis.Lua.SymbolDisplay;
 using Loretta.CodeAnalysis.Lua.Syntax;
 using Loretta.CodeAnalysis.Text;
 
@@ -33,7 +34,7 @@ if (operation == "all" && File.Exists(inputArg) && outDir != null)
         var parseOpts = new LuaParseOptions(opts);
         var dir = Path.Combine(outDir, preset, Path.GetFileNameWithoutExtension(inputArg));
         Directory.CreateDirectory(dir);
-        var ops = code.Length > 500_000 ? new[] { "diagnostics", "parse" } : new[] { "diagnostics", "lex", "parse", "scope", "constantfold", "minify", "charutils" };
+        var ops = code.Length > 500_000 ? new[] { "diagnostics", "parse" } : new[] { "diagnostics", "lex", "parse", "scope", "constantfold", "minify", "charutils", "objectdisplay" };
         foreach (var op in ops)
         {
             try
@@ -91,7 +92,7 @@ static async Task<object> RunOperation(string operation, LuaParseOptions parseOp
         "charutils" => CharUtilsOp(code),
         "stringutils" => new { note = "covered via lex/parse" },
         "hexfloat" => new { note = "covered via parse" },
-        "objectdisplay" => new { note = "covered via parse" },
+        "objectdisplay" => ObjectDisplayOp(),
         "operator" => new { note = "covered via parse/constantfold" },
         _ => new { error = $"unknown operation {operation}" }
     };
@@ -107,6 +108,27 @@ static object CharUtilsOp(string code)
     var isOctal = charUtilsType.GetMethod("IsOctal", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!;
     var isWhitespace = charUtilsType.GetMethod("IsWhitespace", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!;
     return new { results = code.EnumerateRunes().Select(r => new { ch = r.ToString(), isBinary = r.Value <= char.MaxValue && (bool) isBinary.Invoke(null, new object[] { (char) r.Value })!, isDecimal = r.Value <= char.MaxValue && (bool) isDecimal.Invoke(null, new object[] { (char) r.Value })!, isOctal = r.Value <= char.MaxValue && (bool) isOctal.Invoke(null, new object[] { (char) r.Value })!, isWhitespace = r.Value <= char.MaxValue && (bool) isWhitespace.Invoke(null, new object[] { (char) r.Value })! }).ToArray() };
+}
+
+// ObjectDisplay.FormatLiteral(double, ObjectDisplayOptions, CultureInfo?) oracle:
+// a fixed sample set of doubles, formatted in decimal ("R", invariant) and
+// hexadecimal modes, straight from the reference Loretta.
+static object ObjectDisplayOp()
+{
+    double[] values =
+    {
+        0.0, -0.0, 1.0, -1.0, 0.1, 255.255, 100.0, 1e5, 1e6, 1e7, 1e15, 1e16, 1e17, 1e18, 1e20, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6,
+        3.141592653589793, 123456789012345678.0, 1.2345678901234567e16, 9999999999999999.0, 1.5e-300, 1e300, 5e-324, 0.5, 2.0, 6.25, -123.456,
+        double.NaN, double.PositiveInfinity, double.NegativeInfinity, 2.2250738585072014e-308, 1.7976931348623157e308
+    };
+    return new
+    {
+        results = values.Select(v => new
+        {
+            decimalLiteral = ObjectDisplay.FormatLiteral(v, ObjectDisplayOptions.None),
+            hexadecimalLiteral = ObjectDisplay.FormatLiteral(v, ObjectDisplayOptions.UseHexadecimalNumbers)
+        }).ToArray()
+    };
 }
 
 static async Task<object> DiagnosticsOp(LuaParseOptions opts, string code)

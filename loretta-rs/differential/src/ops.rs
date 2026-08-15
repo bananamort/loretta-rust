@@ -117,3 +117,72 @@ pub fn charutils(code: &str) -> Result<Json, String> {
         .collect();
     Ok(Json::Object(vec![("results".into(), Json::Array(results))]))
 }
+
+/// ObjectDisplay oracle: a fixed sample set of doubles formatted in decimal
+/// and hexadecimal modes. Mirrors the C# reference's ObjectDisplayOp.
+pub fn objectdisplay() -> Result<Json, String> {
+    use loretta::symbol_display::objectdisplay::ObjectDisplay;
+    use loretta::symbol_display::objectdisplayoptions::ObjectDisplayOptions;
+
+    let values: [f64; 37] = [
+        0.0,
+        -0.0,
+        1.0,
+        -1.0,
+        0.1,
+        255.255,
+        100.0,
+        1e5,
+        1e6,
+        1e7,
+        1e15,
+        1e16,
+        1e17,
+        1e18,
+        1e20,
+        1e-1,
+        1e-2,
+        1e-3,
+        1e-4,
+        1e-5,
+        1e-6,
+        std::f64::consts::PI, // same double as the reference's 3.141592653589793
+        123456789012345678.0,
+        1.2345678901234567e16,
+        9999999999999999.0,
+        1.5e-300,
+        1e300,
+        5e-324,
+        0.5,
+        2.0,
+        6.25,
+        -123.456,
+        f64::NAN,
+        f64::INFINITY,
+        f64::NEG_INFINITY,
+        2.2250738585072014e-308,
+        1.7976931348623157e308,
+    ];
+    let results: Vec<Json> = values
+        .iter()
+        .map(|v| {
+            Json::Object(vec![
+                (
+                    "decimalLiteral".into(),
+                    Json::String(ObjectDisplay::format_literal_f64(
+                        *v,
+                        ObjectDisplayOptions::NONE,
+                    )),
+                ),
+                (
+                    "hexadecimalLiteral".into(),
+                    Json::String(ObjectDisplay::format_literal_f64(
+                        *v,
+                        ObjectDisplayOptions::USE_HEXADECIMAL_NUMBERS,
+                    )),
+                ),
+            ])
+        })
+        .collect();
+    Ok(Json::Object(vec![("results".into(), Json::Array(results))]))
+}

@@ -222,8 +222,104 @@ impl ObjectDisplay {
         if options.includes_option(ObjectDisplayOptions::USE_HEXADECIMAL_NUMBERS) {
             crate::utilities::hexfloat::HexFloat::double_to_hex_string(value)
         } else {
-            format!("{value}")
+            Self::format_double_r(value)
         }
+    }
+
+    /// .NET `double.ToString("R", CultureInfo.InvariantCulture)`: shortest
+    /// round-trippable digits laid out like "G" — scientific when the decimal
+    /// exponent is <= -5 or >= 17, otherwise decimal (verified against the
+    /// objectdisplay oracle across all 11 presets).
+    fn format_double_r(value: f64) -> String {
+        if value.is_nan() {
+            return "NaN".to_string();
+        }
+        if value == f64::INFINITY {
+            return "Infinity".to_string();
+        }
+        if value == f64::NEG_INFINITY {
+            return "-Infinity".to_string();
+        }
+        if value == 0.0 && value.is_sign_negative() {
+            return "-0".to_string();
+        }
+        // Rust's shortest scientific formatting produces the same shortest
+        // round-trippable digits as .NET "R" ("d[.ddd]e±X").
+        let sci = format!("{:e}", value);
+        let (negative, digits, exp) = Self::parse_shortest_sci(&sci);
+        let n = digits.len() as i32;
+        if exp <= -5 || exp >= 17 {
+            let mut out = String::new();
+            if negative {
+                out.push('-');
+            }
+            out.push(char::from(b'0' + digits[0]));
+            if n > 1 {
+                out.push('.');
+                for &d in &digits[1..] {
+                    out.push(char::from(b'0' + d));
+                }
+            }
+            out.push('E');
+            if exp < 0 {
+                out.push('-');
+            } else {
+                out.push('+');
+            }
+            out.push_str(&format!("{:02}", exp.abs()));
+            out
+        } else if exp >= 0 {
+            let mut out = String::new();
+            if negative {
+                out.push('-');
+            }
+            let point = (exp + 1) as usize;
+            if point >= digits.len() {
+                for &d in &digits {
+                    out.push(char::from(b'0' + d));
+                }
+                for _ in 0..(point - digits.len()) {
+                    out.push('0');
+                }
+            } else {
+                for (i, &d) in digits.iter().enumerate() {
+                    if i == point {
+                        out.push('.');
+                    }
+                    out.push(char::from(b'0' + d));
+                }
+            }
+            out
+        } else {
+            let mut out = String::new();
+            if negative {
+                out.push('-');
+            }
+            out.push_str("0.");
+            for _ in 0..(-exp - 1) {
+                out.push('0');
+            }
+            for &d in &digits {
+                out.push(char::from(b'0' + d));
+            }
+            out
+        }
+    }
+
+    /// Parses Rust's shortest scientific form "d[.ddd]e±X" into
+    /// (negative, significant digits, decimal exponent).
+    fn parse_shortest_sci(s: &str) -> (bool, Vec<u8>, i32) {
+        let (negative, rest) = match s.strip_prefix('-') {
+            Some(r) => (true, r),
+            None => (false, s),
+        };
+        let (mantissa, exp) = rest.split_once('e').expect("scientific form");
+        let digits: Vec<u8> = mantissa
+            .chars()
+            .filter(|c| *c != '.')
+            .map(|c| c as u8 - b'0')
+            .collect();
+        (negative, digits, exp.parse().expect("exponent"))
     }
 
     /// Returns a Lua number literal with the given value (i64).
