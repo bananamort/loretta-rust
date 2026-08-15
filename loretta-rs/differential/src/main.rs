@@ -143,7 +143,7 @@ fn file_stem(path: &str) -> String {
 /// pending coverage until the per-preset version-gating diagnostics land;
 /// every other difference is a hard failure (drift = bug in Rust).
 fn run_check(expected_dir: &str, tmp_dir: &str) {
-    const OPS: [&str; 3] = ["diagnostics", "lex", "parse"];
+    const OPS: [&str; 4] = ["diagnostics", "lex", "parse", "constantfold"];
     let mut identical = 0usize;
     let mut pending = 0usize;
     let mut failed = 0usize;
@@ -221,7 +221,17 @@ fn run_check(expected_dir: &str, tmp_dir: &str) {
                     .join(&stem)
                     .join(format!("{op}.json"));
                 if exp_path.exists() {
-                    not_implemented += 1;
+                    let run = std::process::Command::new(env::current_exe().expect("current exe"))
+                        .arg(op)
+                        .arg(preset)
+                        .arg(file)
+                        .output()
+                        .expect("run differential");
+                    // A successful run means the op is implemented; only
+                    // erroring ops count as not implemented.
+                    if !run.status.success() {
+                        not_implemented += 1;
+                    }
                 }
             }
         }
@@ -251,9 +261,7 @@ fn run_operation(operation: &str, preset: &str, code: &str, _label: &str) -> Res
         "parse" => ops::parse(code),
         "scope" => Err("scope: not yet ported (needs scoping/script nodes)".to_string()),
         "rename" => Err("rename: not yet ported (needs scoping/script nodes)".to_string()),
-        "constantfold" => {
-            Err("constantfold: not yet ported (needs experimental nodes)".to_string())
-        }
+        "constantfold" => ops::constantfold(code),
         "minify" => Err("minify: not yet ported (needs experimental nodes)".to_string()),
         "charutils" => Ok(Json::Object(vec![(
             "note".into(),
