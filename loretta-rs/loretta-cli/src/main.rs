@@ -96,6 +96,7 @@ pub struct Command {
 static S_ROOT_COMMAND: OnceLock<Vec<Command>> = OnceLock::new();
 
 /// C# Program.Setting (private enum).
+#[derive(Copy, Clone)]
 enum Setting {
     PrintCurrentDir,
     PrintOutputPrefixed,
@@ -103,6 +104,7 @@ enum Setting {
 
 /// C# Program.LuaSyntaxOptionsPreset (private enum, Program.cs:124-137).
 /// Maps to LuaSyntaxOptions via PresetEnumToPresetOptions (row 430).
+#[derive(Copy, Clone)]
 enum LuaSyntaxOptionsPreset {
     Lua51,
     Lua52,
@@ -599,6 +601,79 @@ fn lex_command(preset: LuaSyntaxOptionsPreset, path: &str, print_tokens: bool) {
     writeln!(output_writer(), "{dump}").expect("write output");
 }
 
+/// Simple wildcard match (the C# MatchType.Simple enumeration patterns).
+fn glob_matches(name: &str, pattern: &str) -> bool {
+    fn rec(n: &[char], p: &[char]) -> bool {
+        if p.is_empty() {
+            return n.is_empty();
+        }
+        match p[0] {
+            '*' => {
+                for i in 0..=n.len() {
+                    if rec(&n[i..], &p[1..]) {
+                        return true;
+                    }
+                }
+                false
+            }
+            '?' => !n.is_empty() && rec(&n[1..], &p[1..]),
+            c => !n.is_empty() && n[0] == c && rec(&n[1..], &p[1..]),
+        }
+    }
+    let n: Vec<char> = name.chars().collect();
+    let p: Vec<char> = pattern.chars().collect();
+    rec(&n, &p)
+}
+
+/// C# Program.MassParse (Program.cs:262-282): parses files matching the
+/// patterns. The enumeration order is unspecified in C#, so the port sorts
+/// the file list for a deterministic oracle; the duration output is runtime
+/// data (not byte-comparable).
+fn mass_parse_command(preset: LuaSyntaxOptionsPreset, patterns: &[&str]) {
+    let mut files: Vec<String> = Vec::new();
+    if let Ok(entries) = std::fs::read_dir(".") {
+        for entry in entries.flatten() {
+            let name = entry.file_name().to_string_lossy().into_owned();
+            if patterns.iter().any(|p| glob_matches(&name, p)) {
+                files.push(name);
+            }
+        }
+    }
+    files.sort();
+    let _options = preset_enum_to_preset_options(preset);
+    for file in files {
+        match std::fs::read_to_string(&file) {
+            Ok(code) => {
+                let start = std::time::Instant::now();
+                let result =
+                    full_moon::parse_fallible(&code, preset_to_lua_version(preset)).into_result();
+                let elapsed = start.elapsed();
+                S_LOGGER.write_line(&format!("{file}: {}", format_duration(elapsed)));
+                let has_diagnostics = result.is_err();
+                // The C# condition is inverted (logs an error when there are
+                // NO diagnostics) — ported verbatim (Program.cs:280).
+                if !has_diagnostics {
+                    S_LOGGER.log_error("Diagnostics were emitted.");
+                }
+            }
+            Err(e) => S_LOGGER.log_error(&format!("Error reading {file}: {e}")),
+        }
+    }
+}
+
+/// Renders a duration like the dropped Tsu.Timing Duration.Format (the
+/// hh:mm:ss.ffffff shape used by the CLI's prefix template).
+fn format_duration(elapsed: std::time::Duration) -> String {
+    let total = elapsed.as_micros();
+    let us = total % 1_000_000;
+    let total_s = total / 1_000_000;
+    let s = total_s % 60;
+    let total_m = total_s / 60;
+    let m = total_m % 60;
+    let h = total_m / 60;
+    format!("{h:02}:{m:02}:{s:02}.{us:06}")
+}
+
 /// C# Program.ChangeDirectory — changes the current directory (Program.cs:99-110).
 fn change_directory(relative_path: &str) {
     let result =
@@ -681,6 +756,8 @@ fn main() {
         as fn(LuaSyntaxOptionsPreset) -> loretta::luaparseoptions::LuaParseOptions;
     // Referenced until the static ctor (row 456) wires the lex command.
     let _ = lex_command as fn(LuaSyntaxOptionsPreset, &str, bool);
+    // Referenced until the static ctor (row 456) wires the mass-parse command.
+    let _ = mass_parse_command as fn(LuaSyntaxOptionsPreset, &[&str]);
     writeln!(
         output_writer(),
         "loretta-cli: pending port — see loretta-rs/PROGRESS.md"
