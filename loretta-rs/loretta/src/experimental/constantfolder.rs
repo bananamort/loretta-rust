@@ -32,8 +32,6 @@ impl ExpressionFlags {
     const IS_LONG: Self = Self(1 << 8);
     const IS_STRING_WITH_NUMBER: Self = Self(1 << 9);
 
-    // C# composite flags (ConstantFolder.ExpressionFlags.cs lines 22-25).
-    const CAN_CONVERT_TO_BOOL: Self = Self(Self::IS_TRUTHY.0 | Self::IS_FALSEY.0);
     const IS_SCALAR: Self = Self(
         Self::IS_NIL.0 | Self::IS_DOUBLE.0 | Self::IS_LONG.0 | Self::IS_STR.0 | Self::IS_BOOL.0,
     );
@@ -141,8 +139,6 @@ impl ConstantFolder {
             _ => {}
         }
         if Self::can_convert_to_boolean(inner) {
-            // The C# composite `CanConvertToBool` flag is kept for parity.
-            let _ = ExpressionFlags::CAN_CONVERT_TO_BOOL;
             if Self::is_falsey(inner) {
                 flags.or(ExpressionFlags::IS_FALSEY);
             } else {
