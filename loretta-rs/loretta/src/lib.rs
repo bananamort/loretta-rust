@@ -6,6 +6,7 @@ pub mod continuetype;
 pub mod errors;
 pub mod experimental;
 pub mod integerformats;
+pub mod luaparseoptions;
 pub mod luaresources;
 pub mod luasyntaxoptions;
 pub mod operations;
