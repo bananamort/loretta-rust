@@ -93,6 +93,7 @@ fn main() {
                         "objectdisplay",
                         "messageprovider",
                         "gotolabel",
+                        "stringutils",
                     ]
                 };
                 for op in &ops {
@@ -148,7 +149,7 @@ fn file_stem(path: &str) -> String {
 /// pending coverage until the per-preset version-gating diagnostics land;
 /// every other difference is a hard failure (drift = bug in Rust).
 fn run_check(expected_dir: &str, tmp_dir: &str) {
-    const OPS: [&str; 8] = [
+    const OPS: [&str; 9] = [
         "options",
         "diagnostics",
         "lex",
@@ -157,6 +158,7 @@ fn run_check(expected_dir: &str, tmp_dir: &str) {
         "objectdisplay",
         "messageprovider",
         "gotolabel",
+        "stringutils",
     ];
     let mut identical = 0usize;
     let mut pending = 0usize;
@@ -271,10 +273,7 @@ fn run_operation(operation: &str, preset: &str, code: &str, _label: &str) -> Res
         }
         "minify" => Err("minify: not yet ported (needs experimental nodes)".to_string()),
         "charutils" => ops::charutils(code),
-        "stringutils" => Ok(Json::Object(vec![(
-            "note".into(),
-            Json::String("covered via lex/parse".into()),
-        )])),
+        "stringutils" => ops::stringutils(),
         "hexfloat" => Ok(Json::Object(vec![(
             "note".into(),
             Json::String("covered via parse".into()),
