@@ -34,7 +34,7 @@ if (operation == "all" && File.Exists(inputArg) && outDir != null)
         var parseOpts = new LuaParseOptions(opts);
         var dir = Path.Combine(outDir, preset, Path.GetFileNameWithoutExtension(inputArg));
         Directory.CreateDirectory(dir);
-        var ops = code.Length > 500_000 ? new[] { "diagnostics", "parse" } : new[] { "diagnostics", "lex", "parse", "scope", "constantfold", "minify", "charutils", "objectdisplay", "messageprovider", "gotolabel" };
+        var ops = code.Length > 500_000 ? new[] { "diagnostics", "parse" } : new[] { "options", "diagnostics", "lex", "parse", "scope", "constantfold", "minify", "charutils", "objectdisplay", "messageprovider", "gotolabel" };
         foreach (var op in ops)
         {
             try
@@ -81,7 +81,12 @@ static async Task<object> RunOperation(string operation, LuaParseOptions parseOp
     var syntaxOpts = parseOpts.SyntaxOptions;
     return operation switch
     {
-        "options" => new { preset = syntaxOpts.ToString() },
+        "options" => new
+        {
+            preset = syntaxOpts.ToString(),
+            features = parseOpts.Features.Select(f => f.Key + "=" + f.Value).ToArray(),
+            withFeatures = parseOpts.WithFeatures(new[] { new KeyValuePair<string, string>("foo", "bar") }).Features.Select(f => f.Key + "=" + f.Value).ToArray()
+        },
         "diagnostics" => await DiagnosticsOp(parseOpts, code),
         "lex" => await LexOp(parseOpts, code),
         "parse" => await ParseOp(parseOpts, code),

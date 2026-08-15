@@ -1,0 +1,7 @@
+{
+  "preset": "LuaJIT 2.0",
+  "features": [],
+  "withFeatures": [
+    "foo=bar"
+  ]
+}

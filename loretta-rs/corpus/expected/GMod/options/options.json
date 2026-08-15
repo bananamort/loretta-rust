@@ -1,0 +1,7 @@
+{
+  "preset": "GLua",
+  "features": [],
+  "withFeatures": [
+    "foo=bar"
+  ]
+}

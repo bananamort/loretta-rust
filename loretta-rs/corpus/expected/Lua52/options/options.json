@@ -1,0 +1,7 @@
+{
+  "preset": "Lua 5.2",
+  "features": [],
+  "withFeatures": [
+    "foo=bar"
+  ]
+}

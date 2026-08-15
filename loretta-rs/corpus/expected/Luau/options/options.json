@@ -1,0 +1,7 @@
+{
+  "preset": "Luau",
+  "features": [],
+  "withFeatures": [
+    "foo=bar"
+  ]
+}
