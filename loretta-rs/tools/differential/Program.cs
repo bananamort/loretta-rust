@@ -88,7 +88,9 @@ static async Task<object> RunOperation(string operation, LuaParseOptions parseOp
             documentationMode = parseOpts.DocumentationMode.ToString(),
             withDocumentationMode = parseOpts.WithDocumentationMode(Loretta.CodeAnalysis.DocumentationMode.None).DocumentationMode.ToString(),
             features = parseOpts.Features.Select(f => f.Key + "=" + f.Value).ToArray(),
-            withFeatures = parseOpts.WithFeatures(new[] { new KeyValuePair<string, string>("foo", "bar") }).Features.Select(f => f.Key + "=" + f.Value).ToArray()
+            withFeatures = parseOpts.WithFeatures(new[] { new KeyValuePair<string, string>("foo", "bar") }).Features.Select(f => f.Key + "=" + f.Value).ToArray(),
+            equalsDefault = parseOpts.Equals(new LuaParseOptions(syntaxOpts)),
+            equalsWithFeatures = parseOpts.Equals(parseOpts.WithFeatures(new[] { new KeyValuePair<string, string>("foo", "bar") }))
         },
         "diagnostics" => await DiagnosticsOp(parseOpts, code),
         "lex" => await LexOp(parseOpts, code),
