@@ -5,6 +5,7 @@ pub mod console_timing_logger_text_writer;
 
 use std::io::{self, Write};
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::OnceLock;
 
 /// The console logger. C# `ConsoleTimingLogger` is an external type
 /// (Tsu.Timing) — dropped per the Port Boundary; the port carries a minimal
@@ -38,6 +39,20 @@ static S_PRINT_CURRENT_DIR: AtomicBool = AtomicBool::new(false);
 /// Whether the REPL prefixes output with the timing logger (C# Program.s_printOutputPrefixed).
 static S_PRINT_OUTPUT_PREFIXED: AtomicBool = AtomicBool::new(false);
 
+/// A REPL command (C# System.CommandLine.Command — dropped infra; the port
+/// carries the name/aliases/handler surface the REPL uses).
+pub struct Command {
+    /// The primary name (e.g. "q").
+    pub name: &'static str,
+    /// The aliases (e.g. "quit", "exit").
+    pub aliases: &'static [&'static str],
+    /// The handler invoked with the rest of the input line.
+    pub handler: fn(&str),
+}
+
+/// The root command table (C# Program.s_rootCommand, built in the static ctor).
+static S_ROOT_COMMAND: OnceLock<Vec<Command>> = OnceLock::new();
+
 fn main() {
     // Temporary REPL stub mirroring Main's state initialization until the
     // Main row (410) lands (C# Main sets s_shouldRun = true first).
@@ -48,6 +63,8 @@ fn main() {
             S_LOGGER.write(&dir.display().to_string());
         }
     }
+    // Referenced until the static ctor (row 456) builds it and Main (410) invokes it.
+    let _ = S_ROOT_COMMAND.get();
     // Referenced until OutputWriter (row 409) lands.
     let _ = S_PRINT_OUTPUT_PREFIXED.load(Ordering::Relaxed);
     S_LOGGER.write_line("loretta-cli: pending port — see loretta-rs/PROGRESS.md");
