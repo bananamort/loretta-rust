@@ -64,6 +64,7 @@ jobs:
               print(f"PROGRESS rows OK: {rows}")
           PY
       - name: C# oracle (strict per-feature)
+        if: ${{ hashFiles('references/Loretta/**/*.csproj') != '' }}
         run: |
           dotnet --info | head -n 5
           NUGET_PACKAGES=/tmp/loretta-differential-packages dotnet build loretta-rs/tools/differential/Differential.csproj -c Release
@@ -72,8 +73,12 @@ jobs:
           test -f loretta-rs/corpus/expected/All/anim/diagnostics.json
           echo "C# oracle OK — expected per AllPresets for corpus + features"
       - name: Differential smoke (corpus + expected)
+        if: ${{ hashFiles('references/Loretta/**/*.csproj') != '' }}
         working-directory: loretta-rs
         run: |
           ls -lh corpus/expected/All/anim/ | head -n 20
           test -f corpus/expected/All/anim/parse.json
           echo "Differential harness — C# expected present, Rust oracle to be built by agents per loretta-rs/tools/differential/README.md"
+      - name: Oracle2 status
+        if: ${{ hashFiles('references/Loretta/**/*.csproj') == '' }}
+        run: echo "C# oracle skipped — references/ not available (gitignored). Oracle2 runs locally."
