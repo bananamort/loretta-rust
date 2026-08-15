@@ -8,6 +8,7 @@
     "foo=bar"
   ],
   "equalsDefault": true,
+  "equalsObjectDefault": true,
   "equalsWithFeatures": false,
   "syntaxEqualsAll": false
 }
