@@ -89,6 +89,7 @@ fn main() {
                         "constantfold",
                         "minify",
                         "charutils",
+                        "objectdisplay",
                     ]
                 };
                 for op in &ops {
@@ -144,7 +145,7 @@ fn file_stem(path: &str) -> String {
 /// pending coverage until the per-preset version-gating diagnostics land;
 /// every other difference is a hard failure (drift = bug in Rust).
 fn run_check(expected_dir: &str, tmp_dir: &str) {
-    const OPS: [&str; 4] = ["diagnostics", "lex", "parse", "charutils"];
+    const OPS: [&str; 5] = ["diagnostics", "lex", "parse", "charutils", "objectdisplay"];
     let mut identical = 0usize;
     let mut pending = 0usize;
     let mut failed = 0usize;
@@ -265,10 +266,7 @@ fn run_operation(operation: &str, preset: &str, code: &str, _label: &str) -> Res
             "note".into(),
             Json::String("covered via parse".into()),
         )])),
-        "objectdisplay" => Ok(Json::Object(vec![(
-            "note".into(),
-            Json::String("covered via parse".into()),
-        )])),
+        "objectdisplay" => ops::objectdisplay(),
         "operator" => Ok(Json::Object(vec![(
             "note".into(),
             Json::String("covered via parse/constantfold".into()),
