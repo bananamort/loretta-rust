@@ -7,6 +7,7 @@ pub mod errors;
 pub mod experimental;
 pub mod integerformats;
 pub mod luaresources;
+pub mod luasyntaxoptions;
 pub mod operations;
 pub mod options;
 pub mod scoping;
