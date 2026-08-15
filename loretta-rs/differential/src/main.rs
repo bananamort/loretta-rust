@@ -88,6 +88,7 @@ fn main() {
                         "scope",
                         "constantfold",
                         "minify",
+                        "charutils",
                     ]
                 };
                 for op in &ops {
@@ -143,7 +144,7 @@ fn file_stem(path: &str) -> String {
 /// pending coverage until the per-preset version-gating diagnostics land;
 /// every other difference is a hard failure (drift = bug in Rust).
 fn run_check(expected_dir: &str, tmp_dir: &str) {
-    const OPS: [&str; 3] = ["diagnostics", "lex", "parse"];
+    const OPS: [&str; 4] = ["diagnostics", "lex", "parse", "charutils"];
     let mut identical = 0usize;
     let mut pending = 0usize;
     let mut failed = 0usize;
@@ -255,10 +256,7 @@ fn run_operation(operation: &str, preset: &str, code: &str, _label: &str) -> Res
             Err("constantfold: not yet ported (needs experimental nodes)".to_string())
         }
         "minify" => Err("minify: not yet ported (needs experimental nodes)".to_string()),
-        "charutils" => Ok(Json::Object(vec![(
-            "note".into(),
-            Json::String("covered via lex/parse".into()),
-        )])),
+        "charutils" => ops::charutils(code),
         "stringutils" => Ok(Json::Object(vec![(
             "note".into(),
             Json::String("covered via lex/parse".into()),

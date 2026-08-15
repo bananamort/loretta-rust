@@ -94,3 +94,20 @@ pub fn parse(code: &str) -> Result<Json, String> {
         ("hasErrors".into(), Json::Bool(has_errors)),
     ]))
 }
+
+/// CharUtils oracle: for every char of the input, the ported CharUtils result
+/// per member. Mirrors the C# reference's CharUtilsOp (real Loretta via
+/// reflection); members land one node at a time.
+pub fn charutils(code: &str) -> Result<Json, String> {
+    use loretta::utilities::charutils::CharUtils;
+    let results: Vec<Json> = code
+        .chars()
+        .map(|ch| {
+            Json::Object(vec![
+                ("ch".into(), Json::String(ch.to_string())),
+                ("isBinary".into(), Json::Bool(CharUtils::is_binary(ch))),
+            ])
+        })
+        .collect();
+    Ok(Json::Object(vec![("results".into(), Json::Array(results))]))
+}
