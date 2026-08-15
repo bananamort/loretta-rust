@@ -122,11 +122,11 @@ impl HexFloat {
 
         let n = s.len();
         if n == 0 {
-            return Err(HexFloatError::InvalidFormat);
+            return Err(HexFloatError::invalid_format_message(s, n));
         }
 
         if n > ((i32::MAX as i64 + MIN_S_EXP as i64 - 10) / 4) as usize {
-            return Err(HexFloatError::Overflow);
+            return Err(HexFloatError::too_long_message());
         }
 
         let bytes = s.as_bytes();
@@ -147,7 +147,7 @@ impl HexFloat {
         // "0x" prefix
         if i + 1 < n && (bytes[i + 1] == b'x' || bytes[i + 1] == b'X') {
             if bytes[i] != b'0' {
-                return Err(HexFloatError::InvalidFormat);
+                return Err(HexFloatError::invalid_format_message(s, n));
             }
             i += 2;
         }
@@ -161,7 +161,7 @@ impl HexFloat {
                 if n_bits >= 0 {
                     break;
                 } else {
-                    return Err(HexFloatError::InvalidFormat);
+                    return Err(HexFloatError::invalid_format_message(s, n));
                 }
             }
             let c = bytes[i];
@@ -204,7 +204,7 @@ impl HexFloat {
 
             if c == b'.' {
                 if past_dot {
-                    return Err(HexFloatError::InvalidFormat);
+                    return Err(HexFloatError::invalid_format_message(s, n));
                 }
                 past_dot = true;
                 exp = if n_bits >= 0 { n_bits } else { 0 };
@@ -223,7 +223,7 @@ impl HexFloat {
                     i += 1;
                 }
                 if i == n {
-                    return Err(HexFloatError::InvalidFormat);
+                    return Err(HexFloatError::invalid_format_message(s, n));
                 }
                 let mut e: i32 = 0;
                 while i < n {
@@ -236,7 +236,7 @@ impl HexFloat {
                             e = i32::MAX - 8;
                         }
                     } else {
-                        return Err(HexFloatError::InvalidFormat);
+                        return Err(HexFloatError::invalid_format_message(s, n));
                     }
                 }
                 e *= e_sign;
@@ -273,7 +273,7 @@ impl HexFloat {
                     return Ok(f64::NAN);
                 }
             }
-            return Err(HexFloatError::InvalidFormat);
+            return Err(HexFloatError::invalid_format_message(s, n));
         }
 
         if n_bits == 0 {
@@ -315,7 +315,7 @@ impl HexFloat {
                     if xn == 0 {
                         exp += 1;
                         if exp > MAX_EXP {
-                            return Err(HexFloatError::Overflow);
+                            return Err(HexFloatError::overflow_message(s, n));
                         }
                     }
                 } else {
@@ -327,28 +327,61 @@ impl HexFloat {
             xn |= ((sign as u64) << (MAX_BITS - 1 + EXP_BITS)) | ((exp as u64) << (MAX_BITS - 1));
             Ok(f64::from_bits(xn))
         } else {
-            Err(HexFloatError::Overflow)
+            Err(HexFloatError::overflow_message(s, n))
         }
     }
 }
 
-/// Errors from hex float parsing.
+/// Errors from hex float parsing, carrying the C# exception messages verbatim
+/// (HexFloat.cs InvalidFormat/OverflowException texts).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum HexFloatError {
-    /// The string is not a valid hex float format.
-    InvalidFormat,
-    /// The value is too large or too small for a double.
-    Overflow,
+    /// C# FormatException message: "The given hexadecimal string representation
+    /// of a double precision floating-point number (\"...\") is invalid."
+    InvalidFormat(String),
+    /// C# OverflowException message: either the too-long input or the
+    /// value-out-of-range text.
+    Overflow(String),
+}
+
+impl HexFloatError {
+    fn invalid_format_message(s: &str, n: usize) -> Self {
+        let msg = if n < 32 {
+            format!(
+                "The given hexadecimal string representation of a double precision floating-point number (\"{s}\") is invalid."
+            )
+        } else {
+            "The given hexadecimal string representation of a double precision floating-point number is invalid."
+                .to_string()
+        };
+        HexFloatError::InvalidFormat(msg)
+    }
+
+    fn overflow_message(s: &str, n: usize) -> Self {
+        let msg = if n < 32 {
+            format!(
+                "The given string (\"{s}\") represents a value either too large or too small for a double precision floating-point number."
+            )
+        } else {
+            "The given string represents a value either too large or too small for a double precision floating-point number."
+                .to_string()
+        };
+        HexFloatError::Overflow(msg)
+    }
+
+    fn too_long_message() -> Self {
+        HexFloatError::Overflow(
+            "The given hexadecimal string representation of a double precision floating-point number is too long."
+                .to_string(),
+        )
+    }
 }
 
 impl std::fmt::Display for HexFloatError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            HexFloatError::InvalidFormat => {
-                write!(f, "Invalid hexadecimal floating-point format")
-            }
-            HexFloatError::Overflow => {
-                write!(f, "Floating-point value overflow or underflow")
+            HexFloatError::InvalidFormat(msg) | HexFloatError::Overflow(msg) => {
+                write!(f, "{msg}")
             }
         }
     }
