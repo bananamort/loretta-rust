@@ -299,6 +299,10 @@ pub fn charutils(code: &str) -> Result<Json, String> {
                     "isWhitespace".into(),
                     Json::Bool(CharUtils::is_whitespace(ch)),
                 ),
+                (
+                    "isValidFirstIdentifierChar".into(),
+                    Json::Bool(CharUtils::is_valid_first_identifier_char(ch)),
+                ),
             ])
         })
         .collect();
