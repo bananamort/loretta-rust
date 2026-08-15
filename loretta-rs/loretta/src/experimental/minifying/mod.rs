@@ -2,4 +2,5 @@
 
 pub mod islotallocator;
 pub mod sequentialslotallocator;
+pub mod sortedslotallocator;
 pub mod triviarewriter;
