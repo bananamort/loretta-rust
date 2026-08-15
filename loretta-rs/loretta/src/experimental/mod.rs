@@ -2,3 +2,4 @@
 
 pub mod constantfoldingoptions;
 pub mod minifying;
+pub mod syntaxextensions;
