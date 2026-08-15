@@ -822,6 +822,20 @@ fn run_multi_lua(args: &[&str]) {
     }
 }
 
+/// C# Program.PrintMemoryUsage (Program.cs:444-450).
+fn print_memory_usage() {
+    let gc_mem = gc_memory();
+    let proc_mem = process_memory();
+    S_LOGGER.write_line(&format!(
+        "Memory usage according to GC:       {}",
+        file_size_format(gc_mem)
+    ));
+    S_LOGGER.write_line(&format!(
+        "Memory usage according to Process:  {}",
+        file_size_format(proc_mem)
+    ));
+}
+
 /// C# Program.Clear (Program.cs:437) — clears the console (ANSI escape
 /// sequence; Console.Clear is platform-specific).
 fn clear() {
@@ -926,6 +940,8 @@ fn main() {
     let _ = multi_lua as fn(&str);
     let _ = multi_lua_expression as fn(&str);
     let _ = clear as fn();
+    // Referenced until the static ctor (row 456) wires the memory command.
+    let _ = print_memory_usage as fn();
     // Referenced until the memory rows (451-455) land.
     let _ = current_proc as fn() -> u32;
     let _ = (gc_memory as fn() -> u64, process_memory as fn() -> u64);
