@@ -1,5 +1,6 @@
 {
   "preset": "All (with integers)",
+  "language": "Lua",
   "documentationMode": "Parse",
   "features": [],
   "withFeatures": [

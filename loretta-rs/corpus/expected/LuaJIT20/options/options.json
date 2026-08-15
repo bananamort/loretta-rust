@@ -1,5 +1,6 @@
 {
   "preset": "LuaJIT 2.0",
+  "language": "Lua",
   "documentationMode": "Parse",
   "features": [],
   "withFeatures": [

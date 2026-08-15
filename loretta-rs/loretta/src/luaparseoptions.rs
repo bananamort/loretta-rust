@@ -28,6 +28,11 @@ impl LuaParseOptions {
         "Parse"
     }
 
+    /// The language name (C# `LanguageNames.Lua`).
+    pub fn language(&self) -> &'static str {
+        "Lua"
+    }
+
     /// Creates a new set of parse options.
     pub fn new(syntax_options: LuaSyntaxOptions) -> Self {
         Self {

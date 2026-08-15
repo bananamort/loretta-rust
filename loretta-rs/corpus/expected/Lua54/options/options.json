@@ -1,5 +1,6 @@
 {
   "preset": "Lua 5.4",
+  "language": "Lua",
   "documentationMode": "Parse",
   "features": [],
   "withFeatures": [

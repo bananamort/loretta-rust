@@ -84,6 +84,7 @@ static async Task<object> RunOperation(string operation, LuaParseOptions parseOp
         "options" => new
         {
             preset = syntaxOpts.ToString(),
+            language = parseOpts.Language,
             documentationMode = parseOpts.DocumentationMode.ToString(),
             features = parseOpts.Features.Select(f => f.Key + "=" + f.Value).ToArray(),
             withFeatures = parseOpts.WithFeatures(new[] { new KeyValuePair<string, string>("foo", "bar") }).Features.Select(f => f.Key + "=" + f.Value).ToArray()
