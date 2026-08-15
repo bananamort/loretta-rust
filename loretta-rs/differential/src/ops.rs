@@ -76,6 +76,10 @@ pub fn options(preset: &str) -> Result<Json, String> {
             Json::Bool(parse_opts == LuaParseOptions::new(opts.clone())),
         ),
         (
+            "equalsObjectDefault".into(),
+            Json::Bool(parse_opts == LuaParseOptions::new(opts.clone())),
+        ),
+        (
             "equalsWithFeatures".into(),
             Json::Bool(
                 parse_opts
