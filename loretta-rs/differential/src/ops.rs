@@ -340,6 +340,10 @@ pub fn charutils(code: &str) -> Result<Json, String> {
                     "isHexadecimal".into(),
                     Json::Bool(CharUtils::is_hexadecimal(ch)),
                 ),
+                (
+                    "isValidTrailingIdentifierChar".into(),
+                    Json::Bool(CharUtils::is_valid_trailing_identifier_char(ch)),
+                ),
             ])
         })
         .collect();

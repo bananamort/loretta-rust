@@ -8,7 +8,8 @@
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
       "isAlphaNumeric": true,
-      "isHexadecimal": false
+      "isHexadecimal": false,
+      "isValidTrailingIdentifierChar": true
     },
     {
       "ch": "e",
@@ -18,7 +19,8 @@
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
       "isAlphaNumeric": true,
-      "isHexadecimal": true
+      "isHexadecimal": true,
+      "isValidTrailingIdentifierChar": true
     },
     {
       "ch": "t",
@@ -28,7 +30,8 @@
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
       "isAlphaNumeric": true,
-      "isHexadecimal": false
+      "isHexadecimal": false,
+      "isValidTrailingIdentifierChar": true
     },
     {
       "ch": "u",
@@ -38,7 +41,8 @@
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
       "isAlphaNumeric": true,
-      "isHexadecimal": false
+      "isHexadecimal": false,
+      "isValidTrailingIdentifierChar": true
     },
     {
       "ch": "r",
@@ -48,7 +52,8 @@
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
       "isAlphaNumeric": true,
-      "isHexadecimal": false
+      "isHexadecimal": false,
+      "isValidTrailingIdentifierChar": true
     },
     {
       "ch": "n",
@@ -58,7 +63,8 @@
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
       "isAlphaNumeric": true,
-      "isHexadecimal": false
+      "isHexadecimal": false,
+      "isValidTrailingIdentifierChar": true
     },
     {
       "ch": " ",
@@ -68,7 +74,8 @@
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
       "isAlphaNumeric": false,
-      "isHexadecimal": false
+      "isHexadecimal": false,
+      "isValidTrailingIdentifierChar": false
     },
     {
       "ch": "1",
@@ -78,7 +85,8 @@
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
       "isAlphaNumeric": true,
-      "isHexadecimal": true
+      "isHexadecimal": true,
+      "isValidTrailingIdentifierChar": true
     },
     {
       "ch": " ",
@@ -88,7 +96,8 @@
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
       "isAlphaNumeric": false,
-      "isHexadecimal": false
+      "isHexadecimal": false,
+      "isValidTrailingIdentifierChar": false
     },
     {
       "ch": "\u002B",
@@ -98,7 +107,8 @@
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
       "isAlphaNumeric": false,
-      "isHexadecimal": false
+      "isHexadecimal": false,
+      "isValidTrailingIdentifierChar": false
     },
     {
       "ch": " ",
@@ -108,7 +118,8 @@
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
       "isAlphaNumeric": false,
-      "isHexadecimal": false
+      "isHexadecimal": false,
+      "isValidTrailingIdentifierChar": false
     },
     {
       "ch": "2",
@@ -118,7 +129,8 @@
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
       "isAlphaNumeric": true,
-      "isHexadecimal": true
+      "isHexadecimal": true,
+      "isValidTrailingIdentifierChar": true
     },
     {
       "ch": "\n",
@@ -128,7 +140,8 @@
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
       "isAlphaNumeric": false,
-      "isHexadecimal": false
+      "isHexadecimal": false,
+      "isValidTrailingIdentifierChar": false
     }
   ]
 }
