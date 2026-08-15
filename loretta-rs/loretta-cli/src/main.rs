@@ -106,6 +106,7 @@ enum Setting {
 #[derive(Copy, Clone)]
 enum SlotAllocator {
     Sequential,
+    Sorted,
 }
 
 /// C# Program.NamingStrategy (private enum, Program.cs:284-289). Maps to
@@ -770,7 +771,7 @@ fn main() {
     let _ = preset_enum_to_preset_options
         as fn(LuaSyntaxOptionsPreset) -> loretta::luaparseoptions::LuaParseOptions;
     // Constructed until GetSlotAllocator (row 443) uses it.
-    let _ = SlotAllocator::Sequential;
+    let _ = (SlotAllocator::Sequential, SlotAllocator::Sorted);
     // Constructed until GetNamingStrategy (row 439) uses it.
     let _ = (
         NamingStrategy::Alphabetical,
