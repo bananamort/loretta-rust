@@ -423,13 +423,13 @@ Generated from `loretta-rs/nodes.json` (`744` distinct symbols, `803` MemberDecl
 | 408 | `Loretta.CLI.Program.s_rootCommand` | `Loretta.CLI.Program.s_rootCommand` | `src/Compilers/Lua/CommandLine/Program.cs:20` | `loretta-cli/src/main.rs` | done | — |
 | 409 | `Loretta.CLI.Program.OutputWriter` | `Loretta.CLI.Program.OutputWriter` | `src/Compilers/Lua/CommandLine/Program.cs:22` | `loretta-cli/src/main.rs` | done | — |
 | 410 | `Loretta.CLI.Program.Main()` | `Loretta.CLI.Program.Main()` | `src/Compilers/Lua/CommandLine/Program.cs:25` | `loretta-cli/src/main.rs` | done | — |
-| 411 | `Loretta.CLI.Program.Setting` | `Loretta.CLI.Program.Setting` | `src/Compilers/Lua/CommandLine/Program.cs:66` | `loretta-cli/src/main.rs` | done | — |
-| 412 | `Loretta.CLI.Program.Setting.PrintCurrentDir` | `Loretta.CLI.Program.Setting.PrintCurrentDir` | `src/Compilers/Lua/CommandLine/Program.cs:68` | `loretta-cli/src/main.rs` | done | — |
-| 413 | `Loretta.CLI.Program.Setting.PrintOutputPrefixed` | `Loretta.CLI.Program.Setting.PrintOutputPrefixed` | `src/Compilers/Lua/CommandLine/Program.cs:69` | `loretta-cli/src/main.rs` | done | — |
-| 414 | `Loretta.CLI.Program.Set(Loretta.CLI.Program.Setting, string)` | `Loretta.CLI.Program.Set(Loretta.CLI.Program.Setting, string)` | `src/Compilers/Lua/CommandLine/Program.cs:72` | `loretta-cli/src/main.rs` | done | — |
-| 415 | `Loretta.CLI.Program.Quit()` | `Loretta.CLI.Program.Quit()` | `src/Compilers/Lua/CommandLine/Program.cs:95` | `loretta-cli/src/main.rs` | done | — |
-| 416 | `Loretta.CLI.Program.ChangeDirectory(string)` | `Loretta.CLI.Program.ChangeDirectory(string)` | `src/Compilers/Lua/CommandLine/Program.cs:99` | `loretta-cli/src/main.rs` | done | — |
-| 417 | `Loretta.CLI.Program.ListSymbols()` | `Loretta.CLI.Program.ListSymbols()` | `src/Compilers/Lua/CommandLine/Program.cs:112` | `loretta-cli/src/main.rs` | done | — |
+| 411 | `Loretta.CLI.Program.Setting:NamedType@Program.cs:66` | `Loretta.CLI.Program.Setting` | `src/Compilers/Lua/CommandLine/Program.cs:66` | `loretta-cli/src/main.rs` | pending | — |
+| 412 | `Loretta.CLI.Program.Setting.PrintCurrentDir:Field@Program.cs:68` | `Loretta.CLI.Program.Setting.PrintCurrentDir` | `src/Compilers/Lua/CommandLine/Program.cs:68` | `loretta-cli/src/main.rs` | pending | — |
+| 413 | `Loretta.CLI.Program.Setting.PrintOutputPrefixed:Field@Program.cs:69` | `Loretta.CLI.Program.Setting.PrintOutputPrefixed` | `src/Compilers/Lua/CommandLine/Program.cs:69` | `loretta-cli/src/main.rs` | pending | — |
+| 414 | `Loretta.CLI.Program.Set(Loretta.CLI.Program.Setting, string):Method@Program.cs:72` | `Loretta.CLI.Program.Set(Loretta.CLI.Program.Setting, string)` | `src/Compilers/Lua/CommandLine/Program.cs:72` | `loretta-cli/src/main.rs` | pending | — |
+| 415 | `Loretta.CLI.Program.Quit():Method@Program.cs:95` | `Loretta.CLI.Program.Quit()` | `src/Compilers/Lua/CommandLine/Program.cs:95` | `loretta-cli/src/main.rs` | pending | — |
+| 416 | `Loretta.CLI.Program.ChangeDirectory(string):Method@Program.cs:99` | `Loretta.CLI.Program.ChangeDirectory(string)` | `src/Compilers/Lua/CommandLine/Program.cs:99` | `loretta-cli/src/main.rs` | pending | — |
+| 417 | `Loretta.CLI.Program.ListSymbols():Method@Program.cs:112` | `Loretta.CLI.Program.ListSymbols()` | `src/Compilers/Lua/CommandLine/Program.cs:112` | `loretta-cli/src/main.rs` | pending | — |
 | 418 | `Loretta.CLI.Program.LuaSyntaxOptionsPreset:NamedType@Program.cs:124` | `Loretta.CLI.Program.LuaSyntaxOptionsPreset` | `src/Compilers/Lua/CommandLine/Program.cs:124` | `loretta-cli/src/main.rs` | pending | — |
 | 419 | `Loretta.CLI.Program.LuaSyntaxOptionsPreset.Lua51:Field@Program.cs:126` | `Loretta.CLI.Program.LuaSyntaxOptionsPreset.Lua51` | `src/Compilers/Lua/CommandLine/Program.cs:126` | `loretta-cli/src/main.rs` | pending | — |
 | 420 | `Loretta.CLI.Program.LuaSyntaxOptionsPreset.Lua52:Field@Program.cs:127` | `Loretta.CLI.Program.LuaSyntaxOptionsPreset.Lua52` | `src/Compilers/Lua/CommandLine/Program.cs:127` | `loretta-cli/src/main.rs` | pending | — |
