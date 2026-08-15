@@ -36,14 +36,13 @@ impl ErrorFacts {
 
     /// Gets the severity for the given error code.
     pub fn get_severity(code: ErrorCode) -> DiagnosticSeverity {
-        if Self::is_hidden(code) {
-            DiagnosticSeverity::Hidden
-        } else if Self::is_warning(code) {
-            DiagnosticSeverity::Warning
-        } else if Self::is_info(code) {
-            DiagnosticSeverity::Info
-        } else {
-            DiagnosticSeverity::Error
+        match code {
+            ErrorCode::Void => DiagnosticSeverity::Void,
+            ErrorCode::Unknown => DiagnosticSeverity::Unknown,
+            _ if Self::is_warning(code) => DiagnosticSeverity::Warning,
+            _ if Self::is_info(code) => DiagnosticSeverity::Info,
+            _ if Self::is_hidden(code) => DiagnosticSeverity::Hidden,
+            _ => DiagnosticSeverity::Error,
         }
     }
 

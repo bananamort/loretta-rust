@@ -7,10 +7,14 @@ use crate::errors::luadiagnosticformatter::LuaDiagnosticFormatter;
 /// Severity level for diagnostics.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum DiagnosticSeverity {
-    Hidden,
-    Info,
-    Warning,
-    Error,
+    /// C# InternalDiagnosticSeverity.Void (cast of InternalErrorCode.Void).
+    Void = -2,
+    /// C# InternalDiagnosticSeverity.Unknown (cast of InternalErrorCode.Unknown).
+    Unknown = -1,
+    Hidden = 0,
+    Info = 1,
+    Warning = 2,
+    Error = 3,
 }
 
 /// A Lua-specific diagnostic.
