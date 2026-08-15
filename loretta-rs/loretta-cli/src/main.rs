@@ -822,6 +822,17 @@ fn run_multi_lua(args: &[&str]) {
     }
 }
 
+/// C# Program.PopMemoryUsage (Program.cs:483-493): compares and pops the
+/// most recent memory usage.
+fn pop_memory_usage() {
+    if S_MEMORY_STACK.lock().expect("memory stack lock").is_empty() {
+        S_LOGGER.log_error("Nothing on memory stack to pop.");
+        return;
+    }
+    compare_memory_usage();
+    S_MEMORY_STACK.lock().expect("memory stack lock").pop();
+}
+
 /// C# Program.CompareMemoryUsage (Program.cs:462-481).
 fn compare_memory_usage() {
     let curr_gc_mem = gc_memory();
@@ -1002,6 +1013,7 @@ fn main() {
     let _ = print_memory_usage as fn();
     let _ = push_memory_usage as fn();
     let _ = compare_memory_usage as fn();
+    let _ = pop_memory_usage as fn();
     // Referenced until the memory rows (451-455) land.
     let _ = current_proc as fn() -> u32;
     let _ = (gc_memory as fn() -> u64, process_memory as fn() -> u64);
