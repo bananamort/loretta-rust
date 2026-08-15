@@ -172,6 +172,10 @@ pub fn messageprovider() -> Result<Json, String> {
                     "category".into(),
                     Json::String(MessageProvider::get_category(*code)),
                 ),
+                (
+                    "description".into(),
+                    Json::String(MessageProvider::get_description(*code)),
+                ),
             ])
         })
         .collect();
