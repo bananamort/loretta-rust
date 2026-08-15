@@ -108,6 +108,10 @@ pub fn charutils(code: &str) -> Result<Json, String> {
                 ("isBinary".into(), Json::Bool(CharUtils::is_binary(ch))),
                 ("isDecimal".into(), Json::Bool(CharUtils::is_decimal(ch))),
                 ("isOctal".into(), Json::Bool(CharUtils::is_octal(ch))),
+                (
+                    "isWhitespace".into(),
+                    Json::Bool(CharUtils::is_whitespace(ch)),
+                ),
             ])
         })
         .collect();
