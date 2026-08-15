@@ -303,6 +303,10 @@ pub fn charutils(code: &str) -> Result<Json, String> {
                     "isValidFirstIdentifierChar".into(),
                     Json::Bool(CharUtils::is_valid_first_identifier_char(ch)),
                 ),
+                (
+                    "isAlphaNumeric".into(),
+                    Json::Bool(CharUtils::is_alpha_numeric(ch)),
+                ),
             ])
         })
         .collect();
