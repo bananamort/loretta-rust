@@ -9,10 +9,7 @@
     <RollForward>LatestMajor</RollForward>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../../../references/Loretta/src/Compilers/Lua/Portable/Loretta.CodeAnalysis.Lua.csproj" />
-    <ProjectReference Include="../../../references/Loretta/src/Compilers/Lua/Experimental/Loretta.CodeAnalysis.Lua.Experimental.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Tsu" Version="2.2.2" />
+    <PackageReference Include="Loretta.CodeAnalysis.Lua" Version="0.2.14-nightly.26" />
+    <PackageReference Include="Loretta.CodeAnalysis.Lua.Experimental" Version="0.2.14-nightly.26" />
   </ItemGroup>
 </Project>
