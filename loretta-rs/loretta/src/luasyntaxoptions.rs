@@ -282,6 +282,76 @@ impl LuaSyntaxOptions {
         self.backtick_string_type == BacktickStringType::None
     }
 
+    /// Creates a new LuaSyntaxOptions with the provided values.
+    /// C# ctor throws ArgumentException("AcceptFloorDivision and AcceptCCommentSyntax
+    /// cannot be enabled simultaneously.") when both are enabled (LuaSyntaxOptions.cs:284-288).
+    #[allow(clippy::too_many_arguments)]
+    pub fn new(
+        accept_binary_numbers: bool,
+        accept_c_comment_syntax: bool,
+        accept_compound_assignment: bool,
+        accept_empty_statements: bool,
+        accept_c_boolean_operators: bool,
+        accept_goto: bool,
+        accept_hex_escapes_in_strings: bool,
+        accept_hex_float_literals: bool,
+        accept_octal_numbers: bool,
+        accept_shebang: bool,
+        accept_underscore_in_number_literals: bool,
+        use_lua_jit_identifier_rules: bool,
+        accept_bitwise_operators: bool,
+        accept_whitespace_escape: bool,
+        accept_unicode_escape: bool,
+        continue_type: ContinueType,
+        accept_if_expressions: bool,
+        accept_invalid_escapes: bool,
+        accept_local_variable_attributes: bool,
+        binary_integer_format: IntegerFormats,
+        octal_integer_format: IntegerFormats,
+        decimal_integer_format: IntegerFormats,
+        hex_integer_format: IntegerFormats,
+        accept_typed_lua: bool,
+        accept_floor_division: bool,
+        accept_lua_jit_number_suffixes: bool,
+        accept_nesting_of_long_strings: bool,
+        backtick_string_type: BacktickStringType,
+    ) -> Self {
+        assert!(
+            !(accept_floor_division && accept_c_comment_syntax),
+            "AcceptFloorDivision and AcceptCCommentSyntax cannot be enabled simultaneously."
+        );
+        Self {
+            accept_binary_numbers,
+            accept_c_comment_syntax,
+            accept_compound_assignment,
+            accept_empty_statements,
+            accept_c_boolean_operators,
+            accept_goto,
+            accept_hex_escapes_in_strings,
+            accept_hex_float_literals,
+            accept_octal_numbers,
+            accept_shebang,
+            accept_underscore_in_number_literals,
+            use_lua_jit_identifier_rules,
+            accept_bitwise_operators,
+            accept_whitespace_escape,
+            accept_unicode_escape,
+            continue_type,
+            accept_if_expressions,
+            accept_invalid_escapes,
+            accept_local_variable_attributes,
+            binary_integer_format,
+            octal_integer_format,
+            decimal_integer_format,
+            hex_integer_format,
+            accept_typed_lua,
+            accept_floor_division,
+            accept_lua_jit_number_suffixes,
+            accept_nesting_of_long_strings,
+            backtick_string_type,
+        }
+    }
+
     /// Returns a string representation of the preset.
     pub fn preset_name(&self) -> Option<&'static str> {
         if *self == Self::LUA51 {
