@@ -274,12 +274,15 @@ impl Program {
                     continue;
                 }
             }
-            Self::invoke(&line);
+            // C# `var timingConsole = new TimingLoggerConsole(s_logger);`
+            // created in `Main()` and passed to `s_rootCommand.Invoke(line, timingConsole)`.
+            let timing_console = TimingLoggerConsole::new(Self::logger());
+            Self::invoke(&line, &timing_console);
         }
     }
 
     /// Invokes the root command with the provided line (C# `s_rootCommand.Invoke(...)`).
-    fn invoke(line: &str) {
+    fn invoke(line: &str, timing_console: &TimingLoggerConsole) {
         let mut words = line.split_whitespace();
         let Some(name) = words.next() else {
             return;
@@ -288,12 +291,14 @@ impl Program {
         if let Some(command) = Self::root_command().iter().find(|c| c.matches(name)) {
             // C# `-h`/`--help` shows the command's help description.
             if matches!(rest.as_str(), "-h" | "--help") {
-                Self::logger().write_line(command.description);
+                timing_console.out().write(command.description);
                 return;
             }
             (command.handler)(&rest);
         } else {
-            Self::logger().log_error(&format!("Unrecognized command or argument '{name}'."));
+            timing_console
+                .error()
+                .write(&format!("Unrecognized command or argument '{name}'."));
         }
     }
 
@@ -804,6 +809,84 @@ impl Program {
             "pop" => Self::pop_memory_usage(),
             "comp" | "compare" => Self::compare_memory_usage(),
             _ => Self::print_memory_usage(),
+        }
+    }
+}
+
+/// Ported from Loretta.CLI.TimingLoggerConsole (b767b4e): TimingLoggerConsole, Writer
+/// C# source: src/Compilers/Lua/CommandLine/TimingLoggerConsole.cs
+///
+/// System.CommandLine `IConsole` implementation backed by the timing logger.
+/// The C# `Writer` uses reflection to call the private
+/// `TimingLogger.ProcessWrite(LogLevel, string)`; the port calls the logger's
+/// write/log_error directly (documented adaptation).
+pub struct TimingLoggerConsole {
+    out_writer: Writer,
+    error_writer: Writer,
+}
+
+impl TimingLoggerConsole {
+    /// C# `TimingLoggerConsole(TimingLogger)` ctor.
+    pub fn new(logger: &ConsoleTimingLogger) -> Self {
+        Self {
+            out_writer: Writer::new(logger, LogLevel::None),
+            error_writer: Writer::new(logger, LogLevel::Error),
+        }
+    }
+
+    /// C# `Out` property.
+    pub fn out(&self) -> &Writer {
+        &self.out_writer
+    }
+
+    /// C# `IsOutputRedirected` property.
+    pub fn is_output_redirected(&self) -> bool {
+        false
+    }
+
+    /// C# `Error` property.
+    pub fn error(&self) -> &Writer {
+        &self.error_writer
+    }
+
+    /// C# `IsErrorRedirected` property.
+    pub fn is_error_redirected(&self) -> bool {
+        false
+    }
+
+    /// C# `IsInputRedirected` property.
+    pub fn is_input_redirected(&self) -> bool {
+        false
+    }
+}
+
+/// Tsu.Timing `LogLevel` — only the values used by `Writer` are ported.
+#[derive(Clone, Copy, PartialEq)]
+enum LogLevel {
+    None,
+    Error,
+}
+
+/// C# nested `TimingLoggerConsole.Writer` class.
+pub struct Writer {
+    log_level: LogLevel,
+    logger: ConsoleTimingLogger,
+}
+
+impl Writer {
+    /// C# `Writer(TimingLogger, LogLevel)` ctor.
+    fn new(logger: &ConsoleTimingLogger, log_level: LogLevel) -> Self {
+        Self {
+            log_level,
+            logger: logger.clone(),
+        }
+    }
+
+    /// C# `Write(string)` — dispatches through the log level.
+    pub fn write(&self, value: &str) {
+        match self.log_level {
+            LogLevel::None => self.logger.write_line(value),
+            LogLevel::Error => self.logger.log_error(value),
         }
     }
 }
