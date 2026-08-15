@@ -371,5 +371,41 @@ pub fn objectdisplay() -> Result<Json, String> {
             ])
         })
         .collect();
-    Ok(Json::Object(vec![("results".into(), Json::Array(results))]))
+    let strings: Vec<Json> = [
+        (
+            "a\nb".to_string(),
+            ObjectDisplayOptions::ESCAPE_NON_PRINTABLE_CHARACTERS,
+        ),
+        (
+            "\0\t\r\n".to_string(),
+            ObjectDisplayOptions::ESCAPE_NON_PRINTABLE_CHARACTERS,
+        ),
+        (
+            "\u{FEFF}".to_string(),
+            ObjectDisplayOptions::ESCAPE_NON_PRINTABLE_CHARACTERS,
+        ),
+        (
+            "\u{FEFF}".to_string(),
+            ObjectDisplayOptions::ESCAPE_NON_PRINTABLE_CHARACTERS
+                | ObjectDisplayOptions::ESCAPE_WITH_UTF8,
+        ),
+        (
+            "quote\"here".to_string(),
+            ObjectDisplayOptions::USE_QUOTES
+                | ObjectDisplayOptions::ESCAPE_NON_PRINTABLE_CHARACTERS,
+        ),
+        (
+            "hello there".to_string(),
+            ObjectDisplayOptions::USE_QUOTES
+                | ObjectDisplayOptions::ESCAPE_NON_PRINTABLE_CHARACTERS,
+        ),
+        ("hello".to_string(), ObjectDisplayOptions::NONE),
+    ]
+    .iter()
+    .map(|(s, opts)| Json::String(ObjectDisplay::format_literal_str(s, *opts)))
+    .collect();
+    Ok(Json::Object(vec![
+        ("results".into(), Json::Array(results)),
+        ("strings".into(), Json::Array(strings)),
+    ]))
 }

@@ -148,5 +148,14 @@
       "decimalLiteral": "1.7976931348623157E\u002B308",
       "hexadecimalLiteral": "0x1.fffffffffffffp1023"
     }
+  ],
+  "strings": [
+    "a\\nb",
+    "\\0\\t\\r\\n",
+    "\\u{FEFF}",
+    "\\xEF\\xBB\\xBF",
+    "\u0022quote\\\u0022here\u0022",
+    "\u0022hello there\u0022",
+    "hello"
   ]
 }
