@@ -230,7 +230,7 @@ impl ObjectDisplay {
     /// round-trippable digits laid out like "G" — scientific when the decimal
     /// exponent is <= -5 or >= 17, otherwise decimal (verified against the
     /// objectdisplay oracle across all 11 presets).
-    fn format_double_r(value: f64) -> String {
+    pub fn format_double_r(value: f64) -> String {
         if value.is_nan() {
             return "NaN".to_string();
         }
