@@ -690,6 +690,22 @@ fn format_duration(elapsed: std::time::Duration) -> String {
     format!("{h:02}:{m:02}:{s:02}.{us:06}")
 }
 
+/// C# Program.MultiLua (Program.cs:364) — executes a file in every Lua
+/// distribution via RunMultiLua.
+fn multi_lua(script_path: &str) {
+    run_multi_lua(&[script_path]);
+}
+
+/// C# Program.MultiLuaExpression (Program.cs:366-378) — writes the expression
+/// to a temporary file and executes it via RunMultiLua.
+fn multi_lua_expression(expression: &str) {
+    let path = std::env::temp_dir().join(format!("loretta-cli-{}.lua", std::process::id()));
+    std::fs::write(&path, expression).expect("write temp file");
+    let path_str = path.to_string_lossy().into_owned();
+    run_multi_lua(&[&path_str]);
+    let _ = std::fs::remove_file(&path);
+}
+
 /// C# Program.RunMultiLua (Program.cs:380-433): executes the file in every
 /// Lua distribution under binaries/. The output/error streaming order is
 /// event-driven in C# (timing-dependent); the port drains stdout then stderr.
@@ -861,6 +877,8 @@ fn main() {
     let _ = mass_parse_command as fn(LuaSyntaxOptionsPreset, &[&str]);
     // Referenced until the static ctor (row 456) wires the multi-lua command.
     let _ = run_multi_lua as fn(&[&str]);
+    let _ = multi_lua as fn(&str);
+    let _ = multi_lua_expression as fn(&str);
     writeln!(
         output_writer(),
         "loretta-cli: pending port — see loretta-rs/PROGRESS.md"
