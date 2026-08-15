@@ -120,7 +120,8 @@ static object CharUtilsOp(string code)
     var isDecimal = charUtilsType.GetMethod("IsDecimal", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!;
     var isOctal = charUtilsType.GetMethod("IsOctal", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!;
     var isWhitespace = charUtilsType.GetMethod("IsWhitespace", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!;
-    return new { results = code.EnumerateRunes().Select(r => new { ch = r.ToString(), isBinary = r.Value <= char.MaxValue && (bool) isBinary.Invoke(null, new object[] { (char) r.Value })!, isDecimal = r.Value <= char.MaxValue && (bool) isDecimal.Invoke(null, new object[] { (char) r.Value })!, isOctal = r.Value <= char.MaxValue && (bool) isOctal.Invoke(null, new object[] { (char) r.Value })!, isWhitespace = r.Value <= char.MaxValue && (bool) isWhitespace.Invoke(null, new object[] { (char) r.Value })! }).ToArray() };
+    var isValidFirstIdentifierChar = charUtilsType.GetMethod("IsValidFirstIdentifierChar", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!;
+    return new { results = code.EnumerateRunes().Select(r => new { ch = r.ToString(), isBinary = r.Value <= char.MaxValue && (bool) isBinary.Invoke(null, new object[] { (char) r.Value })!, isDecimal = r.Value <= char.MaxValue && (bool) isDecimal.Invoke(null, new object[] { (char) r.Value })!, isOctal = r.Value <= char.MaxValue && (bool) isOctal.Invoke(null, new object[] { (char) r.Value })!, isWhitespace = r.Value <= char.MaxValue && (bool) isWhitespace.Invoke(null, new object[] { (char) r.Value })!, isValidFirstIdentifierChar = r.Value <= char.MaxValue && (bool) isValidFirstIdentifierChar.Invoke(null, new object[] { (char) r.Value })! }).ToArray() };
 }
 
 // ObjectDisplay.FormatLiteral(double, ObjectDisplayOptions, CultureInfo?) oracle:
