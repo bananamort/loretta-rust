@@ -2,3 +2,4 @@
 
 pub mod charutils;
 pub mod hexfloat;
+pub mod stringutils;
