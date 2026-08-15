@@ -6,9 +6,9 @@ use crate::errors::errorcode::ErrorCode;
 /// Diagnostic information for syntax errors with position information.
 pub struct SyntaxDiagnosticInfo {
     /// The offset in the source text.
-    pub offset: usize,
+    pub offset: i32,
     /// The width of the error span.
-    pub width: usize,
+    pub width: i32,
     /// The error code.
     pub code: ErrorCode,
     /// The formatted arguments.
@@ -17,7 +17,8 @@ pub struct SyntaxDiagnosticInfo {
 
 impl SyntaxDiagnosticInfo {
     /// Creates a new SyntaxDiagnosticInfo with offset, width, code, and arguments.
-    pub fn new(offset: usize, width: usize, code: ErrorCode, arguments: Vec<String>) -> Self {
+    pub fn new(offset: i32, width: i32, code: ErrorCode, arguments: Vec<String>) -> Self {
+        assert!(width >= 0);
         Self {
             offset,
             width,
@@ -27,7 +28,7 @@ impl SyntaxDiagnosticInfo {
     }
 
     /// Creates a new SyntaxDiagnosticInfo with offset, width, and code (no arguments).
-    pub fn with_code(offset: usize, width: usize, code: ErrorCode) -> Self {
+    pub fn with_code(offset: i32, width: i32, code: ErrorCode) -> Self {
         Self::new(offset, width, code, Vec::new())
     }
 
@@ -42,7 +43,7 @@ impl SyntaxDiagnosticInfo {
     }
 
     /// Returns a copy of this diagnostic with a new offset.
-    pub fn with_offset(&self, offset: usize) -> Self {
+    pub fn with_offset(&self, offset: i32) -> Self {
         Self {
             offset,
             width: self.width,
