@@ -86,7 +86,7 @@ fn write_string(s: &str, out: &mut Vec<u8>) {
     for c in s.chars() {
         let code = c as u32;
         match c {
-            '"' | '\'' | '&' | '<' | '>' | '+' => {
+            '"' | '\'' | '&' | '<' | '>' | '+' | '`' => {
                 out.extend_from_slice(format!("\\u{code:04X}").as_bytes());
             }
             '\\' => out.extend_from_slice(b"\\\\"),

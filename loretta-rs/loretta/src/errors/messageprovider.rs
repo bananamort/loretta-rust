@@ -29,8 +29,13 @@ impl MessageProvider {
     }
 
     /// Loads the message for the given error code.
-    pub fn load_message(code: ErrorCode) -> String {
-        Self::get_message_format(code)
+    /// C# LoadMessage -> ErrorFacts.GetMessage; codes without a resource
+    /// (Void/Unknown) yield null in the reference, so None.
+    pub fn load_message(code: ErrorCode) -> Option<String> {
+        match code {
+            ErrorCode::Void | ErrorCode::Unknown => None,
+            _ => Some(Self::get_message_format(code)),
+        }
     }
 
     /// Gets the message format for the given error code.
@@ -147,6 +152,9 @@ impl MessageProvider {
             }
             ErrorCode::ErrWhitespaceEscapeNotSupportedInVersion => {
                 LuaResources::ERR_WHITESPACE_ESCAPE_NOT_SUPPORTED_IN_VERSION
+            }
+            ErrorCode::WrnLineBreakMayAffectErrorReporting => {
+                LuaResources::WRN_LINE_BREAK_MAY_AFFECT_ERROR_REPORTING
             }
             _ => "Unknown error",
         }

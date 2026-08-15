@@ -166,7 +166,7 @@ pub fn messageprovider() -> Result<Json, String> {
     let results: Vec<Json> = codes
         .iter()
         .map(|code| {
-            Json::Object(vec![
+            let mut fields = vec![
                 ("code".into(), Json::Number(*code as i64)),
                 (
                     "category".into(),
@@ -176,7 +176,11 @@ pub fn messageprovider() -> Result<Json, String> {
                     "description".into(),
                     Json::String(MessageProvider::get_description(*code)),
                 ),
-            ])
+            ];
+            if let Some(message) = MessageProvider::load_message(*code) {
+                fields.push(("message".into(), Json::String(message)));
+            }
+            Json::Object(fields)
         })
         .collect();
     Ok(Json::Object(vec![("results".into(), Json::Array(results))]))
