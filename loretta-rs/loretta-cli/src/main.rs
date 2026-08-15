@@ -3,6 +3,8 @@
 
 pub mod console_timing_logger_text_writer;
 
+use std::sync::atomic::{AtomicBool, Ordering};
+
 /// The console logger. C# `ConsoleTimingLogger` is an external type
 /// (Tsu.Timing) — dropped per the Port Boundary; the port carries a minimal
 /// console logger with the same observable surface (timing prefixes are
@@ -20,6 +22,12 @@ impl ConsoleTimingLogger {
 /// The REPL's logger (C# Program.s_logger).
 static S_LOGGER: ConsoleTimingLogger = ConsoleTimingLogger;
 
+/// Whether the REPL should keep running (C# Program.s_shouldRun).
+static S_SHOULD_RUN: AtomicBool = AtomicBool::new(false);
+
 fn main() {
+    // Temporary REPL stub mirroring Main's state initialization until the
+    // Main row (410) lands (C# Main sets s_shouldRun = true first).
+    S_SHOULD_RUN.store(true, Ordering::Relaxed);
     S_LOGGER.write_line("loretta-cli: pending port — see loretta-rs/PROGRESS.md");
 }
