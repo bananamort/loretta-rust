@@ -7,6 +7,7 @@ use console_timing_logger_text_writer::{ConsoleTimingLoggerTextWriter, TimingLog
 use full_moon::tokenizer::{Symbol, Token, TokenReference, TokenType};
 use full_moon::visitors::VisitorMut;
 use loretta::experimental::minifying::islotallocator::ISlotAllocator;
+use loretta::experimental::minifying::namingstrategies::NamingStrategies;
 use loretta::experimental::minifying::namingstrategy::NamingStrategy;
 use loretta::experimental::minifying::sequentialslotallocator::SequentialSlotAllocator;
 use loretta::experimental::minifying::sortedslotallocator::SortedSlotAllocator;
@@ -546,13 +547,12 @@ impl Program {
     }
 
     /// C# `GetNamingStrategy(NamingStrategy)`.
-    /// `Minifying.NamingStrategies` is pending (PROGRESS rows 532-538); the
-    /// placeholder is replaced when it lands.
     fn get_naming_strategy(naming_strategy: NamingStrategyEnum) -> NamingStrategy {
-        let _ = naming_strategy;
-        // Placeholder: maps a slot to its decimal representation until the
-        // Alphabetical/Numerical/ZeroWidth strategies land.
-        |slot| slot.to_string()
+        match naming_strategy {
+            NamingStrategyEnum::Alphabetical => Box::new(NamingStrategies::alphabetical),
+            NamingStrategyEnum::Numerical => Box::new(NamingStrategies::numerical),
+            NamingStrategyEnum::ZeroWidth => Box::new(NamingStrategies::zero_width),
+        }
     }
 
     /// C# `GetSlotAllocator(SlotAllocator)`.
