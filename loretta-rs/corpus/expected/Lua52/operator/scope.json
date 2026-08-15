@@ -1,0 +1,41 @@
+{
+  "label": "loretta-rs/corpus/features/operator.lua",
+  "rootScope": {
+    "kind": "Global",
+    "declaredVariables": [],
+    "containedScopes": [
+      {
+        "kind": "File",
+        "nodeKind": "CompilationUnit",
+        "declaredVariables": [
+          {
+            "name": "arg",
+            "kind": "Parameter"
+          },
+          {
+            "name": "...",
+            "kind": "Parameter"
+          },
+          {
+            "name": "a",
+            "kind": "Local"
+          },
+          {
+            "name": "b",
+            "kind": "Local"
+          },
+          {
+            "name": "c",
+            "kind": "Local"
+          },
+          {
+            "name": "d",
+            "kind": "Local"
+          }
+        ],
+        "containedScopes": []
+      }
+    ]
+  },
+  "scopeCount": 2
+}

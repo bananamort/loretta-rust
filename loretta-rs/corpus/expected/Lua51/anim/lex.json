@@ -1,0 +1,4380 @@
+{
+  "tokens": [
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenBraceToken",
+      "text": "{",
+      "fullText": "{",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseBraceToken",
+      "text": "}",
+      "fullText": "}\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "__index",
+      "fullText": "__index ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "newAnimation",
+      "fullText": "newAnimation",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "image",
+      "fullText": "image",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "fw",
+      "fullText": "fw",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "fh",
+      "fullText": "fh",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "delay",
+      "fullText": "delay",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frames",
+      "fullText": "frames",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "\tlocal ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "a ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenBraceToken",
+      "text": "{",
+      "fullText": "{",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseBraceToken",
+      "text": "}",
+      "fullText": "}\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "\ta",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "img",
+      "fullText": "img ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "image",
+      "fullText": "image\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "\ta",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frames",
+      "fullText": "frames ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenBraceToken",
+      "text": "{",
+      "fullText": "{",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseBraceToken",
+      "text": "}",
+      "fullText": "}\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "\ta",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "delays",
+      "fullText": "delays ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenBraceToken",
+      "text": "{",
+      "fullText": "{",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseBraceToken",
+      "text": "}",
+      "fullText": "}\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "\ta",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "timer",
+      "fullText": "timer ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "0",
+      "fullText": "0\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "\ta",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "\ta",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "fw",
+      "fullText": "fw ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "fw",
+      "fullText": "fw\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "\ta",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "fh",
+      "fullText": "fh ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "fh",
+      "fullText": "fh\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "\ta",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "playing",
+      "fullText": "playing ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "TrueKeyword",
+      "text": "true",
+      "fullText": "true\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "\ta",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "speed",
+      "fullText": "speed ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "\ta",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "mode",
+      "fullText": "mode ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "\ta",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "direction",
+      "fullText": "direction ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "\tlocal ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "imgw",
+      "fullText": "imgw ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "image",
+      "fullText": "image",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "getWidth",
+      "fullText": "getWidth",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "\tlocal ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "imgh",
+      "fullText": "imgh ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "image",
+      "fullText": "image",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "getHeight",
+      "fullText": "getHeight",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IfKeyword",
+      "text": "if",
+      "fullText": "\tif ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frames",
+      "fullText": "frames ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsEqualsToken",
+      "text": "==",
+      "fullText": "== ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "0",
+      "fullText": "0 ",
+      "isMissing": false
+    },
+    {
+      "kind": "ThenKeyword",
+      "text": "then",
+      "fullText": "then\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frames",
+      "fullText": "\t\tframes ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "imgw",
+      "fullText": "imgw ",
+      "isMissing": false
+    },
+    {
+      "kind": "SlashToken",
+      "text": "/",
+      "fullText": "/ ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "fw",
+      "fullText": "fw ",
+      "isMissing": false
+    },
+    {
+      "kind": "StarToken",
+      "text": "*",
+      "fullText": "* ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "imgh",
+      "fullText": "imgh ",
+      "isMissing": false
+    },
+    {
+      "kind": "SlashToken",
+      "text": "/",
+      "fullText": "/ ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "fh",
+      "fullText": "fh\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "\tend\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "\tlocal ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "rowsize",
+      "fullText": "rowsize ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "imgw",
+      "fullText": "imgw ",
+      "isMissing": false
+    },
+    {
+      "kind": "SlashToken",
+      "text": "/",
+      "fullText": "/ ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "fw",
+      "fullText": "fw\n",
+      "isMissing": false
+    },
+    {
+      "kind": "ForKeyword",
+      "text": "for",
+      "fullText": "\tfor ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "i",
+      "fullText": "i ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frames",
+      "fullText": "frames",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1 ",
+      "isMissing": false
+    },
+    {
+      "kind": "DoKeyword",
+      "text": "do",
+      "fullText": "do\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "\t\tlocal ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "row",
+      "fullText": "row ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "math",
+      "fullText": "math",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "floor",
+      "fullText": "floor",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "i",
+      "fullText": "i ",
+      "isMissing": false
+    },
+    {
+      "kind": "SlashToken",
+      "text": "/",
+      "fullText": "/ ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "rowsize",
+      "fullText": "rowsize",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "\t\tlocal ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "column",
+      "fullText": "column ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "i",
+      "fullText": "i ",
+      "isMissing": false
+    },
+    {
+      "kind": "PercentToken",
+      "text": "%",
+      "fullText": "% ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "rowsize",
+      "fullText": "rowsize\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "\t\tlocal ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frame",
+      "fullText": "frame ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "love",
+      "fullText": "love",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "graphics",
+      "fullText": "graphics",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "newQuad",
+      "fullText": "newQuad",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "column",
+      "fullText": "column ",
+      "isMissing": false
+    },
+    {
+      "kind": "StarToken",
+      "text": "*",
+      "fullText": "* ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "fw",
+      "fullText": "fw",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "row",
+      "fullText": "row ",
+      "isMissing": false
+    },
+    {
+      "kind": "StarToken",
+      "text": "*",
+      "fullText": "* ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "fh",
+      "fullText": "fh",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "fw",
+      "fullText": "fw",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "fh",
+      "fullText": "fh",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "imgw",
+      "fullText": "imgw",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "imgh",
+      "fullText": "imgh",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "table",
+      "fullText": "\t\ttable",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "insert",
+      "fullText": "insert",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "a",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frames",
+      "fullText": "frames",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frame",
+      "fullText": "frame",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "table",
+      "fullText": "\t\ttable",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "insert",
+      "fullText": "insert",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "a",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "delays",
+      "fullText": "delays",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "delay",
+      "fullText": "delay",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "\tend\n",
+      "isMissing": false
+    },
+    {
+      "kind": "ReturnKeyword",
+      "text": "return",
+      "fullText": "\treturn ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "setmetatable",
+      "fullText": "setmetatable",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "a",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "update",
+      "fullText": "update",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "dt",
+      "fullText": "dt",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IfKeyword",
+      "text": "if",
+      "fullText": "\tif ",
+      "isMissing": false
+    },
+    {
+      "kind": "NotKeyword",
+      "text": "not",
+      "fullText": "not ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "playing",
+      "fullText": "playing ",
+      "isMissing": false
+    },
+    {
+      "kind": "ThenKeyword",
+      "text": "then",
+      "fullText": "then\n",
+      "isMissing": false
+    },
+    {
+      "kind": "ReturnKeyword",
+      "text": "return",
+      "fullText": "\t\treturn\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "\tend\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "timer",
+      "fullText": "timer ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "timer",
+      "fullText": "timer ",
+      "isMissing": false
+    },
+    {
+      "kind": "PlusToken",
+      "text": "\u002B",
+      "fullText": "\u002B ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "dt",
+      "fullText": "dt ",
+      "isMissing": false
+    },
+    {
+      "kind": "StarToken",
+      "text": "*",
+      "fullText": "* ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "speed",
+      "fullText": "speed\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IfKeyword",
+      "text": "if",
+      "fullText": "\tif ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "timer",
+      "fullText": "timer ",
+      "isMissing": false
+    },
+    {
+      "kind": "GreaterThanToken",
+      "text": "\u003E",
+      "fullText": "\u003E ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "delays",
+      "fullText": "delays",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenBracketToken",
+      "text": "[",
+      "fullText": "[",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseBracketToken",
+      "text": "]",
+      "fullText": "] ",
+      "isMissing": false
+    },
+    {
+      "kind": "ThenKeyword",
+      "text": "then",
+      "fullText": "then\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\t\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "timer",
+      "fullText": "timer ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "timer",
+      "fullText": "timer ",
+      "isMissing": false
+    },
+    {
+      "kind": "MinusToken",
+      "text": "-",
+      "fullText": "- ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "delays",
+      "fullText": "delays",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenBracketToken",
+      "text": "[",
+      "fullText": "[",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseBracketToken",
+      "text": "]",
+      "fullText": "]\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\t\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position ",
+      "isMissing": false
+    },
+    {
+      "kind": "PlusToken",
+      "text": "\u002B",
+      "fullText": "\u002B ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1 ",
+      "isMissing": false
+    },
+    {
+      "kind": "StarToken",
+      "text": "*",
+      "fullText": "* ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "direction",
+      "fullText": "direction\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IfKeyword",
+      "text": "if",
+      "fullText": "\t\tif ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position ",
+      "isMissing": false
+    },
+    {
+      "kind": "GreaterThanToken",
+      "text": "\u003E",
+      "fullText": "\u003E ",
+      "isMissing": false
+    },
+    {
+      "kind": "HashToken",
+      "text": "#",
+      "fullText": "#",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frames",
+      "fullText": "frames ",
+      "isMissing": false
+    },
+    {
+      "kind": "ThenKeyword",
+      "text": "then",
+      "fullText": "then\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IfKeyword",
+      "text": "if",
+      "fullText": "\t\t\tif ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "mode",
+      "fullText": "mode ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsEqualsToken",
+      "text": "==",
+      "fullText": "== ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1 ",
+      "isMissing": false
+    },
+    {
+      "kind": "ThenKeyword",
+      "text": "then",
+      "fullText": "then\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\t\t\t\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "ElseIfKeyword",
+      "text": "elseif",
+      "fullText": "\t\t\telseif ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "mode",
+      "fullText": "mode ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsEqualsToken",
+      "text": "==",
+      "fullText": "== ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2 ",
+      "isMissing": false
+    },
+    {
+      "kind": "ThenKeyword",
+      "text": "then",
+      "fullText": "then\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\t\t\t\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position ",
+      "isMissing": false
+    },
+    {
+      "kind": "MinusToken",
+      "text": "-",
+      "fullText": "- ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\t\t\t\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "stop",
+      "fullText": "stop",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "ElseIfKeyword",
+      "text": "elseif",
+      "fullText": "\t\t\telseif ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "mode",
+      "fullText": "mode ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsEqualsToken",
+      "text": "==",
+      "fullText": "== ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "3",
+      "fullText": "3 ",
+      "isMissing": false
+    },
+    {
+      "kind": "ThenKeyword",
+      "text": "then",
+      "fullText": "then\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\t\t\t\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "direction",
+      "fullText": "direction ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "MinusToken",
+      "text": "-",
+      "fullText": "-",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\t\t\t\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position ",
+      "isMissing": false
+    },
+    {
+      "kind": "MinusToken",
+      "text": "-",
+      "fullText": "- ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "\t\t\tend\n",
+      "isMissing": false
+    },
+    {
+      "kind": "ElseIfKeyword",
+      "text": "elseif",
+      "fullText": "\t\telseif ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position ",
+      "isMissing": false
+    },
+    {
+      "kind": "LessThanToken",
+      "text": "\u003C",
+      "fullText": "\u003C ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1 ",
+      "isMissing": false
+    },
+    {
+      "kind": "AndKeyword",
+      "text": "and",
+      "fullText": "and ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "mode",
+      "fullText": "mode ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsEqualsToken",
+      "text": "==",
+      "fullText": "== ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "3",
+      "fullText": "3 ",
+      "isMissing": false
+    },
+    {
+      "kind": "ThenKeyword",
+      "text": "then",
+      "fullText": "then\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\t\t\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "direction",
+      "fullText": "direction ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\t\t\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position ",
+      "isMissing": false
+    },
+    {
+      "kind": "PlusToken",
+      "text": "\u002B",
+      "fullText": "\u002B ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "\t\tend\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "\tend\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "draw",
+      "fullText": "draw",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "x",
+      "fullText": "x",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "y",
+      "fullText": "y",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "angle",
+      "fullText": "angle",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "sx",
+      "fullText": "sx",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "sy",
+      "fullText": "sy",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "love",
+      "fullText": "\tlove",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "graphics",
+      "fullText": "graphics",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "draw",
+      "fullText": "draw",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "img",
+      "fullText": "img",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frames",
+      "fullText": "frames",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenBracketToken",
+      "text": "[",
+      "fullText": "[",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseBracketToken",
+      "text": "]",
+      "fullText": "]",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "x",
+      "fullText": "x",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "y",
+      "fullText": "y",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "angle",
+      "fullText": "angle",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "sx",
+      "fullText": "sx",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "sy",
+      "fullText": "sy",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "addFrame",
+      "fullText": "addFrame",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "x",
+      "fullText": "x",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "y",
+      "fullText": "y",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "w",
+      "fullText": "w",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "h",
+      "fullText": "h",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "delay",
+      "fullText": "delay",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "\tlocal ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frame",
+      "fullText": "frame ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "love",
+      "fullText": "love",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "graphics",
+      "fullText": "graphics",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "newQuad",
+      "fullText": "newQuad",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "x",
+      "fullText": "x",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "y",
+      "fullText": "y",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "w",
+      "fullText": "w",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "h",
+      "fullText": "h",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "a",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "img",
+      "fullText": "img",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "getWidth",
+      "fullText": "getWidth",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "a",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "img",
+      "fullText": "img",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "getHeight",
+      "fullText": "getHeight",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "table",
+      "fullText": "\ttable",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "insert",
+      "fullText": "insert",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frames",
+      "fullText": "frames",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frame",
+      "fullText": "frame",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "table",
+      "fullText": "\ttable",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "insert",
+      "fullText": "insert",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "delays",
+      "fullText": "delays",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "delay",
+      "fullText": "delay",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "play",
+      "fullText": "play",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "playing",
+      "fullText": "playing ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "TrueKeyword",
+      "text": "true",
+      "fullText": "true\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "stop",
+      "fullText": "stop",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "playing",
+      "fullText": "playing ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "FalseKeyword",
+      "text": "false",
+      "fullText": "false\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "reset",
+      "fullText": "reset",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "seek",
+      "fullText": "seek",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "0",
+      "fullText": "0",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "seek",
+      "fullText": "seek",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frame",
+      "fullText": "frame",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frame",
+      "fullText": "frame\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "timer",
+      "fullText": "timer ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "0",
+      "fullText": "0\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "getCurrentFrame",
+      "fullText": "getCurrentFrame",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "ReturnKeyword",
+      "text": "return",
+      "fullText": "\treturn ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "getSize",
+      "fullText": "getSize",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "ReturnKeyword",
+      "text": "return",
+      "fullText": "\treturn ",
+      "isMissing": false
+    },
+    {
+      "kind": "HashToken",
+      "text": "#",
+      "fullText": "#",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frames",
+      "fullText": "frames\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "setDelay",
+      "fullText": "setDelay",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frame",
+      "fullText": "frame",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "delay",
+      "fullText": "delay",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "delays",
+      "fullText": "delays",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenBracketToken",
+      "text": "[",
+      "fullText": "[",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frame",
+      "fullText": "frame",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseBracketToken",
+      "text": "]",
+      "fullText": "] ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "delay",
+      "fullText": "delay\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "setSpeed",
+      "fullText": "setSpeed",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "speed",
+      "fullText": "speed",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "speed",
+      "fullText": "speed ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "speed",
+      "fullText": "speed\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "getWidth",
+      "fullText": "getWidth",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "ReturnKeyword",
+      "text": "return",
+      "fullText": "\treturn ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frames",
+      "fullText": "frames",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenBracketToken",
+      "text": "[",
+      "fullText": "[",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseBracketToken",
+      "text": "]",
+      "fullText": "]",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "getWidth",
+      "fullText": "getWidth",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "getHeight",
+      "fullText": "getHeight",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "ReturnKeyword",
+      "text": "return",
+      "fullText": "\treturn ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "frames",
+      "fullText": "frames",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenBracketToken",
+      "text": "[",
+      "fullText": "[",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "self",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "position",
+      "fullText": "position",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseBracketToken",
+      "text": "]",
+      "fullText": "]",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "getHeight",
+      "fullText": "getHeight",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\nfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "anim_mt",
+      "fullText": "anim_mt",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "setMode",
+      "fullText": "setMode",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "mode",
+      "fullText": "mode",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IfKeyword",
+      "text": "if",
+      "fullText": "\tif ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "mode",
+      "fullText": "mode ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsEqualsToken",
+      "text": "==",
+      "fullText": "== ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022loop\u0022",
+      "fullText": "\u0022loop\u0022 ",
+      "isMissing": false
+    },
+    {
+      "kind": "ThenKeyword",
+      "text": "then",
+      "fullText": "then\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\t\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "mode",
+      "fullText": "mode ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "ElseIfKeyword",
+      "text": "elseif",
+      "fullText": "\telseif ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "mode",
+      "fullText": "mode ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsEqualsToken",
+      "text": "==",
+      "fullText": "== ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022once\u0022",
+      "fullText": "\u0022once\u0022 ",
+      "isMissing": false
+    },
+    {
+      "kind": "ThenKeyword",
+      "text": "then",
+      "fullText": "then\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\t\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "mode",
+      "fullText": "mode ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2\n",
+      "isMissing": false
+    },
+    {
+      "kind": "ElseIfKeyword",
+      "text": "elseif",
+      "fullText": "\telseif ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "mode",
+      "fullText": "mode ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsEqualsToken",
+      "text": "==",
+      "fullText": "== ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022bounce\u0022",
+      "fullText": "\u0022bounce\u0022 ",
+      "isMissing": false
+    },
+    {
+      "kind": "ThenKeyword",
+      "text": "then",
+      "fullText": "then\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "self",
+      "fullText": "\t\tself",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "mode",
+      "fullText": "mode ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "3",
+      "fullText": "3\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "\tend\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IfKeyword",
+      "text": "if",
+      "fullText": "\nif ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "Animations_legacy_support",
+      "fullText": "Animations_legacy_support ",
+      "isMissing": false
+    },
+    {
+      "kind": "ThenKeyword",
+      "text": "then",
+      "fullText": "then\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "love",
+      "fullText": "\tlove",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "graphics",
+      "fullText": "graphics",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "newAnimation",
+      "fullText": "newAnimation ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "newAnimation",
+      "fullText": "newAnimation\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "\tlocal ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "oldLGDraw",
+      "fullText": "oldLGDraw ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "love",
+      "fullText": "love",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "graphics",
+      "fullText": "graphics",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "draw",
+      "fullText": "draw\n",
+      "isMissing": false
+    },
+    {
+      "kind": "FunctionKeyword",
+      "text": "function",
+      "fullText": "\tfunction ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "love",
+      "fullText": "love",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "graphics",
+      "fullText": "graphics",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "draw",
+      "fullText": "draw",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "item",
+      "fullText": "item",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "UNSUPPORTED",
+      "fullText": "UNSUPPORTED",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IfKeyword",
+      "text": "if",
+      "fullText": "\t\tif ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "type",
+      "fullText": "type",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "item",
+      "fullText": "item",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ") ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsEqualsToken",
+      "text": "==",
+      "fullText": "== ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022table\u0022",
+      "fullText": "\u0022table\u0022 ",
+      "isMissing": false
+    },
+    {
+      "kind": "AndKeyword",
+      "text": "and",
+      "fullText": "and ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "item",
+      "fullText": "item",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "draw",
+      "fullText": "draw ",
+      "isMissing": false
+    },
+    {
+      "kind": "ThenKeyword",
+      "text": "then",
+      "fullText": "then\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "item",
+      "fullText": "\t\t\titem",
+      "isMissing": false
+    },
+    {
+      "kind": "ColonToken",
+      "text": ":",
+      "fullText": ":",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "draw",
+      "fullText": "draw",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "UNSUPPORTED",
+      "fullText": "UNSUPPORTED",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "ElseKeyword",
+      "text": "else",
+      "fullText": "\t\telse\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "oldLGDraw",
+      "fullText": "\t\t\toldLGDraw",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "item",
+      "fullText": "item",
+      "isMissing": false
+    },
+    {
+      "kind": "CommaToken",
+      "text": ",",
+      "fullText": ", ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "UNSUPPORTED",
+      "fullText": "UNSUPPORTED",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "\t\tend\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "\tend\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndOfFileToken",
+      "text": "",
+      "fullText": "",
+      "isMissing": false
+    }
+  ],
+  "count": 729,
+  "roundTrip": true
+}

@@ -1,0 +1,5 @@
+{
+  "treeText": "-- ObjectDisplay: FormatPrimitive, FormatLiteral\nlocal s = \u0022hello\\nworld\u0022\nlocal n = 255.255\n",
+  "rootKind": "CompilationUnit",
+  "hasErrors": false
+}

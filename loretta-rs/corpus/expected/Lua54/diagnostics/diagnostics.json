@@ -1,0 +1,15 @@
+{
+  "diagnostics": [
+    {
+      "id": "LUA0001",
+      "severity": "Error",
+      "message": "Invalid string escape"
+    },
+    {
+      "id": "LUA0001",
+      "severity": "Error",
+      "message": "Invalid string escape"
+    }
+  ],
+  "hasErrors": true
+}

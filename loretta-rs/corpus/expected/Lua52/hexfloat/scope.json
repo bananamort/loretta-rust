@@ -1,0 +1,33 @@
+{
+  "label": "loretta-rs/corpus/features/hexfloat.lua",
+  "rootScope": {
+    "kind": "Global",
+    "declaredVariables": [],
+    "containedScopes": [
+      {
+        "kind": "File",
+        "nodeKind": "CompilationUnit",
+        "declaredVariables": [
+          {
+            "name": "arg",
+            "kind": "Parameter"
+          },
+          {
+            "name": "...",
+            "kind": "Parameter"
+          },
+          {
+            "name": "x",
+            "kind": "Local"
+          },
+          {
+            "name": "y",
+            "kind": "Local"
+          }
+        ],
+        "containedScopes": []
+      }
+    ]
+  },
+  "scopeCount": 2
+}

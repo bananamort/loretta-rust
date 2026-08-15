@@ -1,0 +1,5 @@
+{
+  "treeText": "local a = 1\nprint(a)\n",
+  "rootKind": "CompilationUnit",
+  "hasErrors": false
+}

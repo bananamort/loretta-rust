@@ -1,0 +1,11 @@
+{
+  "original": "local a = \u0022bad\\q\u0022\n",
+  "withoutExtraction": {
+    "foldedText": "local a = \u0022bad\\q\u0022\n",
+    "same": true
+  },
+  "withExtraction": {
+    "foldedText": "local a = \u0022bad\\q\u0022\n",
+    "same": true
+  }
+}

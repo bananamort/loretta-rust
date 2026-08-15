@@ -1,0 +1,168 @@
+{
+  "tokens": [
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "-- Operations: BinaryOperatorKind, UnaryOperatorKind\nlocal ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "a ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1 ",
+      "isMissing": false
+    },
+    {
+      "kind": "PlusToken",
+      "text": "\u002B",
+      "fullText": "\u002B ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2 ",
+      "isMissing": false
+    },
+    {
+      "kind": "StarToken",
+      "text": "*",
+      "fullText": "* ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "3",
+      "fullText": "3\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "b",
+      "fullText": "b ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NotKeyword",
+      "text": "not",
+      "fullText": "not ",
+      "isMissing": false
+    },
+    {
+      "kind": "FalseKeyword",
+      "text": "false",
+      "fullText": "false\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "c",
+      "fullText": "c ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "HashToken",
+      "text": "#",
+      "fullText": "# ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022hello\u0022",
+      "fullText": "\u0022hello\u0022\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "d",
+      "fullText": "d ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2 ",
+      "isMissing": false
+    },
+    {
+      "kind": "HatToken",
+      "text": "^",
+      "fullText": "^ ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "3",
+      "fullText": "3 ",
+      "isMissing": false
+    },
+    {
+      "kind": "HatToken",
+      "text": "^",
+      "fullText": "^ ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndOfFileToken",
+      "text": "",
+      "fullText": "",
+      "isMissing": false
+    }
+  ],
+  "count": 27,
+  "roundTrip": true
+}

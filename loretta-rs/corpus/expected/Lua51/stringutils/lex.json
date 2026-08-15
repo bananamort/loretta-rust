@@ -1,0 +1,60 @@
+{
+  "tokens": [
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "-- StringUtils: IsIdentifier, Trim\nlocal ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "valid",
+      "fullText": "valid ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "_hello",
+      "fullText": "_hello\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "invalid",
+      "fullText": "invalid ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u00221bad\u0022",
+      "fullText": "\u00221bad\u0022\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndOfFileToken",
+      "text": "",
+      "fullText": "",
+      "isMissing": false
+    }
+  ],
+  "count": 9,
+  "roundTrip": true
+}

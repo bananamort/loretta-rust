@@ -1,0 +1,15 @@
+{
+  "diagnostics": [
+    {
+      "id": "LUA0008",
+      "severity": "Error",
+      "message": "Binary numeric literals are not supported in this lua version"
+    },
+    {
+      "id": "LUA0008",
+      "severity": "Error",
+      "message": "Binary numeric literals are not supported in this lua version"
+    }
+  ],
+  "hasErrors": true
+}

@@ -1,0 +1,5 @@
+{
+  "treeText": "-- StringUtils: IsIdentifier, Trim\nlocal valid = _hello\nlocal invalid = \u00221bad\u0022\n",
+  "rootKind": "CompilationUnit",
+  "hasErrors": false
+}

@@ -1,0 +1,11 @@
+{
+  "original": "-- ObjectDisplay: FormatPrimitive, FormatLiteral\nlocal s = \u0022hello\\nworld\u0022\nlocal n = 255.255\n",
+  "withoutExtraction": {
+    "foldedText": "-- ObjectDisplay: FormatPrimitive, FormatLiteral\nlocal s = \u0022hello\\nworld\u0022\nlocal n = 255.255\n",
+    "same": true
+  },
+  "withExtraction": {
+    "foldedText": "-- ObjectDisplay: FormatPrimitive, FormatLiteral\nlocal s = \u0022hello\\nworld\u0022\nlocal n = 255.255\n",
+    "same": true
+  }
+}

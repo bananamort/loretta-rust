@@ -1,0 +1,72 @@
+{
+  "tokens": [
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "a ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "DoKeyword",
+      "text": "do",
+      "fullText": "do\n",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "print",
+      "fullText": "  print",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "a",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndKeyword",
+      "text": "end",
+      "fullText": "end\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndOfFileToken",
+      "text": "",
+      "fullText": "",
+      "isMissing": false
+    }
+  ],
+  "count": 11,
+  "roundTrip": true
+}

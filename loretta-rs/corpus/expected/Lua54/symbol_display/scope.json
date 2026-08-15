@@ -1,0 +1,29 @@
+{
+  "label": "loretta-rs/corpus/features/symbol_display.lua",
+  "rootScope": {
+    "kind": "Global",
+    "declaredVariables": [],
+    "containedScopes": [
+      {
+        "kind": "File",
+        "nodeKind": "CompilationUnit",
+        "declaredVariables": [
+          {
+            "name": "arg",
+            "kind": "Parameter"
+          },
+          {
+            "name": "...",
+            "kind": "Parameter"
+          },
+          {
+            "name": "s",
+            "kind": "Local"
+          }
+        ],
+        "containedScopes": []
+      }
+    ]
+  },
+  "scopeCount": 2
+}

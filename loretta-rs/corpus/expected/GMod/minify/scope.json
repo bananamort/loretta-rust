@@ -1,0 +1,34 @@
+{
+  "label": "loretta-rs/corpus/features/minify.lua",
+  "rootScope": {
+    "kind": "Global",
+    "declaredVariables": [
+      {
+        "name": "print",
+        "kind": "Global"
+      }
+    ],
+    "containedScopes": [
+      {
+        "kind": "File",
+        "nodeKind": "CompilationUnit",
+        "declaredVariables": [
+          {
+            "name": "arg",
+            "kind": "Parameter"
+          },
+          {
+            "name": "...",
+            "kind": "Parameter"
+          },
+          {
+            "name": "veryLongName",
+            "kind": "Local"
+          }
+        ],
+        "containedScopes": []
+      }
+    ]
+  },
+  "scopeCount": 2
+}

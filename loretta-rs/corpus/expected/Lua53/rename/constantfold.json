@@ -1,0 +1,11 @@
+{
+  "original": "local a = 1\nprint(a)\n",
+  "withoutExtraction": {
+    "foldedText": "local a = 1\nprint(a)\n",
+    "same": true
+  },
+  "withExtraction": {
+    "foldedText": "local a = 1\nprint(a)\n",
+    "same": true
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "tokens": [
+    {
+      "kind": "ReturnKeyword",
+      "text": "return",
+      "fullText": "return ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1 ",
+      "isMissing": false
+    },
+    {
+      "kind": "PlusToken",
+      "text": "\u002B",
+      "fullText": "\u002B ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndOfFileToken",
+      "text": "",
+      "fullText": "",
+      "isMissing": false
+    }
+  ],
+  "count": 5,
+  "roundTrip": true
+}

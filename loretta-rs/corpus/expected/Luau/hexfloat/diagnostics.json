@@ -1,0 +1,25 @@
+{
+  "diagnostics": [
+    {
+      "id": "LUA0010",
+      "severity": "Error",
+      "message": "Hexadecimal floating point numeric literals are not supported in this lua version"
+    },
+    {
+      "id": "LUA0010",
+      "severity": "Error",
+      "message": "Hexadecimal floating point numeric literals are not supported in this lua version"
+    },
+    {
+      "id": "LUA0010",
+      "severity": "Error",
+      "message": "Hexadecimal floating point numeric literals are not supported in this lua version"
+    },
+    {
+      "id": "LUA0010",
+      "severity": "Error",
+      "message": "Hexadecimal floating point numeric literals are not supported in this lua version"
+    }
+  ],
+  "hasErrors": true
+}

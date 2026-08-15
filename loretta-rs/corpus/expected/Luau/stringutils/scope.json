@@ -1,0 +1,38 @@
+{
+  "label": "loretta-rs/corpus/features/stringutils.lua",
+  "rootScope": {
+    "kind": "Global",
+    "declaredVariables": [
+      {
+        "name": "_hello",
+        "kind": "Global"
+      }
+    ],
+    "containedScopes": [
+      {
+        "kind": "File",
+        "nodeKind": "CompilationUnit",
+        "declaredVariables": [
+          {
+            "name": "arg",
+            "kind": "Parameter"
+          },
+          {
+            "name": "...",
+            "kind": "Parameter"
+          },
+          {
+            "name": "valid",
+            "kind": "Local"
+          },
+          {
+            "name": "invalid",
+            "kind": "Local"
+          }
+        ],
+        "containedScopes": []
+      }
+    ]
+  },
+  "scopeCount": 2
+}

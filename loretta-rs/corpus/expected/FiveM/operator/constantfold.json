@@ -1,0 +1,11 @@
+{
+  "original": "-- Operations: BinaryOperatorKind, UnaryOperatorKind\nlocal a = 1 \u002B 2 * 3\nlocal b = not false\nlocal c = # \u0022hello\u0022\nlocal d = 2 ^ 3 ^ 2\n",
+  "withoutExtraction": {
+    "foldedText": "-- Operations: BinaryOperatorKind, UnaryOperatorKind\nlocal a = 7\nlocal b = true\nlocal c = 5\nlocal d = 512\n",
+    "same": false
+  },
+  "withExtraction": {
+    "foldedText": "-- Operations: BinaryOperatorKind, UnaryOperatorKind\nlocal a = 7\nlocal b = true\nlocal c = 5\nlocal d = 512\n",
+    "same": false
+  }
+}

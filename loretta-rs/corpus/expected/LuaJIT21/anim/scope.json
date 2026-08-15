@@ -1,0 +1,462 @@
+{
+  "label": "loretta-rs/corpus/anim.lua",
+  "rootScope": {
+    "kind": "Global",
+    "declaredVariables": [
+      {
+        "name": "newAnimation",
+        "kind": "Global"
+      },
+      {
+        "name": "math",
+        "kind": "Global"
+      },
+      {
+        "name": "love",
+        "kind": "Global"
+      },
+      {
+        "name": "table",
+        "kind": "Global"
+      },
+      {
+        "name": "setmetatable",
+        "kind": "Global"
+      },
+      {
+        "name": "a",
+        "kind": "Global"
+      },
+      {
+        "name": "Animations_legacy_support",
+        "kind": "Global"
+      },
+      {
+        "name": "type",
+        "kind": "Global"
+      }
+    ],
+    "containedScopes": [
+      {
+        "kind": "File",
+        "nodeKind": "CompilationUnit",
+        "declaredVariables": [
+          {
+            "name": "arg",
+            "kind": "Parameter"
+          },
+          {
+            "name": "...",
+            "kind": "Parameter"
+          },
+          {
+            "name": "anim_mt",
+            "kind": "Local"
+          }
+        ],
+        "containedScopes": [
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "image",
+                "kind": "Parameter"
+              },
+              {
+                "name": "fw",
+                "kind": "Parameter"
+              },
+              {
+                "name": "fh",
+                "kind": "Parameter"
+              },
+              {
+                "name": "delay",
+                "kind": "Parameter"
+              },
+              {
+                "name": "frames",
+                "kind": "Parameter"
+              },
+              {
+                "name": "a",
+                "kind": "Local"
+              },
+              {
+                "name": "imgw",
+                "kind": "Local"
+              },
+              {
+                "name": "imgh",
+                "kind": "Local"
+              },
+              {
+                "name": "rowsize",
+                "kind": "Local"
+              }
+            ],
+            "containedScopes": [
+              {
+                "kind": "Block",
+                "nodeKind": "IfStatement",
+                "declaredVariables": [],
+                "containedScopes": []
+              },
+              {
+                "kind": "Block",
+                "nodeKind": "NumericForStatement",
+                "declaredVariables": [
+                  {
+                    "name": "i",
+                    "kind": "Iteration"
+                  },
+                  {
+                    "name": "row",
+                    "kind": "Local"
+                  },
+                  {
+                    "name": "column",
+                    "kind": "Local"
+                  },
+                  {
+                    "name": "frame",
+                    "kind": "Local"
+                  }
+                ],
+                "containedScopes": []
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "self",
+                "kind": "Parameter"
+              },
+              {
+                "name": "dt",
+                "kind": "Parameter"
+              }
+            ],
+            "containedScopes": [
+              {
+                "kind": "Block",
+                "nodeKind": "IfStatement",
+                "declaredVariables": [],
+                "containedScopes": []
+              },
+              {
+                "kind": "Block",
+                "nodeKind": "IfStatement",
+                "declaredVariables": [],
+                "containedScopes": [
+                  {
+                    "kind": "Block",
+                    "nodeKind": "IfStatement",
+                    "declaredVariables": [],
+                    "containedScopes": [
+                      {
+                        "kind": "Block",
+                        "nodeKind": "IfStatement",
+                        "declaredVariables": [],
+                        "containedScopes": []
+                      },
+                      {
+                        "kind": "Block",
+                        "nodeKind": "ElseIfClause",
+                        "declaredVariables": [],
+                        "containedScopes": []
+                      },
+                      {
+                        "kind": "Block",
+                        "nodeKind": "ElseIfClause",
+                        "declaredVariables": [],
+                        "containedScopes": []
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "Block",
+                    "nodeKind": "ElseIfClause",
+                    "declaredVariables": [],
+                    "containedScopes": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "self",
+                "kind": "Parameter"
+              },
+              {
+                "name": "x",
+                "kind": "Parameter"
+              },
+              {
+                "name": "y",
+                "kind": "Parameter"
+              },
+              {
+                "name": "angle",
+                "kind": "Parameter"
+              },
+              {
+                "name": "sx",
+                "kind": "Parameter"
+              },
+              {
+                "name": "sy",
+                "kind": "Parameter"
+              }
+            ],
+            "containedScopes": []
+          },
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "self",
+                "kind": "Parameter"
+              },
+              {
+                "name": "x",
+                "kind": "Parameter"
+              },
+              {
+                "name": "y",
+                "kind": "Parameter"
+              },
+              {
+                "name": "w",
+                "kind": "Parameter"
+              },
+              {
+                "name": "h",
+                "kind": "Parameter"
+              },
+              {
+                "name": "delay",
+                "kind": "Parameter"
+              },
+              {
+                "name": "frame",
+                "kind": "Local"
+              }
+            ],
+            "containedScopes": []
+          },
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "self",
+                "kind": "Parameter"
+              }
+            ],
+            "containedScopes": []
+          },
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "self",
+                "kind": "Parameter"
+              }
+            ],
+            "containedScopes": []
+          },
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "self",
+                "kind": "Parameter"
+              }
+            ],
+            "containedScopes": []
+          },
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "self",
+                "kind": "Parameter"
+              },
+              {
+                "name": "frame",
+                "kind": "Parameter"
+              }
+            ],
+            "containedScopes": []
+          },
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "self",
+                "kind": "Parameter"
+              }
+            ],
+            "containedScopes": []
+          },
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "self",
+                "kind": "Parameter"
+              }
+            ],
+            "containedScopes": []
+          },
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "self",
+                "kind": "Parameter"
+              },
+              {
+                "name": "frame",
+                "kind": "Parameter"
+              },
+              {
+                "name": "delay",
+                "kind": "Parameter"
+              }
+            ],
+            "containedScopes": []
+          },
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "self",
+                "kind": "Parameter"
+              },
+              {
+                "name": "speed",
+                "kind": "Parameter"
+              }
+            ],
+            "containedScopes": []
+          },
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "self",
+                "kind": "Parameter"
+              }
+            ],
+            "containedScopes": []
+          },
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "self",
+                "kind": "Parameter"
+              }
+            ],
+            "containedScopes": []
+          },
+          {
+            "kind": "Function",
+            "nodeKind": "FunctionDeclarationStatement",
+            "declaredVariables": [
+              {
+                "name": "self",
+                "kind": "Parameter"
+              },
+              {
+                "name": "mode",
+                "kind": "Parameter"
+              }
+            ],
+            "containedScopes": [
+              {
+                "kind": "Block",
+                "nodeKind": "IfStatement",
+                "declaredVariables": [],
+                "containedScopes": []
+              },
+              {
+                "kind": "Block",
+                "nodeKind": "ElseIfClause",
+                "declaredVariables": [],
+                "containedScopes": []
+              },
+              {
+                "kind": "Block",
+                "nodeKind": "ElseIfClause",
+                "declaredVariables": [],
+                "containedScopes": []
+              }
+            ]
+          },
+          {
+            "kind": "Block",
+            "nodeKind": "IfStatement",
+            "declaredVariables": [
+              {
+                "name": "oldLGDraw",
+                "kind": "Local"
+              }
+            ],
+            "containedScopes": [
+              {
+                "kind": "Function",
+                "nodeKind": "FunctionDeclarationStatement",
+                "declaredVariables": [
+                  {
+                    "name": "item",
+                    "kind": "Parameter"
+                  },
+                  {
+                    "name": "UNSUPPORTED",
+                    "kind": "Parameter"
+                  }
+                ],
+                "containedScopes": [
+                  {
+                    "kind": "Block",
+                    "nodeKind": "IfStatement",
+                    "declaredVariables": [],
+                    "containedScopes": []
+                  },
+                  {
+                    "kind": "Block",
+                    "nodeKind": "ElseClause",
+                    "declaredVariables": [],
+                    "containedScopes": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "scopeCount": 33
+}

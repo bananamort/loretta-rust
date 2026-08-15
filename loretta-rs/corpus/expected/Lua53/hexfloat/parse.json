@@ -1,0 +1,5 @@
+{
+  "treeText": "-- HexFloat: DoubleToHexString, DoubleFromHexString\nlocal x = 0x1.8p10\nlocal y = 0x1.0p0\n",
+  "rootKind": "CompilationUnit",
+  "hasErrors": false
+}

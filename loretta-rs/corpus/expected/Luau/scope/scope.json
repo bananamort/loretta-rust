@@ -1,0 +1,41 @@
+{
+  "label": "loretta-rs/corpus/features/scope.lua",
+  "rootScope": {
+    "kind": "Global",
+    "declaredVariables": [
+      {
+        "name": "print",
+        "kind": "Global"
+      }
+    ],
+    "containedScopes": [
+      {
+        "kind": "File",
+        "nodeKind": "CompilationUnit",
+        "declaredVariables": [
+          {
+            "name": "arg",
+            "kind": "Parameter"
+          },
+          {
+            "name": "...",
+            "kind": "Parameter"
+          },
+          {
+            "name": "a",
+            "kind": "Local"
+          }
+        ],
+        "containedScopes": [
+          {
+            "kind": "Block",
+            "nodeKind": "DoStatement",
+            "declaredVariables": [],
+            "containedScopes": []
+          }
+        ]
+      }
+    ]
+  },
+  "scopeCount": 3
+}

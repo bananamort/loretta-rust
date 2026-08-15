@@ -1,0 +1,11 @@
+{
+  "original": "local s = \u0022test\u0022\n",
+  "withoutExtraction": {
+    "foldedText": "local s = \u0022test\u0022\n",
+    "same": true
+  },
+  "withExtraction": {
+    "foldedText": "local s = \u0022test\u0022\n",
+    "same": true
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "treeText": "local a = \u0022bad\\q\u0022\n",
+  "rootKind": "CompilationUnit",
+  "hasErrors": true
+}

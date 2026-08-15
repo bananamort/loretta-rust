@@ -1,0 +1,5 @@
+{
+  "treeText": "-- Operations: BinaryOperatorKind, UnaryOperatorKind\nlocal a = 1 \u002B 2 * 3\nlocal b = not false\nlocal c = # \u0022hello\u0022\nlocal d = 2 ^ 3 ^ 2\n",
+  "rootKind": "CompilationUnit",
+  "hasErrors": false
+}

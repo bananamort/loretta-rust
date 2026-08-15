@@ -1,0 +1,11 @@
+{
+  "original": "local veryLongName = 1\nprint(veryLongName)\n",
+  "withoutExtraction": {
+    "foldedText": "local veryLongName = 1\nprint(veryLongName)\n",
+    "same": true
+  },
+  "withExtraction": {
+    "foldedText": "local veryLongName = 1\nprint(veryLongName)\n",
+    "same": true
+  }
+}

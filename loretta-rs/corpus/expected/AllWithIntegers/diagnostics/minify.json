@@ -1,0 +1,3 @@
+{
+  "minified": "local a=\u0022bad\\q\u0022"
+}

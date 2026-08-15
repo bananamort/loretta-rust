@@ -1,0 +1,5 @@
+{
+  "treeText": "-- CharUtils: IsAlpha, IsBinary, IsDecimal, IsHexadecimal, IsWhitespace, IsValidFirst/TrailingIdentifierChar\nlocal _a = 1\nlocal a1 = 2\nlocal __test = 3\nlocal a = 0b1010\nlocal b = 0x1A\nlocal c = 123\n",
+  "rootKind": "CompilationUnit",
+  "hasErrors": false
+}

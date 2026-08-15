@@ -1,0 +1,11 @@
+{
+  "original": "return 1 \u002B 2\n",
+  "withoutExtraction": {
+    "foldedText": "return 3\n",
+    "same": false
+  },
+  "withExtraction": {
+    "foldedText": "return 3\n",
+    "same": false
+  }
+}
