@@ -107,6 +107,7 @@ pub fn charutils(code: &str) -> Result<Json, String> {
                 ("ch".into(), Json::String(ch.to_string())),
                 ("isBinary".into(), Json::Bool(CharUtils::is_binary(ch))),
                 ("isDecimal".into(), Json::Bool(CharUtils::is_decimal(ch))),
+                ("isOctal".into(), Json::Bool(CharUtils::is_octal(ch))),
             ])
         })
         .collect();
