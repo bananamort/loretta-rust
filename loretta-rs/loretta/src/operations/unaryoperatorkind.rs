@@ -3,7 +3,7 @@
 
 /// Kind of unary operator.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-#[repr(u8)]
+#[repr(i32)]
 pub enum UnaryOperatorKind {
     /// Represents unknown or error operator kind.
     None = 0,
