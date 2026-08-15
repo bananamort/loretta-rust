@@ -822,6 +822,16 @@ fn run_multi_lua(args: &[&str]) {
     }
 }
 
+/// C# Program.InvokeGc (Program.cs:497-504). The .NET GC.Collect /
+/// WaitForPendingFinalizers calls are runtime infra with no Rust equivalent
+/// (dropped); the loop structure is preserved.
+fn invoke_gc(amount: i32) {
+    for _ in 0..amount {
+        // GC.Collect(GC.MaxGeneration, Forced, blocking, compacting);
+        // GC.WaitForPendingFinalizers();
+    }
+}
+
 /// C# Program.PopMemoryUsage (Program.cs:483-493): compares and pops the
 /// most recent memory usage.
 fn pop_memory_usage() {
@@ -1014,6 +1024,7 @@ fn main() {
     let _ = push_memory_usage as fn();
     let _ = compare_memory_usage as fn();
     let _ = pop_memory_usage as fn();
+    let _ = invoke_gc as fn(i32);
     // Referenced until the memory rows (451-455) land.
     let _ = current_proc as fn() -> u32;
     let _ = (gc_memory as fn() -> u64, process_memory as fn() -> u64);
