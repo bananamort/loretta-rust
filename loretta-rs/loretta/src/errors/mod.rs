@@ -6,3 +6,4 @@ pub mod luadiagnostic;
 pub mod luadiagnosticformatter;
 pub mod luadiagnosticinfo;
 pub mod messageprovider;
+pub mod syntaxdiagnosticinfo;
