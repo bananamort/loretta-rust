@@ -276,6 +276,12 @@ impl LuaSyntaxOptions {
         Self::ALL_WITH_INTEGERS,
     ];
 
+    /// C# obsolete `AcceptHashStrings => BacktickStringType == BacktickStringType.None`
+    /// (LuaSyntaxOptions.cs:412-413) — the obsolete warning attribute has no Rust equivalent.
+    pub fn accept_hash_strings(&self) -> bool {
+        self.backtick_string_type == BacktickStringType::None
+    }
+
     /// Returns a string representation of the preset.
     pub fn preset_name(&self) -> Option<&'static str> {
         if *self == Self::LUA51 {
