@@ -71,6 +71,17 @@ pub fn options(preset: &str) -> Result<Json, String> {
         ),
         ("features".into(), Json::Array(features)),
         ("withFeatures".into(), Json::Array(with_features)),
+        (
+            "equalsDefault".into(),
+            Json::Bool(parse_opts == LuaParseOptions::new(opts.clone())),
+        ),
+        (
+            "equalsWithFeatures".into(),
+            Json::Bool(
+                parse_opts
+                    == parse_opts.with_features(vec![("foo".to_string(), "bar".to_string())]),
+            ),
+        ),
     ]))
 }
 

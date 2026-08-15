@@ -6,5 +6,7 @@
   "features": [],
   "withFeatures": [
     "foo=bar"
-  ]
+  ],
+  "equalsDefault": true,
+  "equalsWithFeatures": false
 }
