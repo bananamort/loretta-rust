@@ -102,7 +102,8 @@ enum Setting {
     PrintOutputPrefixed,
 }
 
-/// C# Program.NamingStrategy (private enum, Program.cs:284-289).
+/// C# Program.NamingStrategy (private enum, Program.cs:284-289). Maps to
+/// Minifying.NamingStrategies via GetNamingStrategy (row 439).
 #[derive(Copy, Clone)]
 enum NamingStrategy {
     Alphabetical,
