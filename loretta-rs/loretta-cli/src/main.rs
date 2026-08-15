@@ -7,7 +7,7 @@ use console_timing_logger_text_writer::{ConsoleTimingLoggerTextWriter, TimingLog
 use full_moon::tokenizer::Symbol;
 use std::io::{self, BufRead, Write};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::OnceLock;
+use std::sync::{Mutex, OnceLock};
 
 /// The console logger. C# `ConsoleTimingLogger` is an external type
 /// (Tsu.Timing) — dropped per the Port Boundary; the port carries a minimal
@@ -94,6 +94,45 @@ pub struct Command {
 
 /// The root command table (C# Program.s_rootCommand, built in the static ctor).
 static S_ROOT_COMMAND: OnceLock<Vec<Command>> = OnceLock::new();
+
+/// The current process (C# Program.s_currentProc = Process.GetCurrentProcess()).
+fn current_proc() -> u32 {
+    std::process::id()
+}
+
+/// The memory usage stack (C# Program.s_memoryStack, Stack<(gcMemory, processMemory)>).
+static S_MEMORY_STACK: Mutex<Vec<(u64, u64)>> = Mutex::new(Vec::new());
+
+/// The current process's resident memory in bytes (best-effort: /proc/self/statm
+/// on Linux; 0 elsewhere — runtime data, not byte-comparable).
+fn process_memory() -> u64 {
+    if let Ok(statm) = std::fs::read_to_string("/proc/self/statm") {
+        if let Some(rss) = statm.split_whitespace().nth(1) {
+            if let Ok(pages) = rss.parse::<u64>() {
+                return pages * 4096;
+            }
+        }
+    }
+    0
+}
+
+/// The GC-reported memory (C# GC.GetTotalMemory(false)) — the port reports the
+/// process's resident memory (no GC in Rust; runtime data).
+fn gc_memory() -> u64 {
+    process_memory()
+}
+
+/// Renders a byte count like the dropped Tsu FileSize.Format.
+fn file_size_format(bytes: u64) -> String {
+    const UNITS: [&str; 4] = ["B", "KB", "MB", "GB"];
+    let mut value = bytes as f64;
+    let mut unit = 0;
+    while value >= 1024.0 && unit < UNITS.len() - 1 {
+        value /= 1024.0;
+        unit += 1;
+    }
+    format!("{value:.2} {}", UNITS[unit])
+}
 
 /// C# Program.Setting (private enum).
 #[derive(Copy, Clone)]
@@ -887,6 +926,11 @@ fn main() {
     let _ = multi_lua as fn(&str);
     let _ = multi_lua_expression as fn(&str);
     let _ = clear as fn();
+    // Referenced until the memory rows (451-455) land.
+    let _ = current_proc as fn() -> u32;
+    let _ = (gc_memory as fn() -> u64, process_memory as fn() -> u64);
+    let _ = file_size_format as fn(u64) -> String;
+    let _ = &S_MEMORY_STACK;
     writeln!(
         output_writer(),
         "loretta-cli: pending port — see loretta-rs/PROGRESS.md"
