@@ -465,7 +465,7 @@ Generated from `loretta-rs/nodes.json` (`744` distinct symbols, `803` MemberDecl
 | 450 | `Loretta.CLI.Program.s_memoryStack:Field@Program.cs:442` | `Loretta.CLI.Program.s_memoryStack` | `src/Compilers/Lua/CommandLine/Program.cs:442` | `loretta-cli/src/main.rs` | done | — |
 | 451 | `Loretta.CLI.Program.PrintMemoryUsage():Method@Program.cs:444` | `Loretta.CLI.Program.PrintMemoryUsage()` | `src/Compilers/Lua/CommandLine/Program.cs:444` | `loretta-cli/src/main.rs` | done | — |
 | 452 | `Loretta.CLI.Program.PushMemoryUsage():Method@Program.cs:452` | `Loretta.CLI.Program.PushMemoryUsage()` | `src/Compilers/Lua/CommandLine/Program.cs:452` | `loretta-cli/src/main.rs` | done | — |
-| 453 | `Loretta.CLI.Program.CompareMemoryUsage():Method@Program.cs:462` | `Loretta.CLI.Program.CompareMemoryUsage()` | `src/Compilers/Lua/CommandLine/Program.cs:462` | `loretta-cli/src/main.rs` | pending | — |
+| 453 | `Loretta.CLI.Program.CompareMemoryUsage():Method@Program.cs:462` | `Loretta.CLI.Program.CompareMemoryUsage()` | `src/Compilers/Lua/CommandLine/Program.cs:462` | `loretta-cli/src/main.rs` | done | — |
 | 454 | `Loretta.CLI.Program.PopMemoryUsage():Method@Program.cs:483` | `Loretta.CLI.Program.PopMemoryUsage()` | `src/Compilers/Lua/CommandLine/Program.cs:483` | `loretta-cli/src/main.rs` | pending | — |
 | 455 | `Loretta.CLI.Program.InvokeGc(int):Method@Program.cs:497` | `Loretta.CLI.Program.InvokeGc(int)` | `src/Compilers/Lua/CommandLine/Program.cs:497` | `loretta-cli/src/main.rs` | pending | — |
 | 456 | `Loretta.CLI.Program.Program():Method@Program.cs:508` | `Loretta.CLI.Program.Program()` | `src/Compilers/Lua/CommandLine/Program.cs:508` | `loretta-cli/src/main.rs` | pending | — |

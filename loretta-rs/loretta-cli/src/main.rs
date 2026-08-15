@@ -822,6 +822,44 @@ fn run_multi_lua(args: &[&str]) {
     }
 }
 
+/// C# Program.CompareMemoryUsage (Program.cs:462-481).
+fn compare_memory_usage() {
+    let curr_gc_mem = gc_memory();
+    let curr_proc_mem = process_memory();
+    S_LOGGER.write_line(&format!(
+        "Memory usage according to GC:       {}",
+        file_size_format(curr_gc_mem)
+    ));
+    S_LOGGER.write_line(&format!(
+        "Memory usage according to Process:  {}",
+        file_size_format(curr_proc_mem)
+    ));
+    let stack = S_MEMORY_STACK.lock().expect("memory stack lock");
+    let Some((old_gc_mem, old_proc_mem)) = stack.last() else {
+        drop(stack);
+        S_LOGGER.log_error("Nothing on memory stack to compare to.");
+        return;
+    };
+    let delta_gc = curr_gc_mem as i64 - *old_gc_mem as i64;
+    let delta_proc = curr_proc_mem as i64 - *old_proc_mem as i64;
+    S_LOGGER.write_line(&format!(
+        "ΔMemory usage according to GC:      {}",
+        if delta_gc < 0 {
+            format!("-{}", file_size_format((-delta_gc) as u64))
+        } else {
+            file_size_format(delta_gc as u64)
+        }
+    ));
+    S_LOGGER.write_line(&format!(
+        "ΔMemory usage according to Process: {}",
+        if delta_proc < 0 {
+            format!("-{}", file_size_format((-delta_proc) as u64))
+        } else {
+            file_size_format(delta_proc as u64)
+        }
+    ));
+}
+
 /// C# Program.PushMemoryUsage (Program.cs:452-460): prints and pushes the
 /// current memory usage.
 fn push_memory_usage() {
@@ -963,6 +1001,7 @@ fn main() {
     // Referenced until the static ctor (row 456) wires the memory command.
     let _ = print_memory_usage as fn();
     let _ = push_memory_usage as fn();
+    let _ = compare_memory_usage as fn();
     // Referenced until the memory rows (451-455) land.
     let _ = current_proc as fn() -> u32;
     let _ = (gc_memory as fn() -> u64, process_memory as fn() -> u64);
