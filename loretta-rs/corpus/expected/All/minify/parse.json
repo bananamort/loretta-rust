@@ -1,0 +1,5 @@
+{
+  "treeText": "local veryLongName = 1\nprint(veryLongName)\n",
+  "rootKind": "CompilationUnit",
+  "hasErrors": false
+}

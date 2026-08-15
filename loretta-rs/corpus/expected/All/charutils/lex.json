@@ -1,0 +1,36 @@
+{
+  "tokens": [
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "a ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022hello\u0022",
+      "fullText": "\u0022hello\u0022\n",
+      "isMissing": false
+    },
+    {
+      "kind": "EndOfFileToken",
+      "text": "",
+      "fullText": "",
+      "isMissing": false
+    }
+  ],
+  "count": 5,
+  "roundTrip": true
+}

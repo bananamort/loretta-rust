@@ -1,0 +1,5 @@
+{
+  "treeText": "local a = \u0022hello\u0022\n",
+  "rootKind": "CompilationUnit",
+  "hasErrors": false
+}

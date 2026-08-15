@@ -1,0 +1,29 @@
+{
+  "label": "loretta-rs/corpus/features/charutils.lua",
+  "rootScope": {
+    "kind": "Global",
+    "declaredVariables": [],
+    "containedScopes": [
+      {
+        "kind": "File",
+        "nodeKind": "CompilationUnit",
+        "declaredVariables": [
+          {
+            "name": "arg",
+            "kind": "Parameter"
+          },
+          {
+            "name": "...",
+            "kind": "Parameter"
+          },
+          {
+            "name": "a",
+            "kind": "Local"
+          }
+        ],
+        "containedScopes": []
+      }
+    ]
+  },
+  "scopeCount": 2
+}

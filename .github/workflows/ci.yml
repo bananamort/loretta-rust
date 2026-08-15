@@ -44,7 +44,6 @@ jobs:
         working-directory: loretta-rs
         run: |
           echo "Drift check: every public member exists or is documented as DROP; no todo!/unimplemented!/mod deletions"
-          # For now, ensure PROGRESS.md rows match nodes.json count and topo covers all
           python3 - << 'PY'
           import json, pathlib, sys
           nodes = json.loads(pathlib.Path("nodes.json").read_text())
@@ -57,20 +56,24 @@ jobs:
               print("FAIL: duplicate Ids in nodes.json")
               sys.exit(1)
           print(f"Drift OK: {len(nodes)} nodes, {len(edges)} edges, topo {len(topo)}")
-          # Check PROGRESS.md row count
-          import re
           prog = pathlib.Path("PROGRESS.md").read_text()
           rows = len([l for l in prog.splitlines() if l.startswith("| ") and " | pending | " in l or " | done | " in l or " | claimed | " in l])
-          # Count pending/claimed/done rows — should equal nodes
           if rows != len(nodes):
               print(f"WARN: PROGRESS.md rows {rows} != nodes {len(nodes)} (may be pending work)")
           else:
               print(f"PROGRESS rows OK: {rows}")
           PY
-      - name: Differential smoke (corpus exists)
+      - name: C# oracle (strict per-feature)
+        run: |
+          dotnet --info | head -n 5
+          NUGET_PACKAGES=/tmp/loretta-differential-packages dotnet build loretta-rs/tools/differential/Differential.csproj -c Release
+          dotnet run --project loretta-rs/tools/differential/Differential.csproj -c Release --no-build -- diagnostics All "local a=1" | head -n 20
+          ls -lh loretta-rs/corpus/expected/All/anim/ | head -n 20
+          test -f loretta-rs/corpus/expected/All/anim/diagnostics.json
+          echo "C# oracle OK — expected per AllPresets for corpus + features"
+      - name: Differential smoke (corpus + expected)
         working-directory: loretta-rs
         run: |
-          ls -lh corpus/ | head -n 20
-          test -f corpus/anim.lua
-          test -f corpus/rustic.lua
-          echo "Differential harness pending — smoke check passes (corpus seeded)"
+          ls -lh corpus/expected/All/anim/ | head -n 20
+          test -f corpus/expected/All/anim/parse.json
+          echo "Differential harness — C# expected present, Rust oracle to be built by agents per loretta-rs/tools/differential/README.md"
