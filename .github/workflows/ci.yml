@@ -76,4 +76,6 @@ jobs:
         run: |
           ls -lh corpus/expected/All/anim/ | head -n 20
           test -f corpus/expected/All/anim/parse.json
-          echo "Differential harness — C# expected present, Rust oracle to be built by agents per loretta-rs/tools/differential/README.md"
+          echo "Differential harness — C# expected present; Rust oracle:"
+          cargo run -p differential -- check corpus/expected --out target/differential-check
+          echo "Differential oracle OK"

@@ -64,6 +64,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "differential"
+version = "0.1.0"
+dependencies = [
+ "full_moon",
+ "loretta",
+]
+
+[[package]]
 name = "full_moon"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
