@@ -4,4 +4,5 @@ pub mod errorcode;
 pub mod errorfacts;
 pub mod luadiagnostic;
 pub mod luadiagnosticformatter;
+pub mod luadiagnosticinfo;
 pub mod messageprovider;
