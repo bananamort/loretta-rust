@@ -14,7 +14,8 @@ impl CharUtils {
     /// Converts the provided ASCII character into lower-case ASCII.
     #[inline]
     pub fn ascii_lower_case(ch: char) -> char {
-        (ch as u8 | 0b100000) as char
+        // C# (char)(ch | 0b100000) operates on the full UTF-16 unit, not the low byte.
+        char::from_u32(ch as u32 | 0b100000).unwrap()
     }
 
     /// Checks if the next greatest value's index indicates the character is in
