@@ -5,6 +5,7 @@ pub mod backtickstringtype;
 pub mod continuetype;
 pub mod errors;
 pub mod experimental;
+pub mod integerformats;
 pub mod options;
 pub mod scoping;
 pub mod script;
