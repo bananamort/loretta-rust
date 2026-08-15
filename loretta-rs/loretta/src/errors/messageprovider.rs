@@ -15,6 +15,9 @@ impl MessageProvider {
     /// The code prefix for Lua diagnostics.
     pub const CODE_PREFIX: &'static str = "LUA";
 
+    /// C# `ERR_BadDocumentationMode => (int) ErrorCode.ERR_BadDocumentationMode`.
+    pub const ERR_BAD_DOCUMENTATION_MODE: i32 = ErrorCode::ErrBadDocumentationMode as i32;
+
     /// Gets the severity for the given error code.
     pub fn get_severity(code: ErrorCode) -> DiagnosticSeverity {
         match code {
