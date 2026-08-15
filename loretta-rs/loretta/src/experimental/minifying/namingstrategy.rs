@@ -6,4 +6,6 @@
 ///
 /// C# original: `delegate string NamingStrategy(int slot, IEnumerable<IScope> scopes)`
 /// IScope is not yet ported — this will be updated when IScope lands.
-pub type NamingStrategy = fn(slot: i32) -> String;
+/// The boxed-closure representation allows capture-capable factories such as
+/// `NamingStrategies::sequential`.
+pub type NamingStrategy = Box<dyn Fn(i32) -> String>;
