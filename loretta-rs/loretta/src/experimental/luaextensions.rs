@@ -22,11 +22,10 @@ impl LuaExtensions {
     /// C# `Minify(SyntaxTree)` — defaults to the alphabetical naming strategy
     /// and the sorted slot allocator.
     pub fn minify_default(ast: Ast) -> Ast {
-        // C# `Minifying.NamingStrategies.Alphabetical` — the unavailable-name
-        // check is pending IScope (scoping SCC); the strategies run against an
-        // empty unavailable set until then.
+        // C# `Minifying.NamingStrategies.Alphabetical` — pending (PROGRESS
+        // rows 532-538); slot-number names are the placeholder until it lands.
         let mut allocator = SortedSlotAllocator::new();
-        Self::minify_with_allocator(ast, Box::new(alphabetical_placeholder), &mut allocator)
+        Self::minify_with_allocator(ast, |slot| slot.to_string(), &mut allocator)
     }
 
     /// C# `Minify(SyntaxTree, NamingStrategy)` — defaults to the sorted slot
@@ -48,10 +47,4 @@ impl LuaExtensions {
         let _ = (naming_strategy, slot_allocator);
         ast
     }
-}
-
-/// The alphabetical strategy placeholder used by `minify_default` until the
-/// NamingStrategies port's unavailable-name check lands with IScope.
-fn alphabetical_placeholder(slot: i32) -> String {
-    crate::experimental::minifying::namingstrategies::NamingStrategies::alphabetical(slot)
 }
