@@ -3,6 +3,7 @@
 
 pub mod console_timing_logger_text_writer;
 
+use console_timing_logger_text_writer::{ConsoleTimingLoggerTextWriter, TimingLogger};
 use std::io::{self, Write};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::OnceLock;
@@ -24,6 +25,36 @@ impl ConsoleTimingLogger {
     pub fn write(&self, s: &str) {
         print!("{s}");
         io::stdout().flush().expect("flush stdout");
+    }
+}
+
+impl TimingLogger for ConsoleTimingLogger {
+    fn write_str(&self, s: &str) {
+        ConsoleTimingLogger::write(self, s);
+    }
+
+    fn write_char(&self, c: char) {
+        let mut buf = [0u8; 4];
+        ConsoleTimingLogger::write(self, c.encode_utf8(&mut buf));
+    }
+
+    fn write_line(&self, s: &str) {
+        ConsoleTimingLogger::write_line(self, s);
+    }
+}
+
+impl TimingLogger for &ConsoleTimingLogger {
+    fn write_str(&self, s: &str) {
+        ConsoleTimingLogger::write(self, s);
+    }
+
+    fn write_char(&self, c: char) {
+        let mut buf = [0u8; 4];
+        ConsoleTimingLogger::write(self, c.encode_utf8(&mut buf));
+    }
+
+    fn write_line(&self, s: &str) {
+        ConsoleTimingLogger::write_line(self, s);
     }
 }
 
@@ -53,6 +84,16 @@ pub struct Command {
 /// The root command table (C# Program.s_rootCommand, built in the static ctor).
 static S_ROOT_COMMAND: OnceLock<Vec<Command>> = OnceLock::new();
 
+/// C# Program.OutputWriter:
+/// `s_printOutputPrefixed ? new ConsoleTimingLoggerTextWriter(s_logger) : Console.Out`.
+fn output_writer() -> Box<dyn Write> {
+    if S_PRINT_OUTPUT_PREFIXED.load(Ordering::Relaxed) {
+        Box::new(ConsoleTimingLoggerTextWriter::new(&S_LOGGER))
+    } else {
+        Box::new(io::stdout())
+    }
+}
+
 fn main() {
     // Temporary REPL stub mirroring Main's state initialization until the
     // Main row (410) lands (C# Main sets s_shouldRun = true first).
@@ -65,7 +106,9 @@ fn main() {
     }
     // Referenced until the static ctor (row 456) builds it and Main (410) invokes it.
     let _ = S_ROOT_COMMAND.get();
-    // Referenced until OutputWriter (row 409) lands.
-    let _ = S_PRINT_OUTPUT_PREFIXED.load(Ordering::Relaxed);
-    S_LOGGER.write_line("loretta-cli: pending port — see loretta-rs/PROGRESS.md");
+    writeln!(
+        output_writer(),
+        "loretta-cli: pending port — see loretta-rs/PROGRESS.md"
+    )
+    .expect("write output");
 }
