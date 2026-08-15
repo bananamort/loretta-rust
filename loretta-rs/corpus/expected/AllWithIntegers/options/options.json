@@ -1,5 +1,6 @@
 {
   "preset": "All (with integers)",
+  "documentationMode": "Parse",
   "features": [],
   "withFeatures": [
     "foo=bar"

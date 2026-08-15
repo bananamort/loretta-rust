@@ -22,6 +22,12 @@ impl LuaParseOptions {
         }
     }
 
+    /// The documentation mode. C# `DocumentationMode` "does nothing
+    /// currently"; the base ParseOptions ctor fixes it to Parse.
+    pub fn documentation_mode(&self) -> &'static str {
+        "Parse"
+    }
+
     /// Creates a new set of parse options.
     pub fn new(syntax_options: LuaSyntaxOptions) -> Self {
         Self {
