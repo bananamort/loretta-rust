@@ -21,6 +21,10 @@ impl LuaDiagnosticFormatter {
             DiagnosticSeverity::Warning => "warning",
             DiagnosticSeverity::Info => "info",
             DiagnosticSeverity::Hidden => "hidden",
+            // C# GetMessagePrefix throws UnexpectedValue for these (DiagnosticFormatter.cs:63).
+            DiagnosticSeverity::Void | DiagnosticSeverity::Unknown => {
+                unreachable!("unexpected severity")
+            }
         };
         let code = diagnostic.code as i32;
         write!(f, "{prefix} LUA{code:04}: {}", diagnostic.message)

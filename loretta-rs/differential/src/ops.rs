@@ -169,6 +169,10 @@ pub fn messageprovider() -> Result<Json, String> {
             let mut fields = vec![
                 ("code".into(), Json::Number(*code as i64)),
                 (
+                    "severity".into(),
+                    Json::Number(MessageProvider::get_severity(*code) as i64),
+                ),
+                (
                     "category".into(),
                     Json::String(MessageProvider::get_category(*code)),
                 ),

@@ -21,11 +21,7 @@ impl MessageProvider {
 
     /// Gets the severity for the given error code.
     pub fn get_severity(code: ErrorCode) -> DiagnosticSeverity {
-        match code {
-            ErrorCode::WrnLineBreakMayAffectErrorReporting => DiagnosticSeverity::Warning,
-            ErrorCode::Void | ErrorCode::Unknown => DiagnosticSeverity::Hidden,
-            _ => DiagnosticSeverity::Error,
-        }
+        ErrorFacts::get_severity(code)
     }
 
     /// Loads the message for the given error code.
