@@ -157,10 +157,7 @@ fn serialize_scope(scope: &loretta::scoping::iscope::Scope) -> Json {
     use loretta::scoping::iscope::IScope;
     use loretta::scoping::ivariable::IVariable;
     let mut fields = Vec::new();
-    fields.push((
-        "kind".into(),
-        Json::String(scope_kind_name(scope.kind()).into()),
-    ));
+    fields.push(("kind".into(), Json::String(scope_kind_name(scope.kind()).into())));
     if let Some(node_kind) = scope.node_kind() {
         fields.push(("nodeKind".into(), Json::String(node_kind.into())));
     }
