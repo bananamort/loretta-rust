@@ -352,6 +352,73 @@ impl LuaSyntaxOptions {
         }
     }
 
+    /// Creates a new LuaSyntaxOptions changing the provided fields (C# `With`
+    /// with Option<T> defaults; `None` keeps the current value).
+    #[allow(clippy::too_many_arguments)]
+    pub fn with(
+        &self,
+        accept_binary_numbers: Option<bool>,
+        accept_c_comment_syntax: Option<bool>,
+        accept_compound_assignment: Option<bool>,
+        accept_empty_statements: Option<bool>,
+        accept_c_boolean_operators: Option<bool>,
+        accept_goto: Option<bool>,
+        accept_hex_escapes_in_strings: Option<bool>,
+        accept_hex_float_literals: Option<bool>,
+        accept_octal_numbers: Option<bool>,
+        accept_shebang: Option<bool>,
+        accept_underscore_in_number_literals: Option<bool>,
+        use_lua_jit_identifier_rules: Option<bool>,
+        accept_bitwise_operators: Option<bool>,
+        accept_whitespace_escape: Option<bool>,
+        accept_unicode_escape: Option<bool>,
+        continue_type: Option<ContinueType>,
+        accept_if_expressions: Option<bool>,
+        accept_invalid_escapes: Option<bool>,
+        accept_local_variable_attributes: Option<bool>,
+        binary_integer_format: Option<IntegerFormats>,
+        octal_integer_format: Option<IntegerFormats>,
+        decimal_integer_format: Option<IntegerFormats>,
+        hex_integer_format: Option<IntegerFormats>,
+        accept_typed_lua: Option<bool>,
+        accept_floor_division: Option<bool>,
+        accept_lua_jit_number_suffixes: Option<bool>,
+        accept_nesting_of_long_strings: Option<bool>,
+        backtick_string_type: Option<BacktickStringType>,
+    ) -> Self {
+        Self::new(
+            accept_binary_numbers.unwrap_or(self.accept_binary_numbers),
+            accept_c_comment_syntax.unwrap_or(self.accept_c_comment_syntax),
+            accept_compound_assignment.unwrap_or(self.accept_compound_assignment),
+            accept_empty_statements.unwrap_or(self.accept_empty_statements),
+            accept_c_boolean_operators.unwrap_or(self.accept_c_boolean_operators),
+            accept_goto.unwrap_or(self.accept_goto),
+            accept_hex_escapes_in_strings.unwrap_or(self.accept_hex_escapes_in_strings),
+            accept_hex_float_literals.unwrap_or(self.accept_hex_float_literals),
+            accept_octal_numbers.unwrap_or(self.accept_octal_numbers),
+            accept_shebang.unwrap_or(self.accept_shebang),
+            accept_underscore_in_number_literals
+                .unwrap_or(self.accept_underscore_in_number_literals),
+            use_lua_jit_identifier_rules.unwrap_or(self.use_lua_jit_identifier_rules),
+            accept_bitwise_operators.unwrap_or(self.accept_bitwise_operators),
+            accept_whitespace_escape.unwrap_or(self.accept_whitespace_escape),
+            accept_unicode_escape.unwrap_or(self.accept_unicode_escape),
+            continue_type.unwrap_or(self.continue_type),
+            accept_if_expressions.unwrap_or(self.accept_if_expressions),
+            accept_invalid_escapes.unwrap_or(self.accept_invalid_escapes),
+            accept_local_variable_attributes.unwrap_or(self.accept_local_variable_attributes),
+            binary_integer_format.unwrap_or(self.binary_integer_format),
+            octal_integer_format.unwrap_or(self.octal_integer_format),
+            decimal_integer_format.unwrap_or(self.decimal_integer_format),
+            hex_integer_format.unwrap_or(self.hex_integer_format),
+            accept_typed_lua.unwrap_or(self.accept_typed_lua),
+            accept_floor_division.unwrap_or(self.accept_floor_division),
+            accept_lua_jit_number_suffixes.unwrap_or(self.accept_lua_jit_number_suffixes),
+            accept_nesting_of_long_strings.unwrap_or(self.accept_nesting_of_long_strings),
+            backtick_string_type.unwrap_or(self.backtick_string_type),
+        )
+    }
+
     /// Returns a string representation of the preset.
     pub fn preset_name(&self) -> Option<&'static str> {
         if *self == Self::LUA51 {
