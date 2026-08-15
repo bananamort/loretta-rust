@@ -2,6 +2,7 @@
   "preset": "Luau",
   "language": "Lua",
   "documentationMode": "Parse",
+  "withDocumentationMode": "None",
   "features": [],
   "withFeatures": [
     "foo=bar"

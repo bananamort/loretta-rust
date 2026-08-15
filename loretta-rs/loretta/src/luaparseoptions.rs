@@ -11,6 +11,9 @@ pub struct LuaParseOptions {
     /// C# `_features`: ImmutableDictionary<string, string>, always empty by
     /// default ("the features flag doesn't do anything currently").
     pub features: Vec<(String, String)>,
+    /// C# DocumentationMode (Core enum); the base ParseOptions ctor fixes it
+    /// to Parse, and WithDocumentationMode can replace it.
+    documentation_mode: String,
 }
 
 impl LuaParseOptions {
@@ -19,13 +22,38 @@ impl LuaParseOptions {
         Self {
             syntax_options: LuaSyntaxOptions::ALL,
             features: Vec::new(),
+            documentation_mode: "Parse".to_string(),
+        }
+    }
+
+    /// Creates a new set of parse options.
+    pub fn new(syntax_options: LuaSyntaxOptions) -> Self {
+        Self {
+            syntax_options,
+            features: Vec::new(),
+            documentation_mode: "Parse".to_string(),
         }
     }
 
     /// The documentation mode. C# `DocumentationMode` "does nothing
     /// currently"; the base ParseOptions ctor fixes it to Parse.
-    pub fn documentation_mode(&self) -> &'static str {
-        "Parse"
+    pub fn documentation_mode(&self) -> &str {
+        &self.documentation_mode
+    }
+
+    /// Creates a new instance with the documentation mode replaced, or
+    /// returns self when it already matches. C# `WithDocumentationMode`
+    /// (LuaParseOptions.cs:65-71).
+    pub fn with_documentation_mode(&self, documentation_mode: &str) -> Self {
+        if self.documentation_mode != documentation_mode {
+            Self {
+                syntax_options: self.syntax_options.clone(),
+                features: self.features.clone(),
+                documentation_mode: documentation_mode.to_string(),
+            }
+        } else {
+            self.clone()
+        }
     }
 
     /// The language name (C# `LanguageNames.Lua`).
@@ -39,20 +67,13 @@ impl LuaParseOptions {
     /// adds nothing — the docs say the options "don't do anything currently".
     pub fn validate_options(&self, _builder: &mut Vec<String>) {}
 
-    /// Creates a new set of parse options.
-    pub fn new(syntax_options: LuaSyntaxOptions) -> Self {
-        Self {
-            syntax_options,
-            features: Vec::new(),
-        }
-    }
-
     /// Creates a new instance with the features replaced by the provided ones.
     /// C# `WithFeatures` -> `new LuaParseOptions(this) { _features = ... }`.
     pub fn with_features(&self, features: Vec<(String, String)>) -> Self {
         Self {
             syntax_options: self.syntax_options.clone(),
             features,
+            documentation_mode: self.documentation_mode.clone(),
         }
     }
 
@@ -62,6 +83,7 @@ impl LuaParseOptions {
             Self {
                 syntax_options,
                 features: self.features.clone(),
+                documentation_mode: self.documentation_mode.clone(),
             }
         } else {
             self.clone()
