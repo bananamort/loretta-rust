@@ -1,5 +1,5 @@
 [workspace]
-members = ["loretta", "loretta-cli"]
+members = ["loretta", "loretta-cli", "differential"]
 resolver = "2"
 
 [workspace.package]
