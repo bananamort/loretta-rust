@@ -307,6 +307,10 @@ pub fn charutils(code: &str) -> Result<Json, String> {
                     "isAlphaNumeric".into(),
                     Json::Bool(CharUtils::is_alpha_numeric(ch)),
                 ),
+                (
+                    "isHexadecimal".into(),
+                    Json::Bool(CharUtils::is_hexadecimal(ch)),
+                ),
             ])
         })
         .collect();
