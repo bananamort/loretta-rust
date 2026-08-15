@@ -1,5 +1,6 @@
 {
   "preset": "FiveM",
+  "language": "Lua",
   "documentationMode": "Parse",
   "features": [],
   "withFeatures": [

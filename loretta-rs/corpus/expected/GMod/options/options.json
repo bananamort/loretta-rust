@@ -1,5 +1,6 @@
 {
   "preset": "GLua",
+  "language": "Lua",
   "documentationMode": "Parse",
   "features": [],
   "withFeatures": [

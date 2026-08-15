@@ -53,6 +53,10 @@ pub fn options(preset: &str) -> Result<Json, String> {
     Ok(Json::Object(vec![
         ("preset".into(), Json::String(opts.to_string())),
         (
+            "language".into(),
+            Json::String(parse_opts.language().to_string()),
+        ),
+        (
             "documentationMode".into(),
             Json::String(parse_opts.documentation_mode().to_string()),
         ),
