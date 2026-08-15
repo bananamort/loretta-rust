@@ -13,7 +13,7 @@ Generated from `loretta-rs/nodes.json` (`744` distinct symbols, `803` MemberDecl
 
 | # | Node ID | C# symbol | C# file | Rust file | Status | Notes |
 |---|---|---|---|---|---|---|
-| 1 | `Loretta.CLI.ConsoleTimingLoggerTextWriter:NamedType@ConsoleTimingLoggerTextWriter.cs:6` | `Loretta.CLI.ConsoleTimingLoggerTextWriter` | `src/Compilers/Lua/CommandLine/ConsoleTimingLoggerTextWriter.cs:6` | `loretta-cli/src/main.rs` | pending | — |
+| 1 | `Loretta.CLI.ConsoleTimingLoggerTextWriter:NamedType@ConsoleTimingLoggerTextWriter.cs:6` | `Loretta.CLI.ConsoleTimingLoggerTextWriter` | `src/Compilers/Lua/CommandLine/ConsoleTimingLoggerTextWriter.cs:6` | `loretta-cli/src/console_timing_logger_text_writer.rs` | done | Ported with TimingLogger trait abstraction for external Tsu.Timing dependency |
 | 2 | `Loretta.CodeAnalysis.Lua.BacktickStringType:NamedType@BacktickStringType.cs:4` | `Loretta.CodeAnalysis.Lua.BacktickStringType` | `src/Compilers/Lua/Portable/BacktickStringType.cs:4` | `loretta/src/backtickstringtype.rs` | pending | — |
 | 3 | `Loretta.CodeAnalysis.Lua.ContinueType:NamedType@ContinueType.cs:6` | `Loretta.CodeAnalysis.Lua.ContinueType` | `src/Compilers/Lua/Portable/ContinueType.cs:6` | `loretta/src/continuetype.rs` | pending | — |
 | 4 | `Loretta.CodeAnalysis.Lua.ErrorCode:NamedType@ErrorCode.cs:5` | `Loretta.CodeAnalysis.Lua.ErrorCode` | `src/Compilers/Lua/Portable/Errors/ErrorCode.cs:5` | `loretta/src/errors/errorcode.rs` | pending | — |
