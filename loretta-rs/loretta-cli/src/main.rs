@@ -90,6 +90,11 @@ enum Setting {
     PrintOutputPrefixed,
 }
 
+/// C# Program.Quit — stops the REPL loop.
+fn quit() {
+    S_SHOULD_RUN.store(false, Ordering::Relaxed);
+}
+
 /// C# Program.Set(Setting, string) — applies a REPL setting.
 fn set_setting(setting: Setting, value: &str) -> Result<(), String> {
     match setting {
@@ -139,6 +144,7 @@ fn main() {
     let _ = S_ROOT_COMMAND.get();
     // Referenced until the static ctor (row 456) wires it into the command table.
     let _ = set_setting as fn(Setting, &str) -> Result<(), String>;
+    let _ = quit as fn();
     // Constructed until the static ctor (row 456) wires the set command.
     let _ = (Setting::PrintCurrentDir, Setting::PrintOutputPrefixed);
     writeln!(
