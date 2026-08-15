@@ -140,7 +140,17 @@ static object ObjectDisplayOp()
         {
             decimalLiteral = ObjectDisplay.FormatLiteral(v, ObjectDisplayOptions.None),
             hexadecimalLiteral = ObjectDisplay.FormatLiteral(v, ObjectDisplayOptions.UseHexadecimalNumbers)
-        }).ToArray()
+        }).ToArray(),
+        strings = new[]
+        {
+            ObjectDisplay.FormatLiteral("a\nb", ObjectDisplayOptions.EscapeNonPrintableCharacters),
+            ObjectDisplay.FormatLiteral("\0\t\r\n", ObjectDisplayOptions.EscapeNonPrintableCharacters),
+            ObjectDisplay.FormatLiteral("\uFEFF", ObjectDisplayOptions.EscapeNonPrintableCharacters),
+            ObjectDisplay.FormatLiteral("\uFEFF", ObjectDisplayOptions.EscapeNonPrintableCharacters | ObjectDisplayOptions.EscapeWithUtf8),
+            ObjectDisplay.FormatLiteral("quote\"here", ObjectDisplayOptions.UseQuotes | ObjectDisplayOptions.EscapeNonPrintableCharacters),
+            ObjectDisplay.FormatLiteral("hello there", ObjectDisplayOptions.UseQuotes | ObjectDisplayOptions.EscapeNonPrintableCharacters),
+            ObjectDisplay.FormatLiteral("hello", ObjectDisplayOptions.None)
+        }
     };
 }
 
