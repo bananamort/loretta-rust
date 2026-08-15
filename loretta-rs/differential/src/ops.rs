@@ -60,6 +60,15 @@ pub fn options(preset: &str) -> Result<Json, String> {
             "documentationMode".into(),
             Json::String(parse_opts.documentation_mode().to_string()),
         ),
+        (
+            "withDocumentationMode".into(),
+            Json::String(
+                parse_opts
+                    .with_documentation_mode("None")
+                    .documentation_mode()
+                    .to_string(),
+            ),
+        ),
         ("features".into(), Json::Array(features)),
         ("withFeatures".into(), Json::Array(with_features)),
     ]))

@@ -2,6 +2,7 @@
   "preset": "All (with integers)",
   "language": "Lua",
   "documentationMode": "Parse",
+  "withDocumentationMode": "None",
   "features": [],
   "withFeatures": [
     "foo=bar"
