@@ -26,6 +26,11 @@ impl ConsoleTimingLogger {
         print!("{s}");
         io::stdout().flush().expect("flush stdout");
     }
+
+    /// Logs an error to stderr (C# ConsoleTimingLogger.LogError).
+    pub fn log_error(&self, s: &str) {
+        eprintln!("{s}");
+    }
 }
 
 impl TimingLogger for ConsoleTimingLogger {
@@ -95,6 +100,15 @@ fn quit() {
     S_SHOULD_RUN.store(false, Ordering::Relaxed);
 }
 
+/// C# Program.ChangeDirectory — changes the current directory (Program.cs:99-110).
+fn change_directory(relative_path: &str) {
+    let result =
+        std::env::current_dir().and_then(|dir| std::env::set_current_dir(dir.join(relative_path)));
+    if let Err(e) = result {
+        S_LOGGER.log_error(&format!("Error while changing directory: {e}"));
+    }
+}
+
 /// C# Program.Set(Setting, string) — applies a REPL setting.
 fn set_setting(setting: Setting, value: &str) -> Result<(), String> {
     match setting {
@@ -145,6 +159,7 @@ fn main() {
     // Referenced until the static ctor (row 456) wires it into the command table.
     let _ = set_setting as fn(Setting, &str) -> Result<(), String>;
     let _ = quit as fn();
+    let _ = change_directory as fn(&str);
     // Constructed until the static ctor (row 456) wires the set command.
     let _ = (Setting::PrintCurrentDir, Setting::PrintOutputPrefixed);
     writeln!(
