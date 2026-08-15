@@ -1,0 +1,13 @@
+{
+  "preset": "GLua",
+  "language": "Lua",
+  "documentationMode": "Parse",
+  "withDocumentationMode": "None",
+  "features": [],
+  "withFeatures": [
+    "foo=bar"
+  ],
+  "equalsDefault": true,
+  "equalsWithFeatures": false,
+  "syntaxEqualsAll": false
+}

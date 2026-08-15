@@ -153,7 +153,8 @@ static object ObjectDisplayOp()
             ObjectDisplay.FormatLiteral("quote\"here", ObjectDisplayOptions.UseQuotes | ObjectDisplayOptions.EscapeNonPrintableCharacters),
             ObjectDisplay.FormatLiteral("hello there", ObjectDisplayOptions.UseQuotes | ObjectDisplayOptions.EscapeNonPrintableCharacters),
             ObjectDisplay.FormatLiteral("hello", ObjectDisplayOptions.None)
-        }
+        },
+        primitives = new object?[] { null, true, 1.5, 42L, 42UL, "text", 1e20 }.Select(o => ObjectDisplay.FormatPrimitive(o, ObjectDisplayOptions.None)).ToArray()
     };
 }
 

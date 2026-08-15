@@ -1,0 +1,174 @@
+{
+  "results": [
+    {
+      "ch": "l",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "o",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "c",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": "a",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": "l",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": " ",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": true,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "s",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": " ",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": true,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "=",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": " ",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": true,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "\u0022",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "t",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "e",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": "s",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "t",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "\u0022",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "\n",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": true,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    }
+  ]
+}

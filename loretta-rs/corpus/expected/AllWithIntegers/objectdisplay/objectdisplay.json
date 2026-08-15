@@ -157,5 +157,14 @@
     "\u0022quote\\\u0022here\u0022",
     "\u0022hello there\u0022",
     "hello"
+  ],
+  "primitives": [
+    "nil",
+    "true",
+    "1.5",
+    "42",
+    "42ULL",
+    "text",
+    "1E\u002B20"
   ]
 }

@@ -349,6 +349,7 @@ impl ObjectDisplay {
 }
 
 /// Represents a primitive value for FormatPrimitive.
+#[derive(Clone)]
 pub enum PrimitiveValue {
     String(String),
     Bool(bool),

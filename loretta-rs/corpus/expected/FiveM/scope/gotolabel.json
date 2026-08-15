@@ -1,0 +1,8 @@
+{
+  "name": "top",
+  "labelText": "::top::\n",
+  "jumps": [
+    "goto top\n",
+    "goto top\n"
+  ]
+}

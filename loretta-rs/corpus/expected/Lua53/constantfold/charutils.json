@@ -1,0 +1,134 @@
+{
+  "results": [
+    {
+      "ch": "r",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "e",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": "t",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "u",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "r",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "n",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": " ",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": true,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "1",
+      "isBinary": true,
+      "isDecimal": true,
+      "isOctal": true,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": " ",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": true,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "\u002B",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": " ",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": true,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "2",
+      "isBinary": false,
+      "isDecimal": true,
+      "isOctal": true,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": "\n",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": true,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    }
+  ]
+}
