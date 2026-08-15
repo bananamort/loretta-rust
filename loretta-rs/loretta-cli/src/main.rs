@@ -99,6 +99,7 @@ enum Setting {
 enum LuaSyntaxOptionsPreset {
     Lua51,
     Lua52,
+    Lua53,
 }
 
 /// C# Program.ListSymbols — lists the current directory's entries
@@ -199,7 +200,11 @@ fn main() {
     // Constructed until the static ctor (row 456) wires the set command.
     let _ = (Setting::PrintCurrentDir, Setting::PrintOutputPrefixed);
     // Constructed until PresetEnumToPresetOptions (row 430) uses it.
-    let _ = (LuaSyntaxOptionsPreset::Lua51, LuaSyntaxOptionsPreset::Lua52);
+    let _ = (
+        LuaSyntaxOptionsPreset::Lua51,
+        LuaSyntaxOptionsPreset::Lua52,
+        LuaSyntaxOptionsPreset::Lua53,
+    );
     writeln!(
         output_writer(),
         "loretta-cli: pending port — see loretta-rs/PROGRESS.md"
