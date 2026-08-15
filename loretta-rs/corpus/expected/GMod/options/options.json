@@ -1,5 +1,6 @@
 {
   "preset": "GLua",
+  "documentationMode": "Parse",
   "features": [],
   "withFeatures": [
     "foo=bar"

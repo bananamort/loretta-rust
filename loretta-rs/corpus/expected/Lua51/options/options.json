@@ -1,5 +1,6 @@
 {
   "preset": "Lua 5.1",
+  "documentationMode": "Parse",
   "features": [],
   "withFeatures": [
     "foo=bar"

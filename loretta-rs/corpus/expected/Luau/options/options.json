@@ -1,5 +1,6 @@
 {
   "preset": "Luau",
+  "documentationMode": "Parse",
   "features": [],
   "withFeatures": [
     "foo=bar"
