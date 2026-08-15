@@ -68,7 +68,9 @@ impl ErrorFacts {
     }
 
     /// Gets the category for the given error code.
+    /// C# fallback is `Diagnostic.CompilerDiagnosticCategory = "Compiler"`
+    /// (Core Diagnostic.cs) since the categories map is always empty.
     pub fn get_category(_code: ErrorCode) -> String {
-        "compiler".to_string()
+        "Compiler".to_string()
     }
 }
