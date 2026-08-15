@@ -2,6 +2,5 @@
 
 pub mod constantfolder;
 pub mod constantfoldingoptions;
-pub mod luaextensions;
 pub mod minifying;
 pub mod syntaxextensions;
