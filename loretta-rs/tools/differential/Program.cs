@@ -33,7 +33,7 @@ if (operation == "all" && File.Exists(inputArg) && outDir != null)
         var parseOpts = new LuaParseOptions(opts);
         var dir = Path.Combine(outDir, preset, Path.GetFileNameWithoutExtension(inputArg));
         Directory.CreateDirectory(dir);
-        var ops = code.Length > 500_000 ? new[] { "diagnostics", "parse" } : new[] { "diagnostics", "lex", "parse", "scope", "constantfold", "minify" };
+        var ops = code.Length > 500_000 ? new[] { "diagnostics", "parse" } : new[] { "diagnostics", "lex", "parse", "scope", "constantfold", "minify", "charutils" };
         foreach (var op in ops)
         {
             try
@@ -88,13 +88,22 @@ static async Task<object> RunOperation(string operation, LuaParseOptions parseOp
         "rename" => await RenameOp(parseOpts, code),
         "constantfold" => await ConstantFoldOp(parseOpts, code),
         "minify" => await MinifyOp(parseOpts, code),
-        "charutils" => new { note = "covered via lex/parse" },
+        "charutils" => CharUtilsOp(code),
         "stringutils" => new { note = "covered via lex/parse" },
         "hexfloat" => new { note = "covered via parse" },
         "objectdisplay" => new { note = "covered via parse" },
         "operator" => new { note = "covered via parse/constantfold" },
         _ => new { error = $"unknown operation {operation}" }
     };
+}
+
+// CharUtils (internal in Loretta): invoked via reflection so the oracle uses
+// the original C# implementation directly.
+static object CharUtilsOp(string code)
+{
+    var charUtilsType = typeof(SyntaxFactory).Assembly.GetType("Loretta.CodeAnalysis.Lua.Utilities.CharUtils")!;
+    var isBinary = charUtilsType.GetMethod("IsBinary", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!;
+    return new { results = code.EnumerateRunes().Select(r => new { ch = r.ToString(), isBinary = r.Value <= char.MaxValue && (bool) isBinary.Invoke(null, new object[] { (char) r.Value })! }).ToArray() };
 }
 
 static async Task<object> DiagnosticsOp(LuaParseOptions opts, string code)
