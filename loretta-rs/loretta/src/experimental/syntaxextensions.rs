@@ -10,7 +10,5 @@
 //   public static SyntaxNode FoldConstants(this SyntaxNode node, ConstantFoldingOptions options) =>
 //       new ConstantFolder(options).Visit(node);
 
-use crate::experimental::constantfoldingoptions::ConstantFoldingOptions;
-
 /// Extension methods for syntax nodes (experimental).
 pub struct SyntaxExtensions;
