@@ -35,6 +35,9 @@ static S_SHOULD_RUN: AtomicBool = AtomicBool::new(false);
 /// Whether the REPL prints the current directory at each prompt (C# Program.s_printCurrentDir).
 static S_PRINT_CURRENT_DIR: AtomicBool = AtomicBool::new(false);
 
+/// Whether the REPL prefixes output with the timing logger (C# Program.s_printOutputPrefixed).
+static S_PRINT_OUTPUT_PREFIXED: AtomicBool = AtomicBool::new(false);
+
 fn main() {
     // Temporary REPL stub mirroring Main's state initialization until the
     // Main row (410) lands (C# Main sets s_shouldRun = true first).
@@ -45,5 +48,7 @@ fn main() {
             S_LOGGER.write(&dir.display().to_string());
         }
     }
+    // Referenced until OutputWriter (row 409) lands.
+    let _ = S_PRINT_OUTPUT_PREFIXED.load(Ordering::Relaxed);
     S_LOGGER.write_line("loretta-cli: pending port — see loretta-rs/PROGRESS.md");
 }
