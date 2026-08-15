@@ -2,231 +2,288 @@
   "results": [
     {
       "code": 1,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 3,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 4,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 5,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 6,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 7,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 8,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 9,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 10,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 11,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 12,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 13,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 14,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 15,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 16,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 17,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 18,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 19,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 20,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 21,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 22,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": "Lua considers \u0027\\n\\r\u0027 a single line break so error reporting between the editor and Lua may differ; use \\n, \\r or \\r\\n instead"
     },
     {
       "code": 23,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 24,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 25,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 26,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 27,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 28,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 30,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 31,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 32,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 33,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 34,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 35,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 36,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1000,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1001,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1002,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1003,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1004,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1005,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1006,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1007,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1008,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1009,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": "If expressions require a condition but one was not found, did you perhaps forget to specify one?"
     },
     {
       "code": 1010,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1011,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1012,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1013,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1014,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": "Using nilable types directly in intersections is not allowed. The nilable types must be in parenthesis to be used in intersections"
     },
     {
       "code": 1015,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": "Mixing union and intersection types is not allowed. The unions must be inside parenthesis to be used in intersections"
     },
     {
       "code": 1016,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1017,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1018,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 1019,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": 2000,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": -2,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     },
     {
       "code": -1,
-      "category": "Compiler"
+      "category": "Compiler",
+      "description": ""
     }
   ]
 }

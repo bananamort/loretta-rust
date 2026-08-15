@@ -154,23 +154,26 @@ impl MessageProvider {
     }
 
     /// Gets the description for the given error code.
+    /// C# returns a LocalizableResourceString whose ToString() is "" when
+    /// the resx has no "<code>_Description" entry (verified via oracle).
     pub fn get_description(code: ErrorCode) -> String {
         match code {
             ErrorCode::ErrIfExpressionConditionExpected => {
-                LuaResources::ERR_IF_EXPRESSION_CONDITION_EXPECTED_DESCRIPTION
+                LuaResources::ERR_IF_EXPRESSION_CONDITION_EXPECTED_DESCRIPTION.to_string()
             }
             ErrorCode::ErrMixingNilableAndIntersectionNotAllowed => {
                 LuaResources::ERR_MIXING_NILABLE_AND_INTERSECTION_NOT_ALLOWED_DESCRIPTION
+                    .to_string()
             }
             ErrorCode::ErrMixingUnionsAndIntersectionsNotAllowed => {
                 LuaResources::ERR_MIXING_UNIONS_AND_INTERSECTIONS_NOT_ALLOWED_DESCRIPTION
+                    .to_string()
             }
             ErrorCode::WrnLineBreakMayAffectErrorReporting => {
-                LuaResources::WRN_LINE_BREAK_MAY_AFFECT_ERROR_REPORTING_DESCRIPTION
+                LuaResources::WRN_LINE_BREAK_MAY_AFFECT_ERROR_REPORTING_DESCRIPTION.to_string()
             }
-            _ => "",
+            _ => String::new(),
         }
-        .to_string()
     }
 
     /// Gets the title for the given error code.

@@ -141,7 +141,8 @@ static object MessageProviderOp()
     var messageProviderType = assembly.GetType("Loretta.CodeAnalysis.Lua.MessageProvider")!;
     var instance = messageProviderType.GetField("Instance", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!.GetValue(null)!;
     var getCategory = messageProviderType.GetMethod("GetCategory", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)!;
-    return new { results = Enum.GetValues(errorCodeType).Cast<object>().Select(code => new { code = (int) code, category = (string) getCategory.Invoke(instance, new object[] { (int) code })! }).ToArray() };
+    var getDescription = messageProviderType.GetMethod("GetDescription", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)!;
+    return new { results = Enum.GetValues(errorCodeType).Cast<object>().Select(code => new { code = (int) code, category = (string) getCategory.Invoke(instance, new object[] { (int) code })!, description = getDescription.Invoke(instance, new object[] { (int) code })!.ToString() }).ToArray() };
 }
 
 static async Task<object> DiagnosticsOp(LuaParseOptions opts, string code)
