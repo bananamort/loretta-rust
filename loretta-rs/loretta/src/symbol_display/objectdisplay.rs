@@ -204,7 +204,9 @@ impl ObjectDisplay {
             return (start, end);
         }
 
-        let mut equals = "=".repeat(62);
+        // C# seeds 61 '='s — the fast path can handle up to 60, so the slow
+        // path starts one above it (ObjectDisplay.cs:346).
+        let mut equals = "=".repeat(61);
         loop {
             let start_delimiter = format!("[{equals}[");
             let end_delimiter = format!("]{equals}]");
