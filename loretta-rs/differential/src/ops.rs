@@ -82,6 +82,10 @@ pub fn options(preset: &str) -> Result<Json, String> {
                     == parse_opts.with_features(vec![("foo".to_string(), "bar".to_string())]),
             ),
         ),
+        (
+            "syntaxEqualsAll".into(),
+            Json::Bool(opts == LuaSyntaxOptions::ALL),
+        ),
     ]))
 }
 
