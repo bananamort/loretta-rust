@@ -95,6 +95,11 @@ enum Setting {
     PrintOutputPrefixed,
 }
 
+/// C# Program.LuaSyntaxOptionsPreset (private enum, Program.cs:124-137).
+enum LuaSyntaxOptionsPreset {
+    Lua51,
+}
+
 /// C# Program.ListSymbols — lists the current directory's entries
 /// (Program.cs:112-118). The .NET enumeration order is unspecified, so the
 /// port sorts each group for a deterministic oracle.
@@ -192,6 +197,8 @@ fn main() {
     let _ = list_symbols as fn();
     // Constructed until the static ctor (row 456) wires the set command.
     let _ = (Setting::PrintCurrentDir, Setting::PrintOutputPrefixed);
+    // Constructed until PresetEnumToPresetOptions (row 430) uses it.
+    let _ = LuaSyntaxOptionsPreset::Lua51;
     writeln!(
         output_writer(),
         "loretta-cli: pending port — see loretta-rs/PROGRESS.md"
