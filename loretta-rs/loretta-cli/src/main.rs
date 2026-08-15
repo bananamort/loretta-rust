@@ -145,6 +145,26 @@ fn quit() {
     S_SHOULD_RUN.store(false, Ordering::Relaxed);
 }
 
+/// C# Program.PresetEnumToPresetOptions (Program.cs:139-157).
+fn preset_enum_to_preset_options(
+    preset: LuaSyntaxOptionsPreset,
+) -> loretta::luaparseoptions::LuaParseOptions {
+    use loretta::luasyntaxoptions::LuaSyntaxOptions;
+    loretta::luaparseoptions::LuaParseOptions::new(match preset {
+        LuaSyntaxOptionsPreset::Lua51 => LuaSyntaxOptions::LUA51,
+        LuaSyntaxOptionsPreset::Lua52 => LuaSyntaxOptions::LUA52,
+        LuaSyntaxOptionsPreset::Lua53 => LuaSyntaxOptions::LUA53,
+        LuaSyntaxOptionsPreset::Lua54 => LuaSyntaxOptions::LUA54,
+        LuaSyntaxOptionsPreset::LuaJit20 => LuaSyntaxOptions::LUAJIT20,
+        LuaSyntaxOptionsPreset::LuaJit21 => LuaSyntaxOptions::LUAJIT21,
+        LuaSyntaxOptionsPreset::GMod => LuaSyntaxOptions::GMOD,
+        LuaSyntaxOptionsPreset::Luau => LuaSyntaxOptions::LUAU,
+        LuaSyntaxOptionsPreset::FiveM => LuaSyntaxOptions::FIVEM,
+        LuaSyntaxOptionsPreset::All => LuaSyntaxOptions::ALL,
+        LuaSyntaxOptionsPreset::Alli => LuaSyntaxOptions::ALL_WITH_INTEGERS,
+    })
+}
+
 /// C# Program.ChangeDirectory — changes the current directory (Program.cs:99-110).
 fn change_directory(relative_path: &str) {
     let result =
@@ -222,6 +242,9 @@ fn main() {
         LuaSyntaxOptionsPreset::All,
         LuaSyntaxOptionsPreset::Alli,
     );
+    // Referenced until Lex (row 431) uses it.
+    let _ = preset_enum_to_preset_options
+        as fn(LuaSyntaxOptionsPreset) -> loretta::luaparseoptions::LuaParseOptions;
     writeln!(
         output_writer(),
         "loretta-cli: pending port — see loretta-rs/PROGRESS.md"
