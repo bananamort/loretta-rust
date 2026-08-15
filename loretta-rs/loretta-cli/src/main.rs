@@ -90,6 +90,31 @@ enum Setting {
     PrintOutputPrefixed,
 }
 
+/// C# Program.Set(Setting, string) — applies a REPL setting.
+fn set_setting(setting: Setting, value: &str) -> Result<(), String> {
+    match setting {
+        Setting::PrintCurrentDir => {
+            S_PRINT_CURRENT_DIR.store(parse_bool(value)?, Ordering::Relaxed);
+        }
+        Setting::PrintOutputPrefixed => {
+            S_PRINT_OUTPUT_PREFIXED.store(parse_bool(value)?, Ordering::Relaxed);
+        }
+    }
+    Ok(())
+}
+
+/// C# Program.Set's local ParseBool (Program.cs:81-90).
+fn parse_bool(input: &str) -> Result<bool, String> {
+    match input.to_lowercase().as_str() {
+        "yes" | "true" | "on" => Ok(true),
+        "no" | "false" | "off" => Ok(false),
+        _ => Err(
+            "Invalid boolean value '{0}' accepted values are: yes, true, on, no, false or off"
+                .to_string(),
+        ),
+    }
+}
+
 /// C# Program.OutputWriter:
 /// `s_printOutputPrefixed ? new ConsoleTimingLoggerTextWriter(s_logger) : Console.Out`.
 fn output_writer() -> Box<dyn Write> {
@@ -112,9 +137,10 @@ fn main() {
     }
     // Referenced until the static ctor (row 456) builds it and Main (410) invokes it.
     let _ = S_ROOT_COMMAND.get();
-    // Referenced until Set (row 414) uses it.
-    let _ = Setting::PrintCurrentDir;
-    let _ = Setting::PrintOutputPrefixed;
+    // Referenced until the static ctor (row 456) wires it into the command table.
+    let _ = set_setting as fn(Setting, &str) -> Result<(), String>;
+    // Constructed until the static ctor (row 456) wires the set command.
+    let _ = (Setting::PrintCurrentDir, Setting::PrintOutputPrefixed);
     writeln!(
         output_writer(),
         "loretta-cli: pending port — see loretta-rs/PROGRESS.md"
