@@ -3,3 +3,4 @@
 pub mod errorcode;
 pub mod luadiagnostic;
 pub mod luadiagnosticformatter;
+pub mod messageprovider;
