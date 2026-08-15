@@ -423,7 +423,7 @@ Generated from `loretta-rs/nodes.json` (`744` distinct symbols, `803` MemberDecl
 | 408 | `Loretta.CLI.Program.s_rootCommand:Field@Program.cs:20` | `Loretta.CLI.Program.s_rootCommand` | `src/Compilers/Lua/CommandLine/Program.cs:20` | `loretta-cli/src/main.rs` | done | — |
 | 409 | `Loretta.CLI.Program.OutputWriter:Property@Program.cs:22` | `Loretta.CLI.Program.OutputWriter` | `src/Compilers/Lua/CommandLine/Program.cs:22` | `loretta-cli/src/main.rs` | done | — |
 | 410 | `Loretta.CLI.Program.Main():Method@Program.cs:25` | `Loretta.CLI.Program.Main()` | `src/Compilers/Lua/CommandLine/Program.cs:25` | `loretta-cli/src/main.rs` | pending | — |
-| 411 | `Loretta.CLI.Program.Setting:NamedType@Program.cs:66` | `Loretta.CLI.Program.Setting` | `src/Compilers/Lua/CommandLine/Program.cs:66` | `loretta-cli/src/main.rs` | pending | — |
+| 411 | `Loretta.CLI.Program.Setting:NamedType@Program.cs:66` | `Loretta.CLI.Program.Setting` | `src/Compilers/Lua/CommandLine/Program.cs:66` | `loretta-cli/src/main.rs` | done | — |
 | 412 | `Loretta.CLI.Program.Setting.PrintCurrentDir:Field@Program.cs:68` | `Loretta.CLI.Program.Setting.PrintCurrentDir` | `src/Compilers/Lua/CommandLine/Program.cs:68` | `loretta-cli/src/main.rs` | done | — |
 | 413 | `Loretta.CLI.Program.Setting.PrintOutputPrefixed:Field@Program.cs:69` | `Loretta.CLI.Program.Setting.PrintOutputPrefixed` | `src/Compilers/Lua/CommandLine/Program.cs:69` | `loretta-cli/src/main.rs` | done | — |
 | 414 | `Loretta.CLI.Program.Set(Loretta.CLI.Program.Setting, string):Method@Program.cs:72` | `Loretta.CLI.Program.Set(Loretta.CLI.Program.Setting, string)` | `src/Compilers/Lua/CommandLine/Program.cs:72` | `loretta-cli/src/main.rs` | done | — |

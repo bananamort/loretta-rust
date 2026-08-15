@@ -134,7 +134,7 @@ fn file_size_format(bytes: u64) -> String {
     format!("{value:.2} {}", UNITS[unit])
 }
 
-/// C# Program.Setting (private enum).
+/// C# Program.Setting (private enum, Program.cs:66-70). Applied by Set (row 414).
 #[derive(Copy, Clone)]
 enum Setting {
     PrintCurrentDir,
