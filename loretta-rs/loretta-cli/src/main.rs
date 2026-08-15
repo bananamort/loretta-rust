@@ -102,6 +102,12 @@ enum Setting {
     PrintOutputPrefixed,
 }
 
+/// C# Program.SlotAllocator (private enum, Program.cs:302-306).
+#[derive(Copy, Clone)]
+enum SlotAllocator {
+    Sequential,
+}
+
 /// C# Program.NamingStrategy (private enum, Program.cs:284-289). Maps to
 /// Minifying.NamingStrategies via GetNamingStrategy (row 439).
 #[derive(Copy, Clone)]
@@ -763,6 +769,8 @@ fn main() {
     // Referenced until Lex (row 431) uses it.
     let _ = preset_enum_to_preset_options
         as fn(LuaSyntaxOptionsPreset) -> loretta::luaparseoptions::LuaParseOptions;
+    // Constructed until GetSlotAllocator (row 443) uses it.
+    let _ = SlotAllocator::Sequential;
     // Constructed until GetNamingStrategy (row 439) uses it.
     let _ = (
         NamingStrategy::Alphabetical,
