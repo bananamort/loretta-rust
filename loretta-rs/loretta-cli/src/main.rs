@@ -783,6 +783,13 @@ fn run_multi_lua(args: &[&str]) {
     }
 }
 
+/// C# Program.Clear (Program.cs:437) — clears the console (ANSI escape
+/// sequence; Console.Clear is platform-specific).
+fn clear() {
+    print!("\x1b[2J\x1b[H");
+    io::stdout().flush().expect("flush stdout");
+}
+
 /// C# Program.ChangeDirectory — changes the current directory (Program.cs:99-110).
 fn change_directory(relative_path: &str) {
     let result =
@@ -879,6 +886,7 @@ fn main() {
     let _ = run_multi_lua as fn(&[&str]);
     let _ = multi_lua as fn(&str);
     let _ = multi_lua_expression as fn(&str);
+    let _ = clear as fn();
     writeln!(
         output_writer(),
         "loretta-cli: pending port — see loretta-rs/PROGRESS.md"
