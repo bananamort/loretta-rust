@@ -95,6 +95,89 @@ pub fn parse(code: &str) -> Result<Json, String> {
     ]))
 }
 
+/// MessageProvider oracle: the category of every ErrorCode in declaration
+/// order, mirroring the C# reference's MessageProviderOp.
+pub fn messageprovider() -> Result<Json, String> {
+    use loretta::errors::errorcode::ErrorCode;
+    use loretta::errors::messageprovider::MessageProvider;
+
+    let mut codes: Vec<ErrorCode> = vec![
+        ErrorCode::Void,
+        ErrorCode::Unknown,
+        ErrorCode::ErrInvalidStringEscape,
+        ErrorCode::ErrUnfinishedString,
+        ErrorCode::ErrInvalidNumber,
+        ErrorCode::ErrNumericLiteralTooLarge,
+        ErrorCode::ErrUnfinishedLongComment,
+        ErrorCode::ErrShebangNotSupportedInLuaVersion,
+        ErrorCode::ErrBinaryNumericLiteralNotSupportedInVersion,
+        ErrorCode::ErrOctalNumericLiteralNotSupportedInVersion,
+        ErrorCode::ErrHexFloatLiteralNotSupportedInVersion,
+        ErrorCode::ErrUnderscoreInNumericLiteralNotSupportedInVersion,
+        ErrorCode::ErrCCommentsNotSupportedInVersion,
+        ErrorCode::ErrLuajitIdentifierRulesNotSupportedInVersion,
+        ErrorCode::ErrBadCharacter,
+        ErrorCode::ErrUnexpectedToken,
+        ErrorCode::ErrHexStringEscapesNotSupportedInVersion,
+        ErrorCode::ErrAmbiguousFunctionCallOrNewStatement,
+        ErrorCode::ErrNonFunctionCallBeingUsedAsStatement,
+        ErrorCode::ErrCannotBeAssignedTo,
+        ErrorCode::ErrDoubleOverflow,
+        ErrorCode::ErrBitwiseOperatorsNotSupportedInVersion,
+        ErrorCode::WrnLineBreakMayAffectErrorReporting,
+        ErrorCode::ErrWhitespaceEscapeNotSupportedInVersion,
+        ErrorCode::ErrUnicodeEscapeMissingOpenBrace,
+        ErrorCode::ErrUnicodeEscapeMissingCloseBrace,
+        ErrorCode::ErrEscapeTooLarge,
+        ErrorCode::ErrHexDigitExpected,
+        ErrorCode::ErrUnicodeEscapesNotSupportedLuaInVersion,
+        ErrorCode::ErrNumberSuffixNotSupportedInVersion,
+        ErrorCode::ErrLuajitSuffixInFloat,
+        ErrorCode::ErrLua51NestingInLongString,
+        ErrorCode::ErrInterpolatedStringMustStartWithBacktickCharacter,
+        ErrorCode::ErrUnclosedExpressionHole,
+        ErrorCode::ErrDoubleBraceInInterpolation,
+        ErrorCode::ErrInterpolatedStringsNotSupportedInVersion,
+        ErrorCode::ErrIdentifierExpectedKw,
+        ErrorCode::ErrIdentifierExpected,
+        ErrorCode::ErrSemicolonExpected,
+        ErrorCode::ErrCloseParenExpected,
+        ErrorCode::ErrLbraceExpected,
+        ErrorCode::ErrRbraceExpected,
+        ErrorCode::ErrSyntaxError,
+        ErrorCode::ErrInsufficientStack,
+        ErrorCode::ErrIfExpressionsNotSupportedInLuaVersion,
+        ErrorCode::ErrIfExpressionConditionExpected,
+        ErrorCode::ErrExpressionExpected,
+        ErrorCode::ErrInvalidExpressionPart,
+        ErrorCode::ErrInvalidStatement,
+        ErrorCode::ErrCompoundAssignmentNotSupportedInLuaVersion,
+        ErrorCode::ErrMixingNilableAndIntersectionNotAllowed,
+        ErrorCode::ErrMixingUnionsAndIntersectionsNotAllowed,
+        ErrorCode::ErrTypedLuaNotSupportedInLuaVersion,
+        ErrorCode::ErrOnlyOneTableTypeIndexerIsAllowed,
+        ErrorCode::ErrNormalTypeParametersComeBeforePacks,
+        ErrorCode::ErrGotoNotSupportedInLuaVersion,
+        ErrorCode::ErrBadDocumentationMode,
+    ];
+    // .NET Enum.GetValues returns the values in increasing order of the
+    // underlying value interpreted as unsigned (observed: 1..2000, -2, -1).
+    codes.sort_by_key(|code| *code as u32);
+    let results: Vec<Json> = codes
+        .iter()
+        .map(|code| {
+            Json::Object(vec![
+                ("code".into(), Json::Number(*code as i64)),
+                (
+                    "category".into(),
+                    Json::String(MessageProvider::get_category(*code)),
+                ),
+            ])
+        })
+        .collect();
+    Ok(Json::Object(vec![("results".into(), Json::Array(results))]))
+}
+
 /// CharUtils oracle: for every char of the input, the ported CharUtils result
 /// per member. Mirrors the C# reference's CharUtilsOp (real Loretta via
 /// reflection); members land one node at a time.
