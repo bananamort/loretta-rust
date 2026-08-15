@@ -28,7 +28,17 @@ impl StringUtils {
     }
 
     /// Trims whitespace from both ends of the string.
+    /// C# CharUtils.IsWhitespace is only ' ' and '\t'-'\r', so str::trim() is not equivalent.
     pub fn trim(value: &str) -> &str {
-        value.trim()
+        let bytes = value.as_bytes();
+        let mut start = 0;
+        while start < bytes.len() && CharUtils::is_whitespace(bytes[start] as char) {
+            start += 1;
+        }
+        let mut end = bytes.len();
+        while end > start && CharUtils::is_whitespace(bytes[end - 1] as char) {
+            end -= 1;
+        }
+        &value[start..end]
     }
 }
