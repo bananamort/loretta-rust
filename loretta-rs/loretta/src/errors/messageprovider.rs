@@ -156,7 +156,7 @@ impl MessageProvider {
             ErrorCode::WrnLineBreakMayAffectErrorReporting => {
                 LuaResources::WRN_LINE_BREAK_MAY_AFFECT_ERROR_REPORTING
             }
-            _ => "Unknown error",
+            _ => "",
         }
         .to_string()
     }

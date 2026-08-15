@@ -180,6 +180,10 @@ pub fn messageprovider() -> Result<Json, String> {
             if let Some(message) = MessageProvider::load_message(*code) {
                 fields.push(("message".into(), Json::String(message)));
             }
+            fields.push((
+                "messageFormat".into(),
+                Json::String(MessageProvider::get_message_format(*code)),
+            ));
             Json::Object(fields)
         })
         .collect();
