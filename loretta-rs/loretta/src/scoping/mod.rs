@@ -2,3 +2,4 @@
 
 pub mod igotolabel;
 pub mod scopekind;
+pub mod variablekind;
