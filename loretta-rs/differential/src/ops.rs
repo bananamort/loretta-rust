@@ -35,11 +35,26 @@ pub fn compute_diagnostics(code: &str) -> Result<(Vec<Diagnostic>, bool), String
 }
 
 pub fn options(preset: &str) -> Result<Json, String> {
+    use loretta::luaparseoptions::LuaParseOptions;
+
     let opts = preset_options(preset);
-    Ok(Json::Object(vec![(
-        "preset".into(),
-        Json::String(opts.to_string()),
-    )]))
+    let parse_opts = LuaParseOptions::new(opts.clone());
+    let features: Vec<Json> = parse_opts
+        .features
+        .iter()
+        .map(|(k, v)| Json::String(format!("{k}={v}")))
+        .collect();
+    let with_features: Vec<Json> = parse_opts
+        .with_features(vec![("foo".to_string(), "bar".to_string())])
+        .features
+        .iter()
+        .map(|(k, v)| Json::String(format!("{k}={v}")))
+        .collect();
+    Ok(Json::Object(vec![
+        ("preset".into(), Json::String(opts.to_string())),
+        ("features".into(), Json::Array(features)),
+        ("withFeatures".into(), Json::Array(with_features)),
+    ]))
 }
 
 pub fn diagnostics(code: &str) -> Result<Json, String> {

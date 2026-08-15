@@ -1,0 +1,7 @@
+{
+  "preset": "All (without integers)",
+  "features": [],
+  "withFeatures": [
+    "foo=bar"
+  ]
+}

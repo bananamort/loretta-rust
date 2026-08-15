@@ -1,0 +1,7 @@
+{
+  "preset": "FiveM",
+  "features": [],
+  "withFeatures": [
+    "foo=bar"
+  ]
+}

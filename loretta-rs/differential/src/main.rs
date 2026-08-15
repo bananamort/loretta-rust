@@ -82,6 +82,7 @@ fn main() {
                     vec!["diagnostics", "parse"]
                 } else {
                     vec![
+                        "options",
                         "diagnostics",
                         "lex",
                         "parse",
@@ -147,7 +148,8 @@ fn file_stem(path: &str) -> String {
 /// pending coverage until the per-preset version-gating diagnostics land;
 /// every other difference is a hard failure (drift = bug in Rust).
 fn run_check(expected_dir: &str, tmp_dir: &str) {
-    const OPS: [&str; 7] = [
+    const OPS: [&str; 8] = [
+        "options",
         "diagnostics",
         "lex",
         "parse",
