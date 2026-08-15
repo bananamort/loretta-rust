@@ -24,6 +24,9 @@ impl ObjectDisplay {
             Some(PrimitiveValue::Double(d)) => Some(Self::format_literal_f64(d, options)),
             Some(PrimitiveValue::Long(l)) => Some(Self::format_literal_i64(l, options)),
             Some(PrimitiveValue::Ulong(u)) => Some(Self::format_literal_u64(u, options)),
+            Some(PrimitiveValue::Complex(imaginary)) => {
+                Some(Self::format_literal_complex(imaginary, options))
+            }
         }
     }
 
@@ -78,46 +81,31 @@ impl ObjectDisplay {
             | '*' | '-' | '=' | '+' | '\u{00A7}' | '(' | ')' | '[' | ']' | '{' | '}' | '|'
             | '/' | ';' | ':' | '<' | '>' | ',' | '.' | '?' => false,
             _ => {
-                // Unicode category flagset check — verbatim from C# ObjectDisplay.NeedsEscaping.
-                // ClosePunctuation=0, ConnectorPunctuation=1, CurrencySymbol=2,
-                // DashPunctuation=3, DecimalDigitNumber=4, FinalQuotePunctuation=5,
-                // InitialQuotePunctuation=6, LetterNumber=7, LowercaseLetter=8,
-                // MathSymbol=9, OpenPunctuation=10, OtherLetter=11, OtherNumber=12,
-                // OtherPunctuation=13, TitlecaseLetter=14, UppercaseLetter=15
-                const CATEGORY_FLAG_SET: u32 = (1u32 << 0)   // ClosePunctuation
-                    | (1u32 << 1)   // ConnectorPunctuation
-                    | (1u32 << 2)   // CurrencySymbol
-                    | (1u32 << 3)   // DashPunctuation
-                    | (1u32 << 4)   // DecimalDigitNumber
-                    | (1u32 << 5)   // FinalQuotePunctuation
-                    | (1u32 << 6)   // InitialQuotePunctuation
-                    | (1u32 << 7)   // LetterNumber
-                    | (1u32 << 8)   // LowercaseLetter
-                    | (1u32 << 9)   // MathSymbol
-                    | (1u32 << 10)  // OpenPunctuation
-                    | (1u32 << 11)  // OtherLetter
-                    | (1u32 << 12)  // OtherNumber
-                    | (1u32 << 13)  // OtherPunctuation
-                    | (1u32 << 14)  // TitlecaseLetter
-                    | (1u32 << 15); // UppercaseLetter
-                let category = Self::get_unicode_category(ch);
+                // C# NeedsEscaping flagset over .NET UnicodeCategory values
+                // (ClosePunctuation=21, ConnectorPunctuation=18, CurrencySymbol=26,
+                // DashPunctuation=19, DecimalDigitNumber=8, FinalQuotePunctuation=23,
+                // InitialQuotePunctuation=22, LetterNumber=9, LowercaseLetter=1,
+                // MathSymbol=25, OpenPunctuation=20, OtherLetter=4, OtherNumber=10,
+                // OtherPunctuation=24, TitlecaseLetter=2, UppercaseLetter=0).
+                const CATEGORY_FLAG_SET: u32 = (1u32 << 21)
+                    | (1u32 << 18)
+                    | (1u32 << 26)
+                    | (1u32 << 19)
+                    | (1u32 << 8)
+                    | (1u32 << 23)
+                    | (1u32 << 22)
+                    | (1u32 << 9)
+                    | (1u32 << 1)
+                    | (1u32 << 25)
+                    | (1u32 << 20)
+                    | (1u32 << 4)
+                    | (1u32 << 10)
+                    | (1u32 << 24)
+                    | (1u32 << 2)
+                    | (1u32 << 0);
+                let category = crate::symbol_display::unicode_categories::category_of(ch as u32);
                 !CharUtils::is_category_in_set(CATEGORY_FLAG_SET, category)
             }
-        }
-    }
-
-    /// Maps a char to its general Unicode category (simplified from System.Globalization).
-    fn get_unicode_category(ch: char) -> u8 {
-        if ch.is_ascii_digit() {
-            4 // DecimalDigitNumber
-        } else if ch.is_ascii_lowercase() {
-            8 // LowercaseLetter
-        } else if ch.is_ascii_uppercase() {
-            15 // UppercaseLetter
-        } else if ch.is_ascii_punctuation() || ch.is_ascii_whitespace() {
-            13 // OtherPunctuation
-        } else {
-            11 // OtherLetter (fallback for non-ASCII)
         }
     }
 
@@ -253,6 +241,13 @@ impl ObjectDisplay {
             format!("{value}ULL")
         }
     }
+
+    /// Returns a Lua number literal with the given imaginary part and the `i` suffix.
+    /// C# `FormatLiteral(Complex value, ...)` = `FormatLiteral(value.Imaginary, ...) + "i"`
+    /// — only the imaginary part participates, so the port carries it directly.
+    pub fn format_literal_complex(imaginary: f64, options: ObjectDisplayOptions) -> String {
+        format!("{}i", Self::format_literal_f64(imaginary, options))
+    }
 }
 
 /// Represents a primitive value for FormatPrimitive.
@@ -262,4 +257,6 @@ pub enum PrimitiveValue {
     Double(f64),
     Long(i64),
     Ulong(u64),
+    /// C# System.Numerics.Complex — only the imaginary part is formatted.
+    Complex(f64),
 }

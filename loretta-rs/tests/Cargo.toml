@@ -1,0 +1,18 @@
+[package]
+name = "loretta-tests"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+description = "Ported Loretta unit tests (Compilers/Lua/Test/Portable b767b4e) — Oracle 1 case tables"
+
+[dependencies]
+loretta = { path = "../loretta" }
+
+[[test]]
+name = "stringutils_tests"
+path = "stringutils_tests.rs"
+
+[[test]]
+name = "objectdisplay_tests"
+path = "objectdisplay_tests.rs"

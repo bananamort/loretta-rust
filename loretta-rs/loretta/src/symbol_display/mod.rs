@@ -2,3 +2,4 @@
 
 pub mod objectdisplay;
 pub mod objectdisplayoptions;
+pub mod unicode_categories;
