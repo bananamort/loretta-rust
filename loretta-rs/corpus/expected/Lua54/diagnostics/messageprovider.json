@@ -3,277 +3,332 @@
     {
       "code": 1,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Invalid string escape"
     },
     {
       "code": 3,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Unfinished string"
     },
     {
       "code": 4,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Invalid number"
     },
     {
       "code": 5,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Numeric literal is too large"
     },
     {
       "code": 6,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Unfinished multi-line comment"
     },
     {
       "code": 7,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Shebangs are not supported in this lua version"
     },
     {
       "code": 8,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Binary numeric literals are not supported in this lua version"
     },
     {
       "code": 9,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Octal numeric literals are not supported in this lua version"
     },
     {
       "code": 10,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Hexadecimal floating point numeric literals are not supported in this lua version"
     },
     {
       "code": 11,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Underscores in numeric literals are not supported in this lua version"
     },
     {
       "code": 12,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "C comments are not supported in this lua version"
     },
     {
       "code": 13,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Identifiers containing characters with value above 0x7F are not supported in this lua version"
     },
     {
       "code": 14,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Bad character input: \u0027{0}\u0027"
     },
     {
       "code": 15,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Unexpected token \u0027{0}\u0027"
     },
     {
       "code": 16,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Hexadecimal string escapes are not supported in this lua version"
     },
     {
       "code": 17,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Syntax ambiguous between a function call and a new statement"
     },
     {
       "code": 18,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Function calls are the only expressions that can be used as statements"
     },
     {
       "code": 19,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "This expression cannot be assigned to"
     },
     {
       "code": 20,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Constant represents a value either too large or too small for a double precision floating-point number"
     },
     {
       "code": 21,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Bitwise operators are not supported in this lua version"
     },
     {
       "code": 22,
       "category": "Compiler",
-      "description": "Lua considers \u0027\\n\\r\u0027 a single line break so error reporting between the editor and Lua may differ; use \\n, \\r or \\r\\n instead"
+      "description": "Lua considers \u0027\\n\\r\u0027 a single line break so error reporting between the editor and Lua may differ; use \\n, \\r or \\r\\n instead",
+      "message": "This line break (\\n\\r) may affect error reporting between the editor and lua"
     },
     {
       "code": 23,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "The whitespace escape (\u0027\\z\u0027) is not supported in this lua version"
     },
     {
       "code": 24,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Unicode escape must have an opening brace (\u0027{\u0027) after \u0027\\u\u0027"
     },
     {
       "code": 25,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Unicode escape must have a closing brace (\u0027}\u0027) after the hexadecimal number"
     },
     {
       "code": 26,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Escape is too large, the limit is {0}"
     },
     {
       "code": 27,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Hexadecimal digit expected"
     },
     {
       "code": 28,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Unicode escapes are not supported in this lua version"
     },
     {
       "code": 30,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "LuaJIT number suffixes are not supported in this lua version"
     },
     {
       "code": 31,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "LuaJIT suffixes cannot be used in floating point numbers"
     },
     {
       "code": 32,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Nesting of [[...]] is deprecated"
     },
     {
       "code": 33,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Interpolated strings must start with the backtick character: \u0060"
     },
     {
       "code": 34,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Interpolated strings expressions must have a corresponding closing \u0027}\u0027 for every opening \u0027{\u0027"
     },
     {
       "code": 35,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Double braces have no meaning, did you mean to escape an opening brace with \u0027\\{\u0027?"
     },
     {
       "code": 36,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Interpolated strings are not supported in this lua version"
     },
     {
       "code": 1000,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Identifier expected; \u0027{1}\u0027 is a keyword"
     },
     {
       "code": 1001,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Identifier expected"
     },
     {
       "code": 1002,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "; expected"
     },
     {
       "code": 1003,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": ") expected"
     },
     {
       "code": 1004,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "{ expected"
     },
     {
       "code": 1005,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "} expected"
     },
     {
       "code": 1006,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Syntax error, \u0027{0}\u0027 expected"
     },
     {
       "code": 1007,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "An expression is too long or complex to compile"
     },
     {
       "code": 1008,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "If expressions are not supported in this lua version"
     },
     {
       "code": 1009,
       "category": "Compiler",
-      "description": "If expressions require a condition but one was not found, did you perhaps forget to specify one?"
+      "description": "If expressions require a condition but one was not found, did you perhaps forget to specify one?",
+      "message": "Condition not found for if expression"
     },
     {
       "code": 1010,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Expression expected"
     },
     {
       "code": 1011,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Invalid expression part \u0027{0}\u0027"
     },
     {
       "code": 1012,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Invalid statement"
     },
     {
       "code": 1013,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Compound assignments are not supported in this lua version"
     },
     {
       "code": 1014,
       "category": "Compiler",
-      "description": "Using nilable types directly in intersections is not allowed. The nilable types must be in parenthesis to be used in intersections"
+      "description": "Using nilable types directly in intersections is not allowed. The nilable types must be in parenthesis to be used in intersections",
+      "message": "Using nilable types directly in intersections is not allowed"
     },
     {
       "code": 1015,
       "category": "Compiler",
-      "description": "Mixing union and intersection types is not allowed. The unions must be inside parenthesis to be used in intersections"
+      "description": "Mixing union and intersection types is not allowed. The unions must be inside parenthesis to be used in intersections",
+      "message": "Mixing union and intersection types is not allowed"
     },
     {
       "code": 1016,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Typed lua is not supported in this lua version"
     },
     {
       "code": 1017,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Only one indexer is allowed per table type"
     },
     {
       "code": 1018,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Normal type parameters must come before pack type parameters"
     },
     {
       "code": 1019,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Goto statements and labels are not supported in this lua version"
     },
     {
       "code": 2000,
       "category": "Compiler",
-      "description": ""
+      "description": "",
+      "message": "Provided documentation mode is unsupported or invalid: \u0027{0}\u0027"
     },
     {
       "code": -2,
