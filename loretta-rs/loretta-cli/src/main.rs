@@ -84,6 +84,11 @@ pub struct Command {
 /// The root command table (C# Program.s_rootCommand, built in the static ctor).
 static S_ROOT_COMMAND: OnceLock<Vec<Command>> = OnceLock::new();
 
+/// C# Program.Setting (private enum).
+enum Setting {
+    PrintCurrentDir,
+}
+
 /// C# Program.OutputWriter:
 /// `s_printOutputPrefixed ? new ConsoleTimingLoggerTextWriter(s_logger) : Console.Out`.
 fn output_writer() -> Box<dyn Write> {
@@ -106,6 +111,8 @@ fn main() {
     }
     // Referenced until the static ctor (row 456) builds it and Main (410) invokes it.
     let _ = S_ROOT_COMMAND.get();
+    // Referenced until Set (row 414) uses it.
+    let _ = Setting::PrintCurrentDir;
     writeln!(
         output_writer(),
         "loretta-cli: pending port — see loretta-rs/PROGRESS.md"
