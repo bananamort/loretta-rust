@@ -102,6 +102,12 @@ enum Setting {
     PrintOutputPrefixed,
 }
 
+/// C# Program.NamingStrategy (private enum, Program.cs:284-289).
+#[derive(Copy, Clone)]
+enum NamingStrategy {
+    Alphabetical,
+}
+
 /// C# Program.LuaSyntaxOptionsPreset (private enum, Program.cs:124-137).
 /// Maps to LuaSyntaxOptions via PresetEnumToPresetOptions (row 430).
 #[derive(Copy, Clone)]
@@ -754,6 +760,8 @@ fn main() {
     // Referenced until Lex (row 431) uses it.
     let _ = preset_enum_to_preset_options
         as fn(LuaSyntaxOptionsPreset) -> loretta::luaparseoptions::LuaParseOptions;
+    // Constructed until GetNamingStrategy (row 439) uses it.
+    let _ = NamingStrategy::Alphabetical;
     // Referenced until the static ctor (row 456) wires the lex command.
     let _ = lex_command as fn(LuaSyntaxOptionsPreset, &str, bool);
     // Referenced until the static ctor (row 456) wires the mass-parse command.
