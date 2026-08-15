@@ -44,22 +44,6 @@ impl VariableInfo {
     }
 }
 
-impl VariableInfo {
-    /// Projects a real [`Variable`](crate::scoping::ivariable::Variable)
-    /// (scoping SCC) into the rewriter's view.
-    pub fn from_variable(variable: &crate::scoping::ivariable::Variable) -> Self {
-        use crate::scoping::ivariable::IVariable;
-        Self {
-            name: variable.name().to_string(),
-            kind: variable.kind(),
-            has_declaration: variable.declaration().is_some(),
-            read_locations: variable.read_locations().to_vec(),
-            write_locations: variable.write_locations().to_vec(),
-            declaration: variable.declaration(),
-        }
-    }
-}
-
 /// The `Script` surface RenamingRewriter needs (lands with the scoping SCC).
 /// C# `Script.GetVariable(node)` — the node is projected as the identifier
 /// name.
