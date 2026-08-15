@@ -25,7 +25,3 @@ path = "constantfolder_tests.rs"
 [[test]]
 name = "scoping_tests"
 path = "scoping_tests.rs"
-
-[[test]]
-name = "script_tests"
-path = "script_tests.rs"

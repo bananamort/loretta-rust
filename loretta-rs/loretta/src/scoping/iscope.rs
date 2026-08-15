@@ -63,9 +63,6 @@ fn is_at_least(actual: ScopeKind, wanted: ScopeKind) -> bool {
 pub struct Scope {
     kind: ScopeKind,
     node: Option<usize>,
-    /// The C# node-kind name of the scope's origin node (`node.Kind()`),
-    /// used by the scope op serialization.
-    node_kind: Option<String>,
     parent: Option<ScopeRef>,
     variables: HashMap<String, VariableRef>,
     declared_variables: Vec<VariableRef>,
@@ -84,7 +81,6 @@ impl Scope {
         Rc::new(RefCell::new(Self {
             kind,
             node,
-            node_kind: None,
             parent,
             variables: HashMap::new(),
             declared_variables: Vec::new(),
@@ -127,17 +123,6 @@ impl Scope {
     /// The parent scope (C# `Scope.Parent`).
     pub fn parent_ref(&self) -> Option<ScopeRef> {
         self.parent.clone()
-    }
-
-    /// The C# node-kind name of the scope's origin node (`node.Kind()`),
-    /// used by the scope op serialization.
-    pub fn node_kind(&self) -> Option<&str> {
-        self.node_kind.as_deref()
-    }
-
-    /// Sets the C# node-kind name of the scope's origin node.
-    pub fn set_node_kind(&mut self, node_kind: Option<String>) {
-        self.node_kind = node_kind;
     }
 
     /// C# `FileScope.ArgVariable`.
@@ -306,16 +291,14 @@ impl Scope {
         None
     }
 
-    /// C# `GetOrCreateLabel(string, GotoLabelStatementSyntax?)` — the C#
-    /// `LorettaDebug.AssertNotNull(labelSyntax)` would fire for goto-created
-    /// labels (the C# GotoWalker passes none); the release behavior is
-    /// authoritative.
+    /// C# `GetOrCreateLabel(string, GotoLabelStatementSyntax?)`.
     pub fn get_or_create_label(
         &mut self,
         name: String,
         label_syntax: Option<Label>,
     ) -> Rc<RefCell<GotoLabel>> {
         debug_assert!(!name.is_empty());
+        debug_assert!(label_syntax.is_some());
 
         match self.try_get_label(&name) {
             Some(label) => label,
