@@ -95,6 +95,35 @@ enum Setting {
     PrintOutputPrefixed,
 }
 
+/// C# Program.ListSymbols — lists the current directory's entries
+/// (Program.cs:112-118). The .NET enumeration order is unspecified, so the
+/// port sorts each group for a deterministic oracle.
+fn list_symbols() {
+    if let Ok(dir) = std::env::current_dir() {
+        if let Ok(entries) = std::fs::read_dir(dir) {
+            let mut dirs: Vec<String> = Vec::new();
+            let mut files: Vec<String> = Vec::new();
+            for entry in entries.flatten() {
+                let name = entry.file_name().to_string_lossy().into_owned();
+                let is_dir = entry.file_type().map(|t| t.is_dir()).unwrap_or(false);
+                if is_dir {
+                    dirs.push(name);
+                } else {
+                    files.push(name);
+                }
+            }
+            dirs.sort();
+            files.sort();
+            for d in dirs {
+                S_LOGGER.write_line(&format!("./{d}/"));
+            }
+            for f in files {
+                S_LOGGER.write_line(&format!("./{f}"));
+            }
+        }
+    }
+}
+
 /// C# Program.Quit — stops the REPL loop.
 fn quit() {
     S_SHOULD_RUN.store(false, Ordering::Relaxed);
@@ -160,6 +189,7 @@ fn main() {
     let _ = set_setting as fn(Setting, &str) -> Result<(), String>;
     let _ = quit as fn();
     let _ = change_directory as fn(&str);
+    let _ = list_symbols as fn();
     // Constructed until the static ctor (row 456) wires the set command.
     let _ = (Setting::PrintCurrentDir, Setting::PrintOutputPrefixed);
     writeln!(
