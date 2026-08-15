@@ -1,8 +1,13 @@
 {
-  "label": "loretta-rs/corpus/features/charutils.lua",
+  "label": "loretta-rs/corpus/features/stringutils.lua",
   "rootScope": {
     "kind": "Global",
-    "declaredVariables": [],
+    "declaredVariables": [
+      {
+        "name": "_hello",
+        "kind": "Global"
+      }
+    ],
     "containedScopes": [
       {
         "kind": "File",
@@ -17,27 +22,11 @@
             "kind": "Parameter"
           },
           {
-            "name": "_a",
+            "name": "valid",
             "kind": "Local"
           },
           {
-            "name": "a1",
-            "kind": "Local"
-          },
-          {
-            "name": "__test",
-            "kind": "Local"
-          },
-          {
-            "name": "a",
-            "kind": "Local"
-          },
-          {
-            "name": "b",
-            "kind": "Local"
-          },
-          {
-            "name": "c",
+            "name": "invalid",
             "kind": "Local"
           }
         ],

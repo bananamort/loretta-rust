@@ -1,0 +1,11 @@
+{
+  "original": "-- StringUtils: IsIdentifier, Trim\nlocal valid = _hello\nlocal invalid = \u00221bad\u0022\n",
+  "withoutExtraction": {
+    "foldedText": "-- StringUtils: IsIdentifier, Trim\nlocal valid = _hello\nlocal invalid = \u00221bad\u0022\n",
+    "same": true
+  },
+  "withExtraction": {
+    "foldedText": "-- StringUtils: IsIdentifier, Trim\nlocal valid = _hello\nlocal invalid = \u00221bad\u0022\n",
+    "same": true
+  }
+}

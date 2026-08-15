@@ -1,5 +1,5 @@
 {
-  "label": "loretta-rs/corpus/features/charutils.lua",
+  "label": "loretta-rs/corpus/features/symbol_display.lua",
   "rootScope": {
     "kind": "Global",
     "declaredVariables": [],
@@ -17,27 +17,7 @@
             "kind": "Parameter"
           },
           {
-            "name": "_a",
-            "kind": "Local"
-          },
-          {
-            "name": "a1",
-            "kind": "Local"
-          },
-          {
-            "name": "__test",
-            "kind": "Local"
-          },
-          {
-            "name": "a",
-            "kind": "Local"
-          },
-          {
-            "name": "b",
-            "kind": "Local"
-          },
-          {
-            "name": "c",
+            "name": "s",
             "kind": "Local"
           }
         ],

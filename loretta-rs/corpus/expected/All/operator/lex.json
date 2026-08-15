@@ -3,79 +3,7 @@
     {
       "kind": "LocalKeyword",
       "text": "local",
-      "fullText": "-- CharUtils: IsAlpha, IsBinary, IsDecimal, IsHexadecimal, IsWhitespace, IsValidFirst/TrailingIdentifierChar\nlocal ",
-      "isMissing": false
-    },
-    {
-      "kind": "IdentifierToken",
-      "text": "_a",
-      "fullText": "_a ",
-      "isMissing": false
-    },
-    {
-      "kind": "EqualsToken",
-      "text": "=",
-      "fullText": "= ",
-      "isMissing": false
-    },
-    {
-      "kind": "NumericLiteralToken",
-      "text": "1",
-      "fullText": "1\n",
-      "isMissing": false
-    },
-    {
-      "kind": "LocalKeyword",
-      "text": "local",
-      "fullText": "local ",
-      "isMissing": false
-    },
-    {
-      "kind": "IdentifierToken",
-      "text": "a1",
-      "fullText": "a1 ",
-      "isMissing": false
-    },
-    {
-      "kind": "EqualsToken",
-      "text": "=",
-      "fullText": "= ",
-      "isMissing": false
-    },
-    {
-      "kind": "NumericLiteralToken",
-      "text": "2",
-      "fullText": "2\n",
-      "isMissing": false
-    },
-    {
-      "kind": "LocalKeyword",
-      "text": "local",
-      "fullText": "local ",
-      "isMissing": false
-    },
-    {
-      "kind": "IdentifierToken",
-      "text": "__test",
-      "fullText": "__test ",
-      "isMissing": false
-    },
-    {
-      "kind": "EqualsToken",
-      "text": "=",
-      "fullText": "= ",
-      "isMissing": false
-    },
-    {
-      "kind": "NumericLiteralToken",
-      "text": "3",
-      "fullText": "3\n",
-      "isMissing": false
-    },
-    {
-      "kind": "LocalKeyword",
-      "text": "local",
-      "fullText": "local ",
+      "fullText": "-- Operations: BinaryOperatorKind, UnaryOperatorKind\nlocal ",
       "isMissing": false
     },
     {
@@ -92,8 +20,32 @@
     },
     {
       "kind": "NumericLiteralToken",
-      "text": "0b1010",
-      "fullText": "0b1010\n",
+      "text": "1",
+      "fullText": "1 ",
+      "isMissing": false
+    },
+    {
+      "kind": "PlusToken",
+      "text": "\u002B",
+      "fullText": "\u002B ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2 ",
+      "isMissing": false
+    },
+    {
+      "kind": "StarToken",
+      "text": "*",
+      "fullText": "* ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "3",
+      "fullText": "3\n",
       "isMissing": false
     },
     {
@@ -115,9 +67,15 @@
       "isMissing": false
     },
     {
-      "kind": "NumericLiteralToken",
-      "text": "0x1A",
-      "fullText": "0x1A\n",
+      "kind": "NotKeyword",
+      "text": "not",
+      "fullText": "not ",
+      "isMissing": false
+    },
+    {
+      "kind": "FalseKeyword",
+      "text": "false",
+      "fullText": "false\n",
       "isMissing": false
     },
     {
@@ -139,9 +97,63 @@
       "isMissing": false
     },
     {
+      "kind": "HashToken",
+      "text": "#",
+      "fullText": "# ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022hello\u0022",
+      "fullText": "\u0022hello\u0022\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "d",
+      "fullText": "d ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
       "kind": "NumericLiteralToken",
-      "text": "123",
-      "fullText": "123\n",
+      "text": "2",
+      "fullText": "2 ",
+      "isMissing": false
+    },
+    {
+      "kind": "HatToken",
+      "text": "^",
+      "fullText": "^ ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "3",
+      "fullText": "3 ",
+      "isMissing": false
+    },
+    {
+      "kind": "HatToken",
+      "text": "^",
+      "fullText": "^ ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2\n",
       "isMissing": false
     },
     {
@@ -151,6 +163,6 @@
       "isMissing": false
     }
   ],
-  "count": 25,
+  "count": 27,
   "roundTrip": true
 }

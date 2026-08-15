@@ -1,3 +1,3 @@
 {
-  "minified": "local a=\u0022hello\u0022"
+  "minified": "local a=1 local b=2 local c=3 local d=0b1010 local e=0x1A local f=123"
 }
