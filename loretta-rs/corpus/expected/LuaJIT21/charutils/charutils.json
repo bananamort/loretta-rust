@@ -7,7 +7,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "-",
@@ -16,7 +17,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -25,7 +27,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "C",
@@ -34,7 +37,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "h",
@@ -43,7 +47,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "a",
@@ -52,7 +57,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "r",
@@ -61,7 +67,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "U",
@@ -70,7 +77,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "t",
@@ -79,7 +87,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "i",
@@ -88,7 +97,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "l",
@@ -97,7 +107,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "s",
@@ -106,7 +117,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": ":",
@@ -115,7 +127,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -124,7 +137,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "I",
@@ -133,7 +147,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "s",
@@ -142,7 +157,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "A",
@@ -151,7 +167,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "l",
@@ -160,7 +177,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "p",
@@ -169,7 +187,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "h",
@@ -178,7 +197,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "a",
@@ -187,7 +207,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": ",",
@@ -196,7 +217,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -205,7 +227,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "I",
@@ -214,7 +237,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "s",
@@ -223,7 +247,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "B",
@@ -232,7 +257,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "i",
@@ -241,7 +267,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "n",
@@ -250,7 +277,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "a",
@@ -259,7 +287,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "r",
@@ -268,7 +297,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "y",
@@ -277,7 +307,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": ",",
@@ -286,7 +317,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -295,7 +327,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "I",
@@ -304,7 +337,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "s",
@@ -313,7 +347,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "D",
@@ -322,7 +357,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "e",
@@ -331,7 +367,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "c",
@@ -340,7 +377,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "i",
@@ -349,7 +387,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "m",
@@ -358,7 +397,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "a",
@@ -367,7 +407,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "l",
@@ -376,7 +417,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": ",",
@@ -385,7 +427,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -394,7 +437,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "I",
@@ -403,7 +447,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "s",
@@ -412,7 +457,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "H",
@@ -421,7 +467,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "e",
@@ -430,7 +477,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "x",
@@ -439,7 +487,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "a",
@@ -448,7 +497,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "d",
@@ -457,7 +507,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "e",
@@ -466,7 +517,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "c",
@@ -475,7 +527,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "i",
@@ -484,7 +537,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "m",
@@ -493,7 +547,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "a",
@@ -502,7 +557,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "l",
@@ -511,7 +567,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": ",",
@@ -520,7 +577,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -529,7 +587,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "I",
@@ -538,7 +597,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "s",
@@ -547,7 +607,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "W",
@@ -556,7 +617,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "h",
@@ -565,7 +627,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "i",
@@ -574,7 +637,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "t",
@@ -583,7 +647,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "e",
@@ -592,7 +657,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "s",
@@ -601,7 +667,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "p",
@@ -610,7 +677,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "a",
@@ -619,7 +687,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "c",
@@ -628,7 +697,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "e",
@@ -637,7 +707,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": ",",
@@ -646,7 +717,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -655,7 +727,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "I",
@@ -664,7 +737,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "s",
@@ -673,7 +747,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "V",
@@ -682,7 +757,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "a",
@@ -691,7 +767,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "l",
@@ -700,7 +777,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "i",
@@ -709,7 +787,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "d",
@@ -718,7 +797,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "F",
@@ -727,7 +807,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "i",
@@ -736,7 +817,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "r",
@@ -745,7 +827,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "s",
@@ -754,7 +837,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "t",
@@ -763,7 +847,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "/",
@@ -772,7 +857,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "T",
@@ -781,7 +867,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "r",
@@ -790,7 +877,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "a",
@@ -799,7 +887,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "i",
@@ -808,7 +897,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "l",
@@ -817,7 +907,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "i",
@@ -826,7 +917,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "n",
@@ -835,7 +927,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "g",
@@ -844,7 +937,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "I",
@@ -853,7 +947,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "d",
@@ -862,7 +957,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "e",
@@ -871,7 +967,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "n",
@@ -880,7 +977,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "t",
@@ -889,7 +987,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "i",
@@ -898,7 +997,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "f",
@@ -907,7 +1007,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "i",
@@ -916,7 +1017,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "e",
@@ -925,7 +1027,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "r",
@@ -934,7 +1037,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "C",
@@ -943,7 +1047,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "h",
@@ -952,7 +1057,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "a",
@@ -961,7 +1067,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "r",
@@ -970,7 +1077,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "\n",
@@ -979,7 +1087,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "l",
@@ -988,7 +1097,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "o",
@@ -997,7 +1107,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "c",
@@ -1006,7 +1117,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "a",
@@ -1015,7 +1127,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "l",
@@ -1024,7 +1137,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -1033,7 +1147,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "_",
@@ -1042,7 +1157,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "a",
@@ -1051,7 +1167,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": " ",
@@ -1060,7 +1177,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "=",
@@ -1069,7 +1187,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -1078,7 +1197,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "1",
@@ -1087,7 +1207,8 @@
       "isOctal": true,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "\n",
@@ -1096,7 +1217,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "l",
@@ -1105,7 +1227,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "o",
@@ -1114,7 +1237,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "c",
@@ -1123,7 +1247,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "a",
@@ -1132,7 +1257,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "l",
@@ -1141,7 +1267,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -1150,7 +1277,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "a",
@@ -1159,7 +1287,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "1",
@@ -1168,7 +1297,8 @@
       "isOctal": true,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": " ",
@@ -1177,7 +1307,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "=",
@@ -1186,7 +1317,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -1195,7 +1327,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "2",
@@ -1204,7 +1337,8 @@
       "isOctal": true,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "\n",
@@ -1213,7 +1347,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "l",
@@ -1222,7 +1357,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "o",
@@ -1231,7 +1367,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "c",
@@ -1240,7 +1377,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "a",
@@ -1249,7 +1387,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "l",
@@ -1258,7 +1397,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -1267,7 +1407,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "_",
@@ -1276,7 +1417,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "_",
@@ -1285,7 +1427,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "t",
@@ -1294,7 +1437,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "e",
@@ -1303,7 +1447,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "s",
@@ -1312,7 +1457,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "t",
@@ -1321,7 +1467,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -1330,7 +1477,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "=",
@@ -1339,7 +1487,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -1348,7 +1497,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "3",
@@ -1357,7 +1507,8 @@
       "isOctal": true,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "\n",
@@ -1366,7 +1517,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "l",
@@ -1375,7 +1527,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "o",
@@ -1384,7 +1537,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "c",
@@ -1393,7 +1547,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "a",
@@ -1402,7 +1557,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "l",
@@ -1411,7 +1567,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -1420,7 +1577,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "a",
@@ -1429,7 +1587,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": " ",
@@ -1438,7 +1597,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "=",
@@ -1447,7 +1607,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -1456,7 +1617,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "0",
@@ -1465,7 +1627,8 @@
       "isOctal": true,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "b",
@@ -1474,7 +1637,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "1",
@@ -1483,7 +1647,8 @@
       "isOctal": true,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "0",
@@ -1492,7 +1657,8 @@
       "isOctal": true,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "1",
@@ -1501,7 +1667,8 @@
       "isOctal": true,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "0",
@@ -1510,7 +1677,8 @@
       "isOctal": true,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "\n",
@@ -1519,7 +1687,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "l",
@@ -1528,7 +1697,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "o",
@@ -1537,7 +1707,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "c",
@@ -1546,7 +1717,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "a",
@@ -1555,7 +1727,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "l",
@@ -1564,7 +1737,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -1573,7 +1747,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "b",
@@ -1582,7 +1757,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": " ",
@@ -1591,7 +1767,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "=",
@@ -1600,7 +1777,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -1609,7 +1787,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "0",
@@ -1618,7 +1797,8 @@
       "isOctal": true,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "x",
@@ -1627,7 +1807,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "1",
@@ -1636,7 +1817,8 @@
       "isOctal": true,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "A",
@@ -1645,7 +1827,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "\n",
@@ -1654,7 +1837,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "l",
@@ -1663,7 +1847,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "o",
@@ -1672,7 +1857,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": "c",
@@ -1681,7 +1867,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "a",
@@ -1690,7 +1877,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "l",
@@ -1699,7 +1887,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -1708,7 +1897,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "c",
@@ -1717,7 +1907,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": true,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": " ",
@@ -1726,7 +1917,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "=",
@@ -1735,7 +1927,8 @@
       "isOctal": false,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": " ",
@@ -1744,7 +1937,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     },
     {
       "ch": "1",
@@ -1753,7 +1947,8 @@
       "isOctal": true,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "2",
@@ -1762,7 +1957,8 @@
       "isOctal": true,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "3",
@@ -1771,7 +1967,8 @@
       "isOctal": true,
       "isWhitespace": false,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": true
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
     },
     {
       "ch": "\n",
@@ -1780,7 +1977,8 @@
       "isOctal": false,
       "isWhitespace": true,
       "isValidFirstIdentifierChar": false,
-      "isAlphaNumeric": false
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
     }
   ]
 }
