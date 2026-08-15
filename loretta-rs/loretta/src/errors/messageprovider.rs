@@ -2,6 +2,7 @@
 // C# source: src/Compilers/Lua/Portable/Errors/MessageProvider.cs
 
 use crate::errors::errorcode::ErrorCode;
+use crate::errors::errorfacts::ErrorFacts;
 use crate::errors::luadiagnostic::{DiagnosticSeverity, LuaDiagnostic};
 use crate::luaresources::LuaResources;
 
@@ -198,8 +199,8 @@ impl MessageProvider {
     }
 
     /// Gets the category for the given error code.
-    pub fn get_category(_code: ErrorCode) -> String {
-        String::new()
+    pub fn get_category(code: ErrorCode) -> String {
+        ErrorFacts::get_category(code)
     }
 
     /// Gets the message prefix for a diagnostic.

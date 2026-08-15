@@ -34,7 +34,7 @@ if (operation == "all" && File.Exists(inputArg) && outDir != null)
         var parseOpts = new LuaParseOptions(opts);
         var dir = Path.Combine(outDir, preset, Path.GetFileNameWithoutExtension(inputArg));
         Directory.CreateDirectory(dir);
-        var ops = code.Length > 500_000 ? new[] { "diagnostics", "parse" } : new[] { "diagnostics", "lex", "parse", "scope", "constantfold", "minify", "charutils", "objectdisplay" };
+        var ops = code.Length > 500_000 ? new[] { "diagnostics", "parse" } : new[] { "diagnostics", "lex", "parse", "scope", "constantfold", "minify", "charutils", "objectdisplay", "messageprovider" };
         foreach (var op in ops)
         {
             try
@@ -94,6 +94,7 @@ static async Task<object> RunOperation(string operation, LuaParseOptions parseOp
         "hexfloat" => new { note = "covered via parse" },
         "objectdisplay" => ObjectDisplayOp(),
         "operator" => new { note = "covered via parse/constantfold" },
+        "messageprovider" => MessageProviderOp(),
         _ => new { error = $"unknown operation {operation}" }
     };
 }
@@ -129,6 +130,18 @@ static object ObjectDisplayOp()
             hexadecimalLiteral = ObjectDisplay.FormatLiteral(v, ObjectDisplayOptions.UseHexadecimalNumbers)
         }).ToArray()
     };
+}
+
+// MessageProvider.GetCategory oracle: the category of every ErrorCode from
+// the reference MessageProvider (internal — reflection).
+static object MessageProviderOp()
+{
+    var assembly = typeof(SyntaxFactory).Assembly;
+    var errorCodeType = assembly.GetType("Loretta.CodeAnalysis.Lua.ErrorCode")!;
+    var messageProviderType = assembly.GetType("Loretta.CodeAnalysis.Lua.MessageProvider")!;
+    var instance = messageProviderType.GetField("Instance", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!.GetValue(null)!;
+    var getCategory = messageProviderType.GetMethod("GetCategory", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)!;
+    return new { results = Enum.GetValues(errorCodeType).Cast<object>().Select(code => new { code = (int) code, category = (string) getCategory.Invoke(instance, new object[] { (int) code })! }).ToArray() };
 }
 
 static async Task<object> DiagnosticsOp(LuaParseOptions opts, string code)

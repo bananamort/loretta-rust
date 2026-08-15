@@ -90,6 +90,7 @@ fn main() {
                         "minify",
                         "charutils",
                         "objectdisplay",
+                        "messageprovider",
                     ]
                 };
                 for op in &ops {
@@ -145,7 +146,14 @@ fn file_stem(path: &str) -> String {
 /// pending coverage until the per-preset version-gating diagnostics land;
 /// every other difference is a hard failure (drift = bug in Rust).
 fn run_check(expected_dir: &str, tmp_dir: &str) {
-    const OPS: [&str; 5] = ["diagnostics", "lex", "parse", "charutils", "objectdisplay"];
+    const OPS: [&str; 6] = [
+        "diagnostics",
+        "lex",
+        "parse",
+        "charutils",
+        "objectdisplay",
+        "messageprovider",
+    ];
     let mut identical = 0usize;
     let mut pending = 0usize;
     let mut failed = 0usize;
@@ -252,7 +260,7 @@ fn run_operation(operation: &str, preset: &str, code: &str, _label: &str) -> Res
         "lex" => ops::lex(code),
         "parse" => ops::parse(code),
         "scope" => Err("scope: not yet ported (needs scoping/script nodes)".to_string()),
-        "rename" => Err("rename: not yet ported (needs scoping/script nodes)".to_string()),
+        "messageprovider" => ops::messageprovider(),
         "constantfold" => {
             Err("constantfold: not yet ported (needs experimental nodes)".to_string())
         }
