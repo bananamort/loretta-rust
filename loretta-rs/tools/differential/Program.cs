@@ -34,7 +34,7 @@ if (operation == "all" && File.Exists(inputArg) && outDir != null)
         var parseOpts = new LuaParseOptions(opts);
         var dir = Path.Combine(outDir, preset, Path.GetFileNameWithoutExtension(inputArg));
         Directory.CreateDirectory(dir);
-        var ops = code.Length > 500_000 ? new[] { "diagnostics", "parse" } : new[] { "options", "diagnostics", "lex", "parse", "scope", "constantfold", "minify", "charutils", "objectdisplay", "messageprovider", "gotolabel" };
+        var ops = code.Length > 500_000 ? new[] { "diagnostics", "parse" } : new[] { "options", "diagnostics", "lex", "parse", "scope", "constantfold", "minify", "charutils", "objectdisplay", "messageprovider", "gotolabel", "stringutils" };
         foreach (var op in ops)
         {
             try
@@ -101,7 +101,7 @@ static async Task<object> RunOperation(string operation, LuaParseOptions parseOp
         "constantfold" => await ConstantFoldOp(parseOpts, code),
         "minify" => await MinifyOp(parseOpts, code),
         "charutils" => CharUtilsOp(code),
-        "stringutils" => new { note = "covered via lex/parse" },
+        "stringutils" => StringUtilsOp(),
         "hexfloat" => new { note = "covered via parse" },
         "objectdisplay" => ObjectDisplayOp(),
         "operator" => new { note = "covered via parse/constantfold" },
@@ -193,6 +193,17 @@ static async Task<object> GotoLabelOp()
     var name = (string) gotoLabelType.GetProperty("Name", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)!.GetValue(labelObj)!;
     var jumps = ((System.Collections.IEnumerable) gotoLabelType.GetProperty("JumpSyntaxes", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)!.GetValue(labelObj)!).Cast<GotoStatementSyntax>();
     return new { name, labelText = label.ToFullString(), jumps = jumps.Select(j => j.ToFullString()).ToArray() };
+}
+
+// StringUtils (internal) oracle: Trim(string) and IsIdentifier(string) over
+// a fixed sample set, from the reference StringUtils via reflection.
+static object StringUtilsOp()
+{
+    var stringUtilsType = typeof(SyntaxFactory).Assembly.GetType("Loretta.CodeAnalysis.Lua.Utilities.StringUtils")!;
+    var trim = stringUtilsType.GetMethod("Trim", new[] { typeof(string) })!;
+    var isIdentifier = stringUtilsType.GetMethod("IsIdentifier", new[] { typeof(string) })!;
+    var samples = new[] { "hello", "_a", "1abc", "a b", "\t trim \r", "a" };
+    return new { results = samples.Select(s => new { input = s, trim = (string) trim.Invoke(null, new object[] { s })!, isIdentifier = (bool) isIdentifier.Invoke(null, new object[] { s })! }).ToArray() };
 }
 
 static async Task<object> DiagnosticsOp(LuaParseOptions opts, string code)

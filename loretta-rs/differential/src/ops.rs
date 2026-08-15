@@ -282,6 +282,31 @@ pub fn messageprovider() -> Result<Json, String> {
     Ok(Json::Object(vec![("results".into(), Json::Array(results))]))
 }
 
+/// StringUtils oracle: Trim(string) and IsIdentifier(string) over a fixed
+/// sample set, mirroring the C# reference's StringUtilsOp.
+pub fn stringutils() -> Result<Json, String> {
+    use loretta::utilities::stringutils::StringUtils;
+
+    let samples: [&str; 6] = ["hello", "_a", "1abc", "a b", "\t trim \r", "a"];
+    let results: Vec<Json> = samples
+        .iter()
+        .map(|s| {
+            Json::Object(vec![
+                ("input".into(), Json::String(s.to_string())),
+                (
+                    "trim".into(),
+                    Json::String(StringUtils::trim(s).to_string()),
+                ),
+                (
+                    "isIdentifier".into(),
+                    Json::Bool(StringUtils::is_identifier(s)),
+                ),
+            ])
+        })
+        .collect();
+    Ok(Json::Object(vec![("results".into(), Json::Array(results))]))
+}
+
 /// CharUtils oracle: for every char of the input, the ported CharUtils result
 /// per member. Mirrors the C# reference's CharUtilsOp (real Loretta via
 /// reflection); members land one node at a time.
