@@ -101,6 +101,7 @@ enum LuaSyntaxOptionsPreset {
     Lua52,
     Lua53,
     Lua54,
+    LuaJit20,
 }
 
 /// C# Program.ListSymbols — lists the current directory's entries
@@ -206,6 +207,7 @@ fn main() {
         LuaSyntaxOptionsPreset::Lua52,
         LuaSyntaxOptionsPreset::Lua53,
         LuaSyntaxOptionsPreset::Lua54,
+        LuaSyntaxOptionsPreset::LuaJit20,
     );
     writeln!(
         output_writer(),
