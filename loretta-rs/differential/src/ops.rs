@@ -345,7 +345,7 @@ pub fn charutils(code: &str) -> Result<Json, String> {
 /// ObjectDisplay oracle: a fixed sample set of doubles formatted in decimal
 /// and hexadecimal modes. Mirrors the C# reference's ObjectDisplayOp.
 pub fn objectdisplay() -> Result<Json, String> {
-    use loretta::symbol_display::objectdisplay::ObjectDisplay;
+    use loretta::symbol_display::objectdisplay::{ObjectDisplay, PrimitiveValue};
     use loretta::symbol_display::objectdisplayoptions::ObjectDisplayOptions;
 
     let values: [f64; 37] = [
@@ -441,8 +441,26 @@ pub fn objectdisplay() -> Result<Json, String> {
     .iter()
     .map(|(s, opts)| Json::String(ObjectDisplay::format_literal_str(s, *opts)))
     .collect();
+    let primitives: Vec<Json> = [
+        None::<PrimitiveValue>,
+        Some(PrimitiveValue::Bool(true)),
+        Some(PrimitiveValue::Double(1.5)),
+        Some(PrimitiveValue::Long(42)),
+        Some(PrimitiveValue::Ulong(42)),
+        Some(PrimitiveValue::String("text".to_string())),
+        Some(PrimitiveValue::Double(1e20)),
+    ]
+    .iter()
+    .map(|o| {
+        Json::String(
+            ObjectDisplay::format_primitive((*o).clone(), ObjectDisplayOptions::NONE)
+                .unwrap_or_default(),
+        )
+    })
+    .collect();
     Ok(Json::Object(vec![
         ("results".into(), Json::Array(results)),
         ("strings".into(), Json::Array(strings)),
+        ("primitives".into(), Json::Array(primitives)),
     ]))
 }

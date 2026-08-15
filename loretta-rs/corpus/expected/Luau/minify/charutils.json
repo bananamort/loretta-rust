@@ -1,0 +1,434 @@
+{
+  "results": [
+    {
+      "ch": "l",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "o",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "c",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": "a",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": "l",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": " ",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": true,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "v",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "e",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": "r",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "y",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "L",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "o",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "n",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "g",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "N",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "a",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": "m",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "e",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": " ",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": true,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "=",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": " ",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": true,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "1",
+      "isBinary": true,
+      "isDecimal": true,
+      "isOctal": true,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": "\n",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": true,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "p",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "r",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "i",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "n",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "t",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "(",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "v",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "e",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": "r",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "y",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "L",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "o",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "n",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "g",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "N",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "a",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": "m",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "e",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": true,
+      "isAlphaNumeric": true,
+      "isHexadecimal": true
+    },
+    {
+      "ch": ")",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": false,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    },
+    {
+      "ch": "\n",
+      "isBinary": false,
+      "isDecimal": false,
+      "isOctal": false,
+      "isWhitespace": true,
+      "isValidFirstIdentifierChar": false,
+      "isAlphaNumeric": false,
+      "isHexadecimal": false
+    }
+  ]
+}

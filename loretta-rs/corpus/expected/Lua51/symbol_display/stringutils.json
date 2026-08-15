@@ -1,0 +1,34 @@
+{
+  "results": [
+    {
+      "input": "hello",
+      "trim": "hello",
+      "isIdentifier": true
+    },
+    {
+      "input": "_a",
+      "trim": "_a",
+      "isIdentifier": true
+    },
+    {
+      "input": "1abc",
+      "trim": "1abc",
+      "isIdentifier": false
+    },
+    {
+      "input": "a b",
+      "trim": "a b",
+      "isIdentifier": false
+    },
+    {
+      "input": "\t trim \r",
+      "trim": "trim",
+      "isIdentifier": false
+    },
+    {
+      "input": "a",
+      "trim": "a",
+      "isIdentifier": true
+    }
+  ]
+}
