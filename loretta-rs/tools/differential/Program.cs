@@ -143,7 +143,8 @@ static object MessageProviderOp()
     var getCategory = messageProviderType.GetMethod("GetCategory", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)!;
     var getDescription = messageProviderType.GetMethod("GetDescription", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)!;
     var loadMessage = messageProviderType.GetMethod("LoadMessage", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)!;
-    return new { results = Enum.GetValues(errorCodeType).Cast<object>().Select(code => new { code = (int) code, category = (string) getCategory.Invoke(instance, new object[] { (int) code })!, description = getDescription.Invoke(instance, new object[] { (int) code })!.ToString(), message = (string) loadMessage.Invoke(instance, new object[] { (int) code, null })! }).ToArray() };
+    var getMessageFormat = messageProviderType.GetMethod("GetMessageFormat", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)!;
+    return new { results = Enum.GetValues(errorCodeType).Cast<object>().Select(code => new { code = (int) code, category = (string) getCategory.Invoke(instance, new object[] { (int) code })!, description = getDescription.Invoke(instance, new object[] { (int) code })!.ToString(), message = (string) loadMessage.Invoke(instance, new object[] { (int) code, null })!, messageFormat = getMessageFormat.Invoke(instance, new object[] { (int) code })!.ToString() }).ToArray() };
 }
 
 static async Task<object> DiagnosticsOp(LuaParseOptions opts, string code)
