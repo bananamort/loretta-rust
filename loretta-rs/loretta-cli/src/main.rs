@@ -96,6 +96,7 @@ enum Setting {
 }
 
 /// C# Program.LuaSyntaxOptionsPreset (private enum, Program.cs:124-137).
+/// Maps to LuaSyntaxOptions via PresetEnumToPresetOptions (row 430).
 enum LuaSyntaxOptionsPreset {
     Lua51,
     Lua52,
