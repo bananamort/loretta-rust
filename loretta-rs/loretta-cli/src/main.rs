@@ -922,6 +922,80 @@ fn clear() {
     io::stdout().flush().expect("flush stdout");
 }
 
+/// The Tsu.Timing LogLevel variants used by the CLI (dropped external enum).
+#[derive(Copy, Clone)]
+pub enum LogLevel {
+    None,
+    Error,
+}
+
+/// C# TimingLoggerConsole.Writer (TimingLoggerConsole.cs:24-40): routes
+/// writes to the logger at a log level. The C# reflectively binds the
+/// logger's private ProcessWrite; the port routes directly (dropped
+/// reflection infra).
+pub struct Writer<'a> {
+    log_level: LogLevel,
+    logger: &'a ConsoleTimingLogger,
+}
+
+impl Writer<'_> {
+    /// C# Writer(TimingLogger, LogLevel).
+    pub fn new(logger: &ConsoleTimingLogger, log_level: LogLevel) -> Writer<'_> {
+        Writer { log_level, logger }
+    }
+
+    /// C# Writer.Write(string) — routes by level.
+    pub fn write(&self, value: &str) {
+        match self.log_level {
+            LogLevel::None => self.logger.write_line(value),
+            LogLevel::Error => self.logger.log_error(value),
+        }
+    }
+}
+
+/// C# TimingLoggerConsole (TimingLoggerConsole.cs:7-42): the System.CommandLine
+/// IConsole adapter — the interface is dropped; the port keeps the
+/// Out/Error writers and the redirection flags.
+pub struct TimingLoggerConsole<'a> {
+    out_writer: Writer<'a>,
+    error_writer: Writer<'a>,
+}
+
+impl TimingLoggerConsole<'_> {
+    /// C# TimingLoggerConsole(TimingLogger).
+    pub fn new(logger: &ConsoleTimingLogger) -> TimingLoggerConsole<'_> {
+        TimingLoggerConsole {
+            out_writer: Writer::new(logger, LogLevel::None),
+            error_writer: Writer::new(logger, LogLevel::Error),
+        }
+    }
+
+    /// C# Out.
+    pub fn out(&self) -> &Writer<'_> {
+        &self.out_writer
+    }
+
+    /// C# IsOutputRedirected — always false.
+    pub fn is_output_redirected(&self) -> bool {
+        false
+    }
+
+    /// C# Error.
+    pub fn error(&self) -> &Writer<'_> {
+        &self.error_writer
+    }
+
+    /// C# IsErrorRedirected — always false.
+    pub fn is_error_redirected(&self) -> bool {
+        false
+    }
+
+    /// C# IsInputRedirected — always false.
+    pub fn is_input_redirected(&self) -> bool {
+        false
+    }
+}
+
 /// C# Program.ChangeDirectory — changes the current directory (Program.cs:99-110).
 fn change_directory(relative_path: &str) {
     let result =
