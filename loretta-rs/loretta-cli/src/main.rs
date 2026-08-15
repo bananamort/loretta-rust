@@ -5,7 +5,7 @@ pub mod console_timing_logger_text_writer;
 
 use console_timing_logger_text_writer::{ConsoleTimingLoggerTextWriter, TimingLogger};
 use full_moon::tokenizer::Symbol;
-use std::io::{self, Write};
+use std::io::{self, BufRead, Write};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::OnceLock;
 
@@ -690,6 +690,83 @@ fn format_duration(elapsed: std::time::Duration) -> String {
     format!("{h:02}:{m:02}:{s:02}.{us:06}")
 }
 
+/// C# Program.RunMultiLua (Program.cs:380-433): executes the file in every
+/// Lua distribution under binaries/. The output/error streaming order is
+/// event-driven in C# (timing-dependent); the port drains stdout then stderr.
+fn run_multi_lua(args: &[&str]) {
+    const PREFIX_TEMPLATE: &str = "[00:00:00.000000]";
+    let mut versions: Vec<String> = Vec::new();
+    if let Ok(entries) = std::fs::read_dir("binaries") {
+        for entry in entries.flatten() {
+            if entry.file_type().map(|t| t.is_dir()).unwrap_or(false) {
+                versions.push(entry.file_name().to_string_lossy().into_owned());
+            }
+        }
+    }
+    versions.sort();
+    for version in versions {
+        let name = version.replace('_', " ");
+        let executable = std::path::Path::new("binaries")
+            .join(&version)
+            .join("lua.exe");
+        // C# pads to Console.WindowWidth - prefix length; the console width
+        // is runtime data, so the port uses the common 80-column default.
+        let width = 80usize.saturating_sub(PREFIX_TEMPLATE.len());
+        let mut title = format!("===== {name} ");
+        while title.len() < width {
+            title.push('=');
+        }
+        S_LOGGER.write_line(&title);
+        let mut child = match std::process::Command::new(&executable)
+            .args(args)
+            .stdout(std::process::Stdio::piped())
+            .stderr(std::process::Stdio::piped())
+            .stdin(std::process::Stdio::null())
+            .spawn()
+        {
+            Ok(child) => child,
+            Err(e) => {
+                S_LOGGER.log_error(&format!("Failed to start {executable:?}: {e}"));
+                continue;
+            }
+        };
+        // C# waits 2000ms then kills.
+        let mut exited = false;
+        for _ in 0..40 {
+            match child.try_wait() {
+                Ok(Some(_)) => {
+                    exited = true;
+                    break;
+                }
+                Ok(None) => std::thread::sleep(std::time::Duration::from_millis(50)),
+                Err(e) => {
+                    S_LOGGER.log_error(&format!("Error waiting for process: {e}"));
+                    exited = true;
+                    break;
+                }
+            }
+        }
+        if !exited {
+            S_LOGGER.log_error("Process has timed out, killing...");
+            let _ = child.kill();
+            S_LOGGER.log_error("Killed.");
+        }
+        if let Some(stdout) = child.stdout.take() {
+            let reader = std::io::BufReader::new(stdout);
+            for line in reader.lines().map_while(Result::ok) {
+                S_LOGGER.write_line(&line);
+            }
+        }
+        if let Some(stderr) = child.stderr.take() {
+            let reader = std::io::BufReader::new(stderr);
+            for line in reader.lines().map_while(Result::ok) {
+                S_LOGGER.log_error(&line);
+            }
+        }
+        let _ = child.wait();
+    }
+}
+
 /// C# Program.ChangeDirectory — changes the current directory (Program.cs:99-110).
 fn change_directory(relative_path: &str) {
     let result =
@@ -782,6 +859,8 @@ fn main() {
     let _ = lex_command as fn(LuaSyntaxOptionsPreset, &str, bool);
     // Referenced until the static ctor (row 456) wires the mass-parse command.
     let _ = mass_parse_command as fn(LuaSyntaxOptionsPreset, &[&str]);
+    // Referenced until the static ctor (row 456) wires the multi-lua command.
+    let _ = run_multi_lua as fn(&[&str]);
     writeln!(
         output_writer(),
         "loretta-cli: pending port — see loretta-rs/PROGRESS.md"
