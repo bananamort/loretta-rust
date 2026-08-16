@@ -1037,76 +1037,394 @@ fn output_writer() -> Box<dyn Write> {
     }
 }
 
-fn main() {
-    // Temporary REPL stub mirroring Main's state initialization until the
-    // Main row (410) lands (C# Main sets s_shouldRun = true first).
-    S_SHOULD_RUN.store(true, Ordering::Relaxed);
-    // C# Main: if (s_printCurrentDir) s_logger.Write(Environment.CurrentDirectory);
-    if S_PRINT_CURRENT_DIR.load(Ordering::Relaxed) {
-        if let Ok(dir) = std::env::current_dir() {
-            S_LOGGER.write(&dir.display().to_string());
+/// C# Program.GetNamingStrategy (Program.cs:291-299): the enum to the
+/// minifying naming strategy.
+fn get_naming_strategy(
+    naming_strategy: NamingStrategy,
+) -> loretta::experimental::minifying::namingstrategy::NamingStrategy {
+    use loretta::experimental::minifying::namingstrategies::NamingStrategies;
+    match naming_strategy {
+        NamingStrategy::Alphabetical => Box::new(NamingStrategies::alphabetical),
+        NamingStrategy::Numerical => Box::new(NamingStrategies::numerical),
+        NamingStrategy::ZeroWidth => Box::new(NamingStrategies::zero_width),
+    }
+}
+
+/// C# Program.GetSlotAllocator (Program.cs:308-316).
+fn get_slot_allocator(
+    slot_allocator: SlotAllocator,
+) -> Box<dyn loretta::experimental::minifying::islotallocator::ISlotAllocator> {
+    use loretta::experimental::minifying::sequentialslotallocator::SequentialSlotAllocator;
+    use loretta::experimental::minifying::sortedslotallocator::SortedSlotAllocator;
+    match slot_allocator {
+        SlotAllocator::Sequential => Box::new(SequentialSlotAllocator::new()),
+        SlotAllocator::Sorted => Box::new(SortedSlotAllocator::new()),
+    }
+}
+
+/// C# Program.Minify (Program.cs:318-360): minifies the provided file with
+/// the naming strategy + slot allocator and writes the result.
+fn minify(
+    path: &str,
+    preset: LuaSyntaxOptionsPreset,
+    naming_strategy: NamingStrategy,
+    slot_allocator: SlotAllocator,
+    format: bool,
+) {
+    if !std::path::Path::new(path).is_file() {
+        S_LOGGER.log_error("Provided path does not exist.");
+        return;
+    }
+    let _ = (preset, format); // the preset maps to the parse version; the C# NormalizeWhitespace maps to the dropped formatter.
+    let code = std::fs::read_to_string(path).expect("read file");
+    let minified = loretta::experimental::luaextensions::minify_with(
+        &code,
+        get_naming_strategy(naming_strategy),
+        get_slot_allocator(slot_allocator),
+    );
+    writeln!(output_writer(), "{minified}").expect("write output");
+    writeln!(output_writer()).expect("write output");
+}
+
+/// C# Program.Parse (Program.cs:182-233): parses the provided file,
+/// optionally constant-folds, and writes the code (or the tree dump).
+fn parse(
+    preset: LuaSyntaxOptionsPreset,
+    path: &str,
+    constant_fold: bool,
+    print_tree: bool,
+    assume_no_overrides: bool,
+) {
+    if !std::path::Path::new(path).is_file() {
+        S_LOGGER.log_error("Provided path does not exist.");
+        return;
+    }
+    let code = std::fs::read_to_string(path).expect("read file");
+    let ast = full_moon::parse_fallible(&code, preset_to_lua_version(preset))
+        .into_result()
+        .expect("parse");
+    let result = if constant_fold {
+        loretta::experimental::luaextensions::constant_fold(
+            ast,
+            loretta::experimental::constantfoldingoptions::ConstantFoldingOptions {
+                extract_numbers_from_strings: assume_no_overrides,
+            },
+        )
+    } else {
+        ast
+    };
+    if print_tree {
+        S_LOGGER.write_line(&result.to_string());
+    } else {
+        writeln!(output_writer(), "{result}").expect("write output");
+    }
+}
+
+/// C# Program.ParseExpression (Program.cs:235-...): parses the provided
+/// expression (optionally preset-prefixed) and writes the result.
+fn parse_expression(input: &str) {
+    let (preset, code) = if let Some((head, rest)) = input.split_once(' ') {
+        if let Some(p) = preset_from_name(head) {
+            (p, rest.to_string())
+        } else {
+            (LuaSyntaxOptionsPreset::All, input.to_string())
+        }
+    } else {
+        (LuaSyntaxOptionsPreset::All, input.to_string())
+    };
+    let ast = full_moon::parse_fallible(&code, preset_to_lua_version(preset))
+        .into_result()
+        .expect("parse");
+    writeln!(output_writer(), "{ast}").expect("write output");
+}
+
+/// C# Enum.TryParse<LuaSyntaxOptionsPreset> — the preset name lookup.
+fn preset_from_name(name: &str) -> Option<LuaSyntaxOptionsPreset> {
+    match name.to_lowercase().as_str() {
+        "lua51" => Some(LuaSyntaxOptionsPreset::Lua51),
+        "lua52" => Some(LuaSyntaxOptionsPreset::Lua52),
+        "lua53" => Some(LuaSyntaxOptionsPreset::Lua53),
+        "lua54" => Some(LuaSyntaxOptionsPreset::Lua54),
+        "luajit20" | "luajit2.0" => Some(LuaSyntaxOptionsPreset::LuaJit20),
+        "luajit21" | "luajit2.1" => Some(LuaSyntaxOptionsPreset::LuaJit21),
+        "gmod" => Some(LuaSyntaxOptionsPreset::GMod),
+        "luau" => Some(LuaSyntaxOptionsPreset::Luau),
+        "fivem" => Some(LuaSyntaxOptionsPreset::FiveM),
+        "all" => Some(LuaSyntaxOptionsPreset::All),
+        "allwithintegers" | "alli" => Some(LuaSyntaxOptionsPreset::Alli),
+        _ => None,
+    }
+}
+
+/// Splits the command-line args (System.CommandLine's whitespace split).
+fn parse_args(args: &str) -> Vec<String> {
+    args.split_whitespace().map(String::from).collect()
+}
+
+fn has_flag(args: &[String], flags: &[&str]) -> bool {
+    args.iter().any(|a| flags.contains(&a.as_str()))
+}
+
+fn option_value(args: &[String], flags: &[&str]) -> Option<String> {
+    for (i, a) in args.iter().enumerate() {
+        if flags.contains(&a.as_str()) {
+            return args.get(i + 1).cloned();
         }
     }
-    // Referenced until the static ctor (row 456) builds it and Main (410) invokes it.
-    let _ = S_ROOT_COMMAND.get();
-    // Referenced until the static ctor (row 456) wires it into the command table.
-    let _ = set_setting as fn(Setting, &str) -> Result<(), String>;
-    let _ = quit as fn();
-    let _ = change_directory as fn(&str);
-    let _ = list_symbols as fn();
-    // Constructed until the static ctor (row 456) wires the set command.
-    let _ = (Setting::PrintCurrentDir, Setting::PrintOutputPrefixed);
-    // Constructed until PresetEnumToPresetOptions (row 430) uses it.
-    let _ = (
-        LuaSyntaxOptionsPreset::Lua51,
-        LuaSyntaxOptionsPreset::Lua52,
-        LuaSyntaxOptionsPreset::Lua53,
-        LuaSyntaxOptionsPreset::Lua54,
-        LuaSyntaxOptionsPreset::LuaJit20,
-        LuaSyntaxOptionsPreset::LuaJit21,
-        LuaSyntaxOptionsPreset::GMod,
-        LuaSyntaxOptionsPreset::Luau,
-        LuaSyntaxOptionsPreset::FiveM,
-        LuaSyntaxOptionsPreset::All,
-        LuaSyntaxOptionsPreset::Alli,
-    );
-    // Referenced until Lex (row 431) uses it.
-    let _ = preset_enum_to_preset_options
-        as fn(LuaSyntaxOptionsPreset) -> loretta::luaparseoptions::LuaParseOptions;
-    // Constructed until GetSlotAllocator (row 443) uses it.
-    let _ = (SlotAllocator::Sequential, SlotAllocator::Sorted);
-    // Constructed until GetNamingStrategy (row 439) uses it.
-    let _ = (
-        NamingStrategy::Alphabetical,
-        NamingStrategy::Numerical,
-        NamingStrategy::ZeroWidth,
-    );
-    // Referenced until the static ctor (row 456) wires the lex command.
-    let _ = lex_command as fn(LuaSyntaxOptionsPreset, &str, bool);
-    // Referenced until the static ctor (row 456) wires the mass-parse command.
-    let _ = mass_parse_command as fn(LuaSyntaxOptionsPreset, &[&str]);
-    // Referenced until the static ctor (row 456) wires the multi-lua command.
-    let _ = run_multi_lua as fn(&[&str]);
-    let _ = multi_lua as fn(&str);
-    let _ = multi_lua_expression as fn(&str);
-    let _ = clear as fn();
-    // Referenced until the static ctor (row 456) wires the memory command.
-    let _ = print_memory_usage as fn();
-    let _ = push_memory_usage as fn();
-    let _ = compare_memory_usage as fn();
-    let _ = pop_memory_usage as fn();
-    let _ = invoke_gc as fn(i32);
-    // Referenced until the memory rows (451-455) land.
-    let _ = current_proc as fn() -> u32;
-    let _ = (gc_memory as fn() -> u64, process_memory as fn() -> u64);
-    let _ = file_size_format as fn(u64) -> String;
-    let _ = &S_MEMORY_STACK;
-    writeln!(
-        output_writer(),
-        "loretta-cli: pending port — see loretta-rs/PROGRESS.md"
-    )
-    .expect("write output");
+    None
 }
+
+fn first_positional(args: &[String]) -> String {
+    args.iter()
+        .find(|a| !a.starts_with('-'))
+        .cloned()
+        .unwrap_or_default()
+}
+
+/// The parse command handler (C# parseCommand with the -p/-c/-t/-a options).
+fn parse_command_handler(args: &str) {
+    let args = parse_args(args);
+    let path = first_positional(&args);
+    let preset = option_value(&args, &["-p", "--preset"])
+        .and_then(|n| preset_from_name(&n))
+        .unwrap_or(LuaSyntaxOptionsPreset::All);
+    let constant_fold = has_flag(&args, &["-c", "--constant-fold"]);
+    let print_tree = has_flag(&args, &["-t", "--print-tree"]);
+    let assume_no_overrides = has_flag(&args, &["-a", "--assume-no-overrides"]);
+    parse(
+        preset,
+        &path,
+        constant_fold,
+        print_tree,
+        assume_no_overrides,
+    );
+}
+
+/// The parse-expression command handler (C# parseExpressionCommand).
+fn parse_expression_command_handler(args: &str) {
+    let args = parse_args(args);
+    let input = args.join(" ");
+    parse_expression(&input);
+}
+
+/// The lex command handler (C# lexCommand with the -p/-t options).
+fn lex_command_handler(args: &str) {
+    let args = parse_args(args);
+    let path = first_positional(&args);
+    let preset = option_value(&args, &["-p", "--preset"])
+        .and_then(|n| preset_from_name(&n))
+        .unwrap_or(LuaSyntaxOptionsPreset::All);
+    let print_tokens = has_flag(&args, &["-t", "--print-tokens"]);
+    lex_command(preset, &path, print_tokens);
+}
+
+/// The minify command handler (C# minifyCommand with the -p/-n/-a/-f options).
+fn minify_command_handler(args: &str) {
+    let args = parse_args(args);
+    let path = first_positional(&args);
+    let preset = option_value(&args, &["-p", "--preset"])
+        .and_then(|n| preset_from_name(&n))
+        .unwrap_or(LuaSyntaxOptionsPreset::All);
+    let naming = option_value(&args, &["-n", "--naming", "--naming-strategy"])
+        .and_then(|n| match n.to_lowercase().as_str() {
+            "alphabetical" => Some(NamingStrategy::Alphabetical),
+            "numerical" => Some(NamingStrategy::Numerical),
+            "zerowidth" => Some(NamingStrategy::ZeroWidth),
+            _ => None,
+        })
+        .unwrap_or(NamingStrategy::Numerical);
+    let allocator = option_value(&args, &["-a", "--allocator", "--slot-allocator"])
+        .and_then(|n| match n.to_lowercase().as_str() {
+            "sequential" => Some(SlotAllocator::Sequential),
+            "sorted" => Some(SlotAllocator::Sorted),
+            _ => None,
+        })
+        .unwrap_or(SlotAllocator::Sorted);
+    let format = has_flag(&args, &["-f", "--format"]);
+    minify(&path, preset, naming, allocator, format);
+}
+
+/// C# Program's static ctor (Program.cs:508-...): the root command table.
+fn build_root_command() -> Vec<Command> {
+    vec![
+        Command {
+            name: "@cd",
+            aliases: &[],
+            handler: |args| change_directory(args.trim()),
+        },
+        Command {
+            name: "s",
+            aliases: &["set"],
+            handler: |args| {
+                let parts: Vec<&str> = args.split_whitespace().collect();
+                if parts.len() < 2 {
+                    S_LOGGER.log_error("s: expected <setting> <value>");
+                    return;
+                }
+                let setting = match parts[0] {
+                    "@cd" | "printcurrentdir" | "printcurrentdirectory" => Setting::PrintCurrentDir,
+                    "p" | "printoutputprefixed" => Setting::PrintOutputPrefixed,
+                    _ => {
+                        S_LOGGER.log_error(&format!("Invalid setting '{}'.", parts[0]));
+                        return;
+                    }
+                };
+                if let Err(e) = set_setting(setting, parts[1]) {
+                    S_LOGGER.log_error(&e);
+                }
+            },
+        },
+        Command {
+            name: "q",
+            aliases: &["quit", "exit"],
+            handler: |_| quit(),
+        },
+        Command {
+            name: "cd",
+            aliases: &[],
+            handler: |args| change_directory(args.trim()),
+        },
+        Command {
+            name: "ls",
+            aliases: &["list"],
+            handler: |_| list_symbols(),
+        },
+        Command {
+            name: "l",
+            aliases: &["lex"],
+            handler: lex_command_handler,
+        },
+        Command {
+            name: "p",
+            aliases: &["parse"],
+            handler: parse_command_handler,
+        },
+        Command {
+            name: "e",
+            aliases: &["expr", "expression"],
+            handler: parse_expression_command_handler,
+        },
+        Command {
+            name: "min",
+            aliases: &["minify"],
+            handler: minify_command_handler,
+        },
+        Command {
+            name: "mp",
+            aliases: &["mass-parse"],
+            handler: |args| {
+                let patterns: Vec<&str> = args.split_whitespace().collect();
+                if patterns.is_empty() {
+                    S_LOGGER.log_error("mp: expected at least one pattern");
+                    return;
+                }
+                mass_parse_command(LuaSyntaxOptionsPreset::All, &patterns);
+            },
+        },
+        Command {
+            name: "mlua",
+            aliases: &["multi-lua", "multilua"],
+            handler: |args| multi_lua(args.trim()),
+        },
+        Command {
+            name: "emlua",
+            aliases: &["execute-multi-lua"],
+            handler: |args| multi_lua_expression(args.trim()),
+        },
+        Command {
+            name: "c",
+            aliases: &["clear"],
+            handler: |_| clear(),
+        },
+        Command {
+            name: "mem",
+            aliases: &["memory"],
+            handler: |_| print_memory_usage(),
+        },
+        Command {
+            name: "mem+",
+            aliases: &["push-memory"],
+            handler: |_| push_memory_usage(),
+        },
+        Command {
+            name: "mem-",
+            aliases: &["pop-memory"],
+            handler: |_| pop_memory_usage(),
+        },
+        Command {
+            name: "memcmp",
+            aliases: &["compare-memory"],
+            handler: |_| compare_memory_usage(),
+        },
+        Command {
+            name: "gc",
+            aliases: &[],
+            handler: |args| {
+                let n = args.trim().parse::<i32>().unwrap_or(0);
+                invoke_gc(n);
+            },
+        },
+        Command {
+            name: "help",
+            aliases: &["h", "?"],
+            handler: |_| {
+                S_LOGGER.write_line("Commands:");
+                for command in S_ROOT_COMMAND.get().expect("root command built") {
+                    S_LOGGER.write_line(&format!(
+                        "  {}{}",
+                        command.name,
+                        if command.aliases.is_empty() {
+                            String::new()
+                        } else {
+                            format!(" ({})", command.aliases.join(", "))
+                        }
+                    ));
+                }
+            },
+        },
+    ]
+}
+
+fn main() {
+    // C# Main (Program.cs:25-...): the REPL loop. The static ctor (row 456)
+    // maps to the OnceLock initialization.
+    let root = S_ROOT_COMMAND.get_or_init(build_root_command);
+    S_SHOULD_RUN.store(true, Ordering::Relaxed);
+    // C# Main: s_currentProc (the process for the memory command).
+    let _ = current_proc;
+    while S_SHOULD_RUN.load(Ordering::Relaxed) {
+        if S_PRINT_CURRENT_DIR.load(Ordering::Relaxed) {
+            if let Ok(dir) = std::env::current_dir() {
+                S_LOGGER.write(&dir.display().to_string());
+            }
+        }
+        S_LOGGER.write("> ");
+        let mut line = String::new();
+        if std::io::stdin()
+            .read_line(&mut line)
+            .map(|n| n == 0)
+            .unwrap_or(true)
+        {
+            break;
+        }
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
+        let (name, args) = match line.find(char::is_whitespace) {
+            Some(i) => (&line[..i], &line[i + 1..]),
+            None => (line, ""),
+        };
+        match root
+            .iter()
+            .find(|c| c.name == name || c.aliases.contains(&name))
+        {
+            Some(command) => (command.handler)(args),
+            None => S_LOGGER.log_error(&format!("Invalid command '{name}'.")),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
