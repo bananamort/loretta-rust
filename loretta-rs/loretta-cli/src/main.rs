@@ -679,9 +679,9 @@ fn glob_matches(name: &str, pattern: &str) -> bool {
 }
 
 /// C# Program.MassParse (Program.cs:262-282): parses files matching the
-/// patterns. The enumeration order is unspecified in C#, so the port sorts
-/// the file list for a deterministic oracle; the duration output is runtime
-/// data (not byte-comparable).
+/// patterns. The enumeration order is the OS order, exactly as the C#
+/// EnumerateFiles (no sort); the duration output is runtime data
+/// (not byte-comparable).
 fn mass_parse_command(preset: LuaSyntaxOptionsPreset, patterns: &[&str]) {
     let mut files: Vec<String> = Vec::new();
     if let Ok(entries) = std::fs::read_dir(".") {
@@ -692,7 +692,6 @@ fn mass_parse_command(preset: LuaSyntaxOptionsPreset, patterns: &[&str]) {
             }
         }
     }
-    files.sort();
     let _options = preset_enum_to_preset_options(preset);
     for file in files {
         match std::fs::read_to_string(&file) {
