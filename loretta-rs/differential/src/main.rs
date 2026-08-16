@@ -149,12 +149,13 @@ fn file_stem(path: &str) -> String {
 /// pending coverage until the per-preset version-gating diagnostics land;
 /// every other difference is a hard failure (drift = bug in Rust).
 fn run_check(expected_dir: &str, tmp_dir: &str) {
-    const OPS: [&str; 11] = [
+    const OPS: [&str; 12] = [
         "options",
         "diagnostics",
         "lex",
         "parse",
         "scope",
+        "minify",
         "constantfold",
         "charutils",
         "objectdisplay",
@@ -165,7 +166,6 @@ fn run_check(expected_dir: &str, tmp_dir: &str) {
     let mut identical = 0usize;
     let mut pending = 0usize;
     let mut failed = 0usize;
-    let mut not_implemented = 0usize;
     let mut failures: Vec<String> = Vec::new();
 
     let expected_root = std::path::Path::new(expected_dir);
@@ -238,27 +238,10 @@ fn run_check(expected_dir: &str, tmp_dir: &str) {
         }
     }
 
-    // Operations whose expected outputs exist but are not implemented yet.
-    for file in &files {
-        let stem = file_stem(file);
-        for preset in PRESETS {
-            let op = "minify";
-            {
-                let exp_path = expected_root
-                    .join(preset)
-                    .join(&stem)
-                    .join(format!("{op}.json"));
-                if exp_path.exists() {
-                    not_implemented += 1;
-                }
-            }
-        }
-    }
-
     println!("Oracle 2 — differential check (Rust vs C# reference)");
     println!("  identical: {identical}");
     println!("  pending (version-gating diagnostics not ported): {pending}");
-    println!("  not implemented (scope/minify ops): {not_implemented}");
+
     println!("  FAILED: {failed}");
     for f in &failures {
         println!("    FAIL {f}");
@@ -278,10 +261,10 @@ fn run_operation(operation: &str, preset: &str, code: &str, label: &str) -> Resu
         "lex" => ops::lex(code),
         "parse" => ops::parse(code),
         "scope" => ops::scope(code, label),
+        "minify" => ops::minify(code),
         "messageprovider" => ops::messageprovider(),
         "gotolabel" => ops::gotolabel(),
         "constantfold" => ops::constantfold(code, preset),
-        "minify" => Err("minify: not yet ported (needs experimental nodes)".to_string()),
         "charutils" => ops::charutils(code),
         "stringutils" => ops::stringutils(),
         "hexfloat" => Ok(Json::Object(vec![(
