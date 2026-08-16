@@ -33,9 +33,10 @@ pub struct ScopeAndVariableWalker {
     label_walker: crate::script::scopeandvariablemanager::gotolabelwalker::GotoLabelWalker,
     /// C# the GotoWalker (unified inline — see the Goto arm).
     goto_walker: crate::script::scopeandvariablemanager::gotowalker::GotoWalker,
-    /// The identifier token positions (the node + the token's start byte) —
-    /// used by the rename rewriter's token replacement.
-    pub identifier_positions: Vec<(Node, usize)>,
+    /// The identifier walk records (the node, the token's start byte, and
+    /// the current scope) — used by the rename rewriter's token replacement
+    /// and the minifier's rename table.
+    pub identifier_positions: Vec<(Node, usize, Rc<RefCell<Scope>>)>,
 }
 
 impl ScopeAndVariableWalker {
@@ -130,12 +131,21 @@ impl ScopeAndVariableWalker {
         parameter: &ast::Parameter,
     ) -> SharedVariable {
         let name = match parameter {
-            ast::Parameter::Name(token) => token.token().to_string(),
+            ast::Parameter::Name(token) => {
+                let token_ref = token.clone();
+                let name_text = token.token().to_string();
+                let node = self.base.make_node("Parameter", name_text.clone());
+                let variable = Scope::add_parameter_in(scope, &name_text, Some(node.clone()));
+                self.record_identifier(node.clone(), &token_ref);
+                self.variables.insert(node, variable.clone());
+                return variable;
+            }
             ast::Parameter::Ellipsis(_) => "...".to_string(),
             #[allow(unreachable_patterns)]
             _ => unreachable!("unsupported parameter kind"),
         };
-        Scope::add_parameter_in(scope, &name, None)
+        let _ = name;
+        unreachable!()
     }
 
     /// Adds a read location + referencing scope for a referenced variable
@@ -147,10 +157,11 @@ impl ScopeAndVariableWalker {
         self.scope().borrow_mut().add_referenced_variable(variable);
     }
 
-    /// Records an identifier token position for the rename rewriter.
+    /// Records an identifier token position for the rename rewriter (the
+    /// current scope is the C# FindScope of the identifier).
     pub fn record_identifier(&mut self, node: Node, token: &TokenReference) {
         self.identifier_positions
-            .push((node, token.start_position().bytes()));
+            .push((node, token.start_position().bytes(), self.scope()));
     }
 
     /// C# VisitCompilationUnit (ScopeAndVariableWalker.cs:93-103).
@@ -254,6 +265,7 @@ impl ScopeAndVariableWalker {
                         Some(self.base.make_node("NumericForStatement", nf.to_string())),
                     );
                     let id_name = self.base.make_node("IdentifierName", index_token.clone());
+                    self.record_identifier(id_name.clone(), nf.index_variable());
                     let id_for = self.base.make_node("NumericForStatement", nf.to_string());
                     self.variables.insert(id_name, variable.clone());
                     self.variables.insert(id_for, variable);
@@ -625,6 +637,7 @@ impl ScopeAndVariableWalker {
                         return;
                     }
                     let node = self.base.make_node("IdentifierName", name.clone());
+                    self.record_identifier(node.clone(), token);
                     let variable = self.get_variable_or_create_global(&name);
                     self.add_read(&node, &variable);
                 }

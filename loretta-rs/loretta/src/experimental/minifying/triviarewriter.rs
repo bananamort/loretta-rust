@@ -260,6 +260,9 @@ impl VisitorMut for TriviaRewriter {
     fn visit_ast(&mut self, ast: Ast) -> Ast {
         // Rebuild the token snapshot for this tree (the instance is reusable).
         self.tokens = collect_tokens(&ast);
+        // The C# GetNextToken yields the EOF after the last token; the
+        // collector only visits the node tokens, so the EOF is appended.
+        self.tokens.push(ast.eof().to_owned());
         self.index = 0;
         let eof = ast.eof().to_owned();
         let nodes = ast.nodes().clone().visit_mut(self);

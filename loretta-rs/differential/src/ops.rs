@@ -367,6 +367,23 @@ fn variable_kind_name(kind: loretta::scoping::variablekind::VariableKind) -> &'s
     }
 }
 
+/// Minify oracle: minifies with the alphabetical naming strategy + the
+/// sequential slot allocator (the C# MinifyOp's `tree.Minify(NamingStrategies.Alphabetical, new SequentialSlotAllocator())`).
+pub fn minify(code: &str) -> Result<Json, String> {
+    use loretta::experimental::luaextensions::minify_with;
+    use loretta::experimental::minifying::namingstrategies::NamingStrategies;
+    use loretta::experimental::minifying::sequentialslotallocator::SequentialSlotAllocator;
+    let minified = minify_with(
+        code,
+        Box::new(NamingStrategies::alphabetical),
+        Box::new(SequentialSlotAllocator::new()),
+    );
+    Ok(Json::Object(vec![(
+        "minified".into(),
+        Json::String(minified),
+    )]))
+}
+
 /// ConstantFolder oracle: parses the code, folds with both option presets
 /// (C# ConstantFoldingOptions(ExtractNumbersFromStrings: false/true)) and
 /// reports the original + folded texts, mirroring the C# reference's
