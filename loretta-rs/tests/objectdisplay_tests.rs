@@ -1,5 +1,7 @@
-// Ported from Compilers/Lua/Test/Portable/SymbolDisplay/ObjectDisplayTests.cs (b767b4e)
-// (the null-argument test is vacuous in Rust: &str has no null value)
+// Ported from Compilers/Lua/Test/Portable/SymbolDisplay/ObjectDisplayTests.cs (b767b4e): ObjectDisplayTests
+// Full C# re-read 2026-08-16 (157 lines, row 750): 10 #[test] case tables cover
+// every [Test]/[Arguments] case; the null-argument test is vacuous in Rust
+// (&str has no null value) — documented drop.
 
 use loretta::symbol_display::objectdisplay::ObjectDisplay;
 use loretta::symbol_display::objectdisplayoptions::ObjectDisplayOptions;
