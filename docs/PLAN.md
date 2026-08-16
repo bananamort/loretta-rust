@@ -10,7 +10,9 @@ We are using `full-moon` because it is maintained on crates.io and stays automat
 
 ## Decision Rationale
 
-Decisions are made for verbatim correctness on `full_moon`, not for docs: a Loretta feature with a `full_moon` equivalent is ported verbatim; only with no `full_moon` equivalent is it explicitly `DROP` (e.g., GLua) and then docs are amended via `spec:` PR to reflect that correct decision.
+Decisions are made for verbatim correctness on `full_moon`, not for docs: a Loretta feature with a `full_moon` equivalent is ported verbatim; only with no `full_moon` equivalent is it explicitly `DROP` and then docs are amended via `spec:` PR to reflect that correct decision.
+
+**Why only `GMod` (GLua) is `DROP`:** `LuaSyntaxOptions.GMod` (`acceptCCommentSyntax:true` `acceptCBooleanOperators:true`) adds `//`/`/* */` and `&&`/`||`/`!=`/`!`. `full_moon` `2.2.0` has no `Symbol` for `&&`/`||`/`!=`/`!` and no `TokenType` for `//` outside `[cfxlua]` `CStyleComment`; supporting them would require forking `full_moon`’s `lexer.rs`/`Symbol::from_str` — local parser upkeep that violates `Rationale` (`full_moon` on `crates.io` stays up-to-date, we port remaining logic). Therefore `GMod` is `DROP` per `Locked Decision 2`; every other `LuaSyntaxOptions` preset maps 1:1 to `full_moon` `LuaVersion`. An agent must not extend `DROP` to satisfy a failing gate — it must port verbatim; only a `spec:` PR that proves `full_moon` has no equivalent may amend `Port Boundary`, and `docs/` stays read-only per `AGENTS.md:34`.
 
 ## Requirements
 
