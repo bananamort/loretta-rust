@@ -286,6 +286,87 @@ pub fn messageprovider() -> Result<Json, String> {
     Ok(Json::Object(vec![("results".into(), Json::Array(results))]))
 }
 
+/// ScopeAndVariableManager oracle: builds the scope tree (the C# ScopeOp's
+/// ScopeToJson) — {label, rootScope, scopeCount}.
+pub fn scope(code: &str, label: &str) -> Result<Json, String> {
+    use loretta::scoping::iscope::IScope;
+    use loretta::scoping::ivariable::IVariable;
+    use loretta::script::scopeandvariablemanager::manager::ScopeAndVariableManager;
+
+    let mut manager = ScopeAndVariableManager::new(vec![code.to_string()]);
+    let state = manager.get_lazy_state();
+
+    fn scope_to_json(scope: &loretta::scoping::iscope::Scope) -> Json {
+        let mut fields: Vec<(String, Json)> = Vec::new();
+        fields.push((
+            "kind".into(),
+            Json::String(scope_kind_name(scope.kind()).to_string()),
+        ));
+        if let Some(node) = scope.node() {
+            fields.push((
+                "nodeKind".into(),
+                Json::String(node.kind_name().to_string()),
+            ));
+        }
+        let declared: Vec<Json> = scope
+            .declared_variables()
+            .iter()
+            .map(|v| {
+                Json::Object(vec![
+                    ("name".into(), Json::String(v.borrow().name().to_string())),
+                    (
+                        "kind".into(),
+                        Json::String(variable_kind_name(v.borrow().kind()).to_string()),
+                    ),
+                ])
+            })
+            .collect();
+        fields.push(("declaredVariables".into(), Json::Array(declared)));
+        let contained: Vec<Json> = scope
+            .contained_scopes()
+            .iter()
+            .map(|s| scope_to_json(&s.borrow()))
+            .collect();
+        fields.push(("containedScopes".into(), Json::Array(contained)));
+        Json::Object(fields)
+    }
+
+    fn count_scopes(scope: &loretta::scoping::iscope::Scope) -> i64 {
+        1 + scope
+            .contained_scopes()
+            .iter()
+            .map(|s| count_scopes(&s.borrow()))
+            .sum::<i64>()
+    }
+
+    let root_scope = state.root_scope.clone();
+    let root_json = scope_to_json(&root_scope.borrow());
+    let scope_count = count_scopes(&root_scope.borrow());
+    Ok(Json::Object(vec![
+        ("label".into(), Json::String(label.to_string())),
+        ("rootScope".into(), root_json),
+        ("scopeCount".into(), Json::Number(scope_count)),
+    ]))
+}
+
+fn scope_kind_name(kind: loretta::scoping::scopekind::ScopeKind) -> &'static str {
+    match kind {
+        loretta::scoping::scopekind::ScopeKind::Global => "Global",
+        loretta::scoping::scopekind::ScopeKind::File => "File",
+        loretta::scoping::scopekind::ScopeKind::Function => "Function",
+        loretta::scoping::scopekind::ScopeKind::Block => "Block",
+    }
+}
+
+fn variable_kind_name(kind: loretta::scoping::variablekind::VariableKind) -> &'static str {
+    match kind {
+        loretta::scoping::variablekind::VariableKind::Local => "Local",
+        loretta::scoping::variablekind::VariableKind::Global => "Global",
+        loretta::scoping::variablekind::VariableKind::Parameter => "Parameter",
+        loretta::scoping::variablekind::VariableKind::Iteration => "Iteration",
+    }
+}
+
 /// ConstantFolder oracle: parses the code, folds with both option presets
 /// (C# ConstantFoldingOptions(ExtractNumbersFromStrings: false/true)) and
 /// reports the original + folded texts, mirroring the C# reference's
