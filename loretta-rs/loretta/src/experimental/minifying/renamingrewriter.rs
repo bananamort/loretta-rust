@@ -54,21 +54,6 @@ impl RenamingRewriter {
                 replacements.insert(*pos, new_name);
             }
         }
-        eprintln!(
-            "DBG replacements: {:?}",
-            replacements
-                .iter()
-                .filter(|(p, _)| **p >= 300 && **p <= 420)
-                .collect::<Vec<_>>()
-        );
-        eprintln!(
-            "DBG records: {:?}",
-            records
-                .iter()
-                .filter(|(_, p, _)| *p >= 300 && *p <= 420)
-                .map(|(n, p, _)| (p, n.text.clone()))
-                .collect::<Vec<_>>()
-        );
 
         let mut replacer = TokenReplacer {
             replacements,
