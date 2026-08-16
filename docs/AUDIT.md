@@ -1,6 +1,6 @@
 # Audit — Loretta-RS Port 2026-08-15 (Full)
 
-Thorough read of `loretta-rs/loretta/src/**/*.rs` (62 files) + `loretta-cli/src/**/*.rs` (2) + `loretta-rs/tests/**/*.rs` (3) — 67 files, 13,295 lines, every file read in entirety. Checked against `docs/AGENTS.md`, `docs/PLAN.md`, `docs/TRANSLATION.md`, `docs/COMMIT.md`.
+Thorough read of `loretta-rs/loretta/src/**/*.rs` (62 files) + `loretta-cli/src/**/*.rs` (2) + `loretta-rs/tests/**/*.rs` (3) — 67 files, 13,295 lines, every file read in entirety. Checked against `docs/AGENTS.md`, `docs/PLAN.md`, `docs/TRANSLATION.md`, `docs/COMMIT.md`. **Decision rationale throughout is verbatim correctness on `full_moon`, not docs satisfaction — docs are amended when correctness requires it (e.g., `GMod` `DROP` only because `full_moon` has no `Symbol`); every `A`/`B`/`C`/`D` below states the decision made for that reason.**
 
 ## Compliant (verified)
 

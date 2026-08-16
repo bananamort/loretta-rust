@@ -8,6 +8,10 @@ Keep this file in sync with `AGENTS.md`.
 
 We are using `full-moon` because it is maintained on crates.io and stays automatically up-to-date with Luau syntax updates. This replaces the need to port Loretta's equivalent functionality, allowing us to port Loretta's remaining logic directly onto `full-moon`.
 
+## Decision Rationale
+
+Decisions are made for verbatim correctness on `full_moon`, not for docs: a Loretta feature with a `full_moon` equivalent is ported verbatim; only with no `full_moon` equivalent is it explicitly `DROP` (e.g., GLua) and then docs are amended via `spec:` PR to reflect that correct decision.
+
 ## Requirements
 
 1. **Logic Parity.** Port Loretta's logic verbatim without omitting code.

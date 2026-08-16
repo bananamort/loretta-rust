@@ -9,6 +9,10 @@ Port Loretta (`../references/Loretta/src/Compilers/Lua/Portable/`) verbatim from
 
 We are using `full-moon` because it is maintained on crates.io and stays automatically up-to-date with Luau syntax updates. This replaces the need to port Loretta's equivalent functionality, allowing us to port Loretta's remaining logic directly onto `full-moon`.
 
+## Decision Rationale
+
+Every decision is made to achieve a **verbatim** port of C# Loretta to Rust using `full_moon` — correctly and byte-for-byte — **not** to satisfy documentation. If a Loretta feature has a `full_moon` equivalent, it is ported verbatim via mechanical adaptation (e.g., `TextSpan` → `Position.bytes`). Only if `full_moon` **has no equivalent** is it explicitly dropped per `Port Boundary` (e.g., GLua `&&`/`||`/`!=`/`!` and `//`/`/* */` have no `full_moon` `Symbol`/`TokenType` and would require local parser upkeep, so they are `DROP`; all other `LuaSyntaxOptions` presets map to `full_moon` `LuaVersion` `luau`/`lua52`/`lua53`/`lua54`/`luajit`/`cfxlua`). Documentation is updated to reflect the correct verbatim decision, not vice versa — a `spec:` PR amends docs when the port’s correctness requires it.
+
 ## Requirements
 
 1. **Logic Parity.** Port Loretta's logic verbatim without omitting or skipping code. Same types, same member names (snake_cased), same control flow, same constants, same error codes and messages.
