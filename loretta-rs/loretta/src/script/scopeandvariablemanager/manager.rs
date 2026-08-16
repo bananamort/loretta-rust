@@ -28,12 +28,14 @@ impl ScopeAndVariableManager {
         ScopeAndVariableManager { trees, state: None }
     }
 
-    /// C# GetLazyState (ScopeAndVariableManager.cs:13-21).
+    /// C# GetLazyState (ScopeAndVariableManager.cs:13-21). The port returns
+    /// a clone (the C# state is memoized; the Rc-based graph shares the
+    /// instances, so the clone preserves the identity).
     pub fn get_lazy_state(&mut self) -> State {
         if self.state.is_none() {
             self.state = Some(Self::calculate_state(&self.trees));
         }
-        self.state.take().expect("state calculated")
+        self.state.clone().expect("state calculated")
     }
 
     /// C# CalculateState (ScopeAndVariableManager.cs:23-54).

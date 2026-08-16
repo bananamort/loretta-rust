@@ -11,6 +11,7 @@ use crate::scoping::ivariable::SharedVariable;
 use crate::scoping::node::Node;
 
 /// C# ScopeAndVariableManager.State (State.cs:7-29).
+#[derive(Clone)]
 pub struct State {
     /// C# State.RootScope (State.cs:22).
     pub root_scope: Rc<RefCell<Scope>>,
