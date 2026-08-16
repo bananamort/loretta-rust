@@ -11,10 +11,19 @@ using Microsoft.CodeAnalysis.MSBuild;
 // This tool fails if any MemberDeclarationSyntax has no corresponding graph node.
 
 var solutionPath = args.Length > 0 && !args[0].EndsWith(".json", StringComparison.OrdinalIgnoreCase)
+    && args[0] != "--include" && args[0] != "--output"
     ? args[0] : "../../../../references/Loretta/Loretta.sln";
-var rawOutput = args.Length > 1 ? args[1]
-    : args.Length == 1 && args[0].EndsWith(".json", StringComparison.OrdinalIgnoreCase) ? args[0]
-    : null;
+// --include <dir> (repeatable) selects the C# dirs to scan; --output <path>
+// names the nodes file (the edges/topo names derive from its base name).
+var includeDirs = new List<string>();
+string? outputArg = null;
+for (var i = 0; i < args.Length; i++)
+{
+    if (args[i] == "--include" && i + 1 < args.Length) includeDirs.Add(args[i + 1]);
+    else if (args[i] == "--output" && i + 1 < args.Length) outputArg = args[i + 1];
+    else if (args[i].EndsWith(".json", StringComparison.OrdinalIgnoreCase)) outputArg = args[i];
+}
+var rawOutput = outputArg;
 
 if (!MSBuildLocator.IsRegistered)
 {
@@ -54,13 +63,18 @@ if (!Directory.Exists(Path.Combine(repoRoot, "references/Loretta/src/Compilers/L
 var outputPath = rawOutput != null ? Path.GetFullPath(rawOutput) : Path.Combine(repoRoot, "loretta-rs/nodes.json");
 var outputDir = Path.GetDirectoryName(outputPath);
 if (outputDir != null) Directory.CreateDirectory(outputDir);
-var edgesPath = Path.Combine(outputDir ?? repoRoot, "edges.json");
-var topoPath = Path.Combine(outputDir ?? repoRoot, "topo.json");
+var outputBase = Path.GetFileNameWithoutExtension(outputPath);
+var edgesPath = Path.Combine(outputDir ?? repoRoot, outputBase == "nodes" ? "edges.json" : $"{outputBase}-edges.json");
+var topoPath = Path.Combine(outputDir ?? repoRoot, outputBase == "nodes" ? "topo.json" : $"{outputBase}-topo.json");
 var luaPortable = Path.Combine(repoRoot, "references/Loretta/src/Compilers/Lua/Portable");
 var luaExperimental = Path.Combine(repoRoot, "references/Loretta/src/Compilers/Lua/Experimental");
 var luaCommandLine = Path.Combine(repoRoot, "references/Loretta/src/Compilers/Lua/CommandLine");
 
-var includedDirs = new[] { luaPortable, luaExperimental, luaCommandLine }.Where(Directory.Exists).ToList();
+var defaultDirs = new[] { luaPortable, luaExperimental, luaCommandLine };
+var includedDirs = includeDirs.Count > 0
+    ? includeDirs.Select(d => Path.GetFullPath(d, repoRoot)).Where(Directory.Exists).ToList()
+    : defaultDirs.Where(Directory.Exists).ToList();
+
 if (includedDirs.Count == 0)
 {
     Console.Error.WriteLine($"No included dirs found under {repoRoot}. Tried: {string.Join(", ", new[] { luaPortable, luaExperimental, luaCommandLine })}");
