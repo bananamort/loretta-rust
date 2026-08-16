@@ -1,0 +1,5 @@
+{
+  "treeText": "-- ConstantFolder hex-string extraction: the C# long.TryParse with\n-- AllowLeadingSign | AllowHexSpecifier throws ArgumentException on .NET 10\n-- (pinned behavior \u2014 the reference errors the whole op).\nlocal ag = \u00220x10\u0022 \u002B 1\n",
+  "rootKind": "CompilationUnit",
+  "hasErrors": false
+}

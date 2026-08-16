@@ -1,0 +1,5 @@
+{
+  "error": "With the AllowHexSpecifier or AllowBinarySpecifier bit set in the enum bit field, the only other valid bits that can be combined into the enum value must be AllowLeadingWhite and AllowTrailingWhite. (Parameter \u0027style\u0027)",
+  "op": "constantfold",
+  "preset": "Lua52"
+}
