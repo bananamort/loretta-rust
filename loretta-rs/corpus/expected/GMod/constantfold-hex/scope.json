@@ -1,5 +1,5 @@
 {
-  "label": "corpus/features/constantfold-hex.lua",
+  "label": "loretta-rs/corpus/features/constantfold-hex.lua",
   "rootScope": {
     "kind": "Global",
     "declaredVariables": [],
