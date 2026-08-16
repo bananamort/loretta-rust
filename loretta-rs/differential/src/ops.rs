@@ -294,7 +294,7 @@ pub fn messageprovider() -> Result<Json, String> {
 /// here and reported as the reference's error entry.
 pub fn constantfold(code: &str, preset: &str) -> Result<Json, String> {
     use loretta::experimental::constantfoldingoptions::ConstantFoldingOptions;
-    use loretta::experimental::syntaxextensions::constant_fold;
+    use loretta::experimental::luaextensions::constant_fold;
 
     let ast = full_moon::parse(code).map_err(|errors| format!("parse failed: {errors:?}"))?;
     let original = ast.to_string();
