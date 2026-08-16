@@ -15,5 +15,9 @@ name = "stringutils_tests"
 path = "stringutils_tests.rs"
 
 [[test]]
+name = "syntaxkind_tests"
+path = "syntaxkind_tests.rs"
+
+[[test]]
 name = "objectdisplay_tests"
 path = "objectdisplay_tests.rs"
