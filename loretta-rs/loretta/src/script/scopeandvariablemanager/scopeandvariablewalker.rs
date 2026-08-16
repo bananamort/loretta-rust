@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use full_moon::ast;
-use full_moon::tokenizer::Symbol;
+use full_moon::tokenizer::{Symbol, TokenReference};
 
 use crate::scoping::igotolabel::GotoLabel;
 use crate::scoping::iscope::Scope;
@@ -33,6 +33,9 @@ pub struct ScopeAndVariableWalker {
     label_walker: crate::script::scopeandvariablemanager::gotolabelwalker::GotoLabelWalker,
     /// C# the GotoWalker (unified inline — see the Goto arm).
     goto_walker: crate::script::scopeandvariablemanager::gotowalker::GotoWalker,
+    /// The identifier token positions (the node + the token's start byte) —
+    /// used by the rename rewriter's token replacement.
+    pub identifier_positions: Vec<(Node, usize)>,
 }
 
 impl ScopeAndVariableWalker {
@@ -57,6 +60,7 @@ impl ScopeAndVariableWalker {
                 scopes,
                 HashMap::new(),
             ),
+            identifier_positions: Vec::new(),
         };
         walker.scope_stack.push(root_scope);
         walker
@@ -143,6 +147,12 @@ impl ScopeAndVariableWalker {
         self.scope().borrow_mut().add_referenced_variable(variable);
     }
 
+    /// Records an identifier token position for the rename rewriter.
+    pub fn record_identifier(&mut self, node: Node, token: &TokenReference) {
+        self.identifier_positions
+            .push((node, token.start_position().bytes()));
+    }
+
     /// C# VisitCompilationUnit (ScopeAndVariableWalker.cs:93-103).
     pub fn visit_ast(&mut self, full_ast: &ast::Ast) {
         let text = full_ast.to_string();
@@ -188,7 +198,8 @@ impl ScopeAndVariableWalker {
                                 continue;
                             }
                             let text = token.token().to_string();
-                            let node = self.base.make_node("IdentifierName", text);
+                            let node = self.base.make_node("IdentifierName", text.clone());
+                            self.record_identifier(node.clone(), token);
                             let variable = self.get_variable_or_create_global(&name);
                             self.variables.insert(node.clone(), variable.clone());
                             variable.borrow_mut().add_write_location(
@@ -212,6 +223,7 @@ impl ScopeAndVariableWalker {
                         return;
                     }
                     let node = self.base.make_node("IdentifierName", name.clone());
+                    self.record_identifier(node.clone(), token);
                     let variable = self.get_variable_or_create_global(&name);
                     self.variables.insert(node.clone(), variable.clone());
                     variable.borrow_mut().add_write_location(
@@ -267,10 +279,9 @@ impl ScopeAndVariableWalker {
                         &identifier_name,
                         Some(self.base.make_node("GenericForStatement", gf.to_string())),
                     );
-                    self.variables.insert(
-                        self.base.make_node("IdentifierName", identifier_name),
-                        variable,
-                    );
+                    let name_node = self.base.make_node("IdentifierName", identifier_name);
+                    self.record_identifier(name_node.clone(), name);
+                    self.variables.insert(name_node, variable);
                 }
                 self.visit_block(gf.block());
                 self.pop_scope(&scope);
@@ -334,6 +345,7 @@ impl ScopeAndVariableWalker {
                         ),
                     );
                     let name_node = self.base.make_node("IdentifierName", identifier_name);
+                    self.record_identifier(name_node.clone(), name);
                     self.variables.insert(name_node, variable.clone());
                     variable.borrow_mut().add_write_location(
                         self.base
@@ -489,6 +501,7 @@ impl ScopeAndVariableWalker {
         if let Some(first) = names.first() {
             let name_text = first.token().to_string();
             let node = self.base.make_node("SimpleFunctionName", name_text.clone());
+            self.record_identifier(node.clone(), first);
             let variable = self.get_variable_or_create_global(&name_text);
             self.variables.insert(node, variable.clone());
             if is_plain {
@@ -516,6 +529,7 @@ impl ScopeAndVariableWalker {
                     return;
                 }
                 let node = self.base.make_node("IdentifierName", name.clone());
+                self.record_identifier(node.clone(), token);
                 let variable = self.get_variable_or_create_global(&name);
                 self.add_read(&node, &variable);
             }
@@ -635,6 +649,7 @@ impl ScopeAndVariableWalker {
                     return;
                 }
                 let node = self.base.make_node("IdentifierName", name.clone());
+                self.record_identifier(node.clone(), token);
                 let variable = self.get_variable_or_create_global(&name);
                 self.add_read(&node, &variable);
             }
