@@ -452,7 +452,7 @@ Generated from `loretta-rs/nodes.json` (`744` distinct symbols, `803` MemberDecl
 | 441 | `Loretta.CLI.Program.SlotAllocator.Sequential:Field@Program.cs:304` | `Loretta.CLI.Program.SlotAllocator.Sequential` | `src/Compilers/Lua/CommandLine/Program.cs:304` | `loretta-cli/src/main.rs` | done | — |
 | 442 | `Loretta.CLI.Program.SlotAllocator.Sorted:Field@Program.cs:305` | `Loretta.CLI.Program.SlotAllocator.Sorted` | `src/Compilers/Lua/CommandLine/Program.cs:305` | `loretta-cli/src/main.rs` | done | — |
 | 445 | `Loretta.CLI.Program.MultiLua(string):Method@Program.cs:364` | `Loretta.CLI.Program.MultiLua(string)` | `src/Compilers/Lua/CommandLine/Program.cs:364` | `loretta-cli/src/main.rs` | done | — |
-| 446 | `Loretta.CLI.Program.MultiLuaExpression(string):Method@Program.cs:366` | `Loretta.CLI.Program.MultiLuaExpression(string)` | `src/Compilers/Lua/CommandLine/Program.cs:366` | `loretta-cli/src/main.rs` | pending | — |
+| 446 | `Loretta.CLI.Program.MultiLuaExpression(string):Method@Program.cs:366` | `Loretta.CLI.Program.MultiLuaExpression(string)` | `src/Compilers/Lua/CommandLine/Program.cs:366` | `loretta-cli/src/main.rs` | done | — |
 | 447 | `Loretta.CLI.Program.RunMultiLua(params string[]):Method@Program.cs:380` | `Loretta.CLI.Program.RunMultiLua(params string[])` | `src/Compilers/Lua/CommandLine/Program.cs:380` | `loretta-cli/src/main.rs` | pending | — |
 | 448 | `Loretta.CLI.Program.Clear():Method@Program.cs:437` | `Loretta.CLI.Program.Clear()` | `src/Compilers/Lua/CommandLine/Program.cs:437` | `loretta-cli/src/main.rs` | pending | — |
 | 449 | `Loretta.CLI.Program.s_currentProc:Field@Program.cs:441` | `Loretta.CLI.Program.s_currentProc` | `src/Compilers/Lua/CommandLine/Program.cs:441` | `loretta-cli/src/main.rs` | pending | — |
