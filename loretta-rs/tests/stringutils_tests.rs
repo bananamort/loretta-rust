@@ -1,6 +1,7 @@
-// Ported from Compilers/Lua/Test/Portable/Utilities/StringUtilsTests.cs (b767b4e):
-// StringUtils_Trim_WorksCorrectly, StringUtils_TrimSpan_WorksCorrectly
-// (the string and span overloads are merged into one trim(&str) per the port)
+// Ported from Compilers/Lua/Test/Portable/Utilities/StringUtilsTests.cs (b767b4e): StringUtilsTests
+// Full C# re-read 2026-08-16 (32 lines, row 753): 2 #[test] case tables cover
+// both [Test]s and all 12 [Arguments] cases (the string and span overloads
+// merge into one trim(&str) per the port).
 
 use loretta::utilities::stringutils::StringUtils;
 
