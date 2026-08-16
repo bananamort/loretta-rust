@@ -21,3 +21,7 @@ path = "syntaxkind_tests.rs"
 [[test]]
 name = "objectdisplay_tests"
 path = "objectdisplay_tests.rs"
+
+[[test]]
+name = "constantfolder_tests"
+path = "constantfolder_tests.rs"
