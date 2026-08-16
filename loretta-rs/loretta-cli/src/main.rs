@@ -175,8 +175,8 @@ enum LuaSyntaxOptionsPreset {
 }
 
 /// C# Program.ListSymbols — lists the current directory's entries
-/// (Program.cs:112-118). The .NET enumeration order is unspecified, so the
-/// port sorts each group for a deterministic oracle.
+/// (Program.cs:112-118). The directory enumeration order is the OS order,
+/// exactly as the C# EnumerateDirectories/EnumerateFiles (no sort).
 fn list_symbols() {
     if let Ok(dir) = std::env::current_dir() {
         if let Ok(entries) = std::fs::read_dir(dir) {
@@ -191,8 +191,6 @@ fn list_symbols() {
                     files.push(name);
                 }
             }
-            dirs.sort();
-            files.sort();
             for d in dirs {
                 S_LOGGER.write_line(&format!("./{d}/"));
             }
