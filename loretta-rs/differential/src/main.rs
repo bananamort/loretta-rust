@@ -149,11 +149,12 @@ fn file_stem(path: &str) -> String {
 /// pending coverage until the per-preset version-gating diagnostics land;
 /// every other difference is a hard failure (drift = bug in Rust).
 fn run_check(expected_dir: &str, tmp_dir: &str) {
-    const OPS: [&str; 10] = [
+    const OPS: [&str; 11] = [
         "options",
         "diagnostics",
         "lex",
         "parse",
+        "scope",
         "constantfold",
         "charutils",
         "objectdisplay",
@@ -191,9 +192,18 @@ fn run_check(expected_dir: &str, tmp_dir: &str) {
                     continue;
                 }
                 let run = std::process::Command::new(env::current_exe().expect("current exe"))
+                    // The C# reference labels carry the repo-root-relative
+                    // paths ("loretta-rs/corpus/..."), so the subprocess runs
+                    // from the repo root with those paths.
+                    .current_dir(
+                        env::current_dir()
+                            .expect("current dir")
+                            .parent()
+                            .expect("workspace parent"),
+                    )
                     .arg(op)
                     .arg(preset)
-                    .arg(file)
+                    .arg(format!("loretta-rs/{file}"))
                     .output()
                     .expect("run differential");
                 // Console mode ends with println's single '\n'; the reference
@@ -232,7 +242,8 @@ fn run_check(expected_dir: &str, tmp_dir: &str) {
     for file in &files {
         let stem = file_stem(file);
         for preset in PRESETS {
-            for op in ["scope", "minify"] {
+            let op = "minify";
+            {
                 let exp_path = expected_root
                     .join(preset)
                     .join(&stem)
@@ -260,13 +271,13 @@ fn run_check(expected_dir: &str, tmp_dir: &str) {
     }
 }
 
-fn run_operation(operation: &str, preset: &str, code: &str, _label: &str) -> Result<Json, String> {
+fn run_operation(operation: &str, preset: &str, code: &str, label: &str) -> Result<Json, String> {
     match operation {
         "options" => ops::options(preset),
         "diagnostics" => ops::diagnostics(code),
         "lex" => ops::lex(code),
         "parse" => ops::parse(code),
-        "scope" => Err("scope: not yet ported (needs scoping/script nodes)".to_string()),
+        "scope" => ops::scope(code, label),
         "messageprovider" => ops::messageprovider(),
         "gotolabel" => ops::gotolabel(),
         "constantfold" => ops::constantfold(code, preset),
@@ -295,7 +306,7 @@ fn run_operation(operation: &str, preset: &str, code: &str, _label: &str) -> Res
             ] {
                 map.insert(
                     op.to_string(),
-                    run_operation(op, preset, code, _label)
+                    run_operation(op, preset, code, label)
                         .unwrap_or_else(|e| Json::Object(vec![("error".into(), Json::String(e))])),
                 );
             }
