@@ -1,3 +1,3 @@
 {
-  "minified": "return 1\u002B2"
+  "minified": "local a=1\u002B2 local b=3-4 local c=5*6 local d=7/2 local e=8%3 local f=2^10 local g=-5 local h=-2.5 local i=not true local j=not false local k=#\u0022hello\u0022local l=\u0022foo\u0022..\u0022bar\u0022local m=\u0022x\u0022.. 1 local n=1\u003C2 local o=2\u003C=2 local p=3\u003E4 local q=4\u003E=4 local r=1==1 local s=1~=2 local t=\u0022a\u0022==\u0022a\u0022local u=\u0022a\u0022\u003C\u0022b\u0022local v=true==false local w=true and 5 local x=false or 7 local y=nil or\u0022default\u0022local z=(1\u002B2)*3 local ba=((4))local bb=({y=2}).y local bc=\u002210\u0022\u002B5 local bd=\u00221e2\u0022\u002B1 local be=1.5\u002B2 local bf=x\u002B1 return a"
 }

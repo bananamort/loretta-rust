@@ -149,11 +149,12 @@ fn file_stem(path: &str) -> String {
 /// pending coverage until the per-preset version-gating diagnostics land;
 /// every other difference is a hard failure (drift = bug in Rust).
 fn run_check(expected_dir: &str, tmp_dir: &str) {
-    const OPS: [&str; 9] = [
+    const OPS: [&str; 10] = [
         "options",
         "diagnostics",
         "lex",
         "parse",
+        "constantfold",
         "charutils",
         "objectdisplay",
         "messageprovider",
@@ -231,7 +232,7 @@ fn run_check(expected_dir: &str, tmp_dir: &str) {
     for file in &files {
         let stem = file_stem(file);
         for preset in PRESETS {
-            for op in ["scope", "constantfold", "minify"] {
+            for op in ["scope", "minify"] {
                 let exp_path = expected_root
                     .join(preset)
                     .join(&stem)
@@ -246,7 +247,7 @@ fn run_check(expected_dir: &str, tmp_dir: &str) {
     println!("Oracle 2 — differential check (Rust vs C# reference)");
     println!("  identical: {identical}");
     println!("  pending (version-gating diagnostics not ported): {pending}");
-    println!("  not implemented (scope/constantfold/minify ops): {not_implemented}");
+    println!("  not implemented (scope/minify ops): {not_implemented}");
     println!("  FAILED: {failed}");
     for f in &failures {
         println!("    FAIL {f}");
@@ -268,9 +269,7 @@ fn run_operation(operation: &str, preset: &str, code: &str, _label: &str) -> Res
         "scope" => Err("scope: not yet ported (needs scoping/script nodes)".to_string()),
         "messageprovider" => ops::messageprovider(),
         "gotolabel" => ops::gotolabel(),
-        "constantfold" => {
-            Err("constantfold: not yet ported (needs experimental nodes)".to_string())
-        }
+        "constantfold" => ops::constantfold(code, preset),
         "minify" => Err("minify: not yet ported (needs experimental nodes)".to_string()),
         "charutils" => ops::charutils(code),
         "stringutils" => ops::stringutils(),

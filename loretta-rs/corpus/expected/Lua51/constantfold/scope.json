@@ -1,5 +1,5 @@
 {
-  "label": "loretta-rs/corpus/features/constantfold.lua",
+  "label": "corpus/features/constantfold.lua",
   "rootScope": {
     "kind": "Global",
     "declaredVariables": [],
@@ -15,6 +15,134 @@
           {
             "name": "...",
             "kind": "Parameter"
+          },
+          {
+            "name": "a",
+            "kind": "Local"
+          },
+          {
+            "name": "b",
+            "kind": "Local"
+          },
+          {
+            "name": "c",
+            "kind": "Local"
+          },
+          {
+            "name": "d",
+            "kind": "Local"
+          },
+          {
+            "name": "e",
+            "kind": "Local"
+          },
+          {
+            "name": "f",
+            "kind": "Local"
+          },
+          {
+            "name": "g",
+            "kind": "Local"
+          },
+          {
+            "name": "h",
+            "kind": "Local"
+          },
+          {
+            "name": "i",
+            "kind": "Local"
+          },
+          {
+            "name": "j",
+            "kind": "Local"
+          },
+          {
+            "name": "k",
+            "kind": "Local"
+          },
+          {
+            "name": "l",
+            "kind": "Local"
+          },
+          {
+            "name": "m",
+            "kind": "Local"
+          },
+          {
+            "name": "n",
+            "kind": "Local"
+          },
+          {
+            "name": "o",
+            "kind": "Local"
+          },
+          {
+            "name": "p",
+            "kind": "Local"
+          },
+          {
+            "name": "q",
+            "kind": "Local"
+          },
+          {
+            "name": "r",
+            "kind": "Local"
+          },
+          {
+            "name": "s",
+            "kind": "Local"
+          },
+          {
+            "name": "t",
+            "kind": "Local"
+          },
+          {
+            "name": "u",
+            "kind": "Local"
+          },
+          {
+            "name": "v",
+            "kind": "Local"
+          },
+          {
+            "name": "w",
+            "kind": "Local"
+          },
+          {
+            "name": "x",
+            "kind": "Local"
+          },
+          {
+            "name": "y",
+            "kind": "Local"
+          },
+          {
+            "name": "z",
+            "kind": "Local"
+          },
+          {
+            "name": "aa",
+            "kind": "Local"
+          },
+          {
+            "name": "ac",
+            "kind": "Local"
+          },
+          {
+            "name": "af",
+            "kind": "Local"
+          },
+          {
+            "name": "ah",
+            "kind": "Local"
+          },
+          {
+            "name": "ai",
+            "kind": "Local"
+          },
+          {
+            "name": "aj",
+            "kind": "Local"
           }
         ],
         "containedScopes": []

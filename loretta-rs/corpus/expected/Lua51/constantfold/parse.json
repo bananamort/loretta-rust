@@ -1,5 +1,5 @@
 {
-  "treeText": "return 1 \u002B 2\n",
+  "treeText": "-- ConstantFolder: arithmetic, unary, concat, comparisons, logic, tables,\n-- parens and string-number extraction (all Lua 5.1-compatible so every\n-- preset parses it).\nlocal a = 1 \u002B 2\nlocal b = 3 - 4\nlocal c = 5 * 6\nlocal d = 7 / 2\nlocal e = 8 % 3\nlocal f = 2 ^ 10\nlocal g = -5\nlocal h = -2.5\nlocal i = not true\nlocal j = not false\nlocal k = #\u0022hello\u0022\nlocal l = \u0022foo\u0022 .. \u0022bar\u0022\nlocal m = \u0022x\u0022 .. 1\nlocal n = 1 \u003C 2\nlocal o = 2 \u003C= 2\nlocal p = 3 \u003E 4\nlocal q = 4 \u003E= 4\nlocal r = 1 == 1\nlocal s = 1 ~= 2\nlocal t = \u0022a\u0022 == \u0022a\u0022\nlocal u = \u0022a\u0022 \u003C \u0022b\u0022\nlocal v = true == false\nlocal w = true and 5\nlocal x = false or 7\nlocal y = nil or \u0022default\u0022\nlocal z = (1 \u002B 2) * 3\nlocal aa = ((4))\nlocal ac = ({ y = 2 }).y\nlocal af = \u002210\u0022 \u002B 5\nlocal ah = \u00221e2\u0022 \u002B 1\nlocal ai = 1.5 \u002B 2\nlocal aj = x \u002B 1\nreturn a\n",
   "rootKind": "CompilationUnit",
   "hasErrors": false
 }

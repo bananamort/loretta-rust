@@ -1,9 +1,21 @@
 {
   "tokens": [
     {
-      "kind": "ReturnKeyword",
-      "text": "return",
-      "fullText": "return ",
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "-- ConstantFolder: arithmetic, unary, concat, comparisons, logic, tables,\n-- parens and string-number extraction (all Lua 5.1-compatible so every\n-- preset parses it).\nlocal ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "a ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
       "isMissing": false
     },
     {
@@ -25,12 +37,1182 @@
       "isMissing": false
     },
     {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "b",
+      "fullText": "b ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "3",
+      "fullText": "3 ",
+      "isMissing": false
+    },
+    {
+      "kind": "MinusToken",
+      "text": "-",
+      "fullText": "- ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "4",
+      "fullText": "4\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "c",
+      "fullText": "c ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "5",
+      "fullText": "5 ",
+      "isMissing": false
+    },
+    {
+      "kind": "StarToken",
+      "text": "*",
+      "fullText": "* ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "6",
+      "fullText": "6\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "d",
+      "fullText": "d ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "7",
+      "fullText": "7 ",
+      "isMissing": false
+    },
+    {
+      "kind": "SlashToken",
+      "text": "/",
+      "fullText": "/ ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "e",
+      "fullText": "e ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "8",
+      "fullText": "8 ",
+      "isMissing": false
+    },
+    {
+      "kind": "PercentToken",
+      "text": "%",
+      "fullText": "% ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "3",
+      "fullText": "3\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "f",
+      "fullText": "f ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2 ",
+      "isMissing": false
+    },
+    {
+      "kind": "HatToken",
+      "text": "^",
+      "fullText": "^ ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "10",
+      "fullText": "10\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "g",
+      "fullText": "g ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "MinusToken",
+      "text": "-",
+      "fullText": "-",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "5",
+      "fullText": "5\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "h",
+      "fullText": "h ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "MinusToken",
+      "text": "-",
+      "fullText": "-",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2.5",
+      "fullText": "2.5\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "i",
+      "fullText": "i ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NotKeyword",
+      "text": "not",
+      "fullText": "not ",
+      "isMissing": false
+    },
+    {
+      "kind": "TrueKeyword",
+      "text": "true",
+      "fullText": "true\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "j",
+      "fullText": "j ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NotKeyword",
+      "text": "not",
+      "fullText": "not ",
+      "isMissing": false
+    },
+    {
+      "kind": "FalseKeyword",
+      "text": "false",
+      "fullText": "false\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "k",
+      "fullText": "k ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "HashToken",
+      "text": "#",
+      "fullText": "#",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022hello\u0022",
+      "fullText": "\u0022hello\u0022\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "l",
+      "fullText": "l ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022foo\u0022",
+      "fullText": "\u0022foo\u0022 ",
+      "isMissing": false
+    },
+    {
+      "kind": "DotDotToken",
+      "text": "..",
+      "fullText": ".. ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022bar\u0022",
+      "fullText": "\u0022bar\u0022\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "m",
+      "fullText": "m ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022x\u0022",
+      "fullText": "\u0022x\u0022 ",
+      "isMissing": false
+    },
+    {
+      "kind": "DotDotToken",
+      "text": "..",
+      "fullText": ".. ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "n",
+      "fullText": "n ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1 ",
+      "isMissing": false
+    },
+    {
+      "kind": "LessThanToken",
+      "text": "\u003C",
+      "fullText": "\u003C ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "o",
+      "fullText": "o ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2 ",
+      "isMissing": false
+    },
+    {
+      "kind": "LessThanEqualsToken",
+      "text": "\u003C=",
+      "fullText": "\u003C= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "p",
+      "fullText": "p ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "3",
+      "fullText": "3 ",
+      "isMissing": false
+    },
+    {
+      "kind": "GreaterThanToken",
+      "text": "\u003E",
+      "fullText": "\u003E ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "4",
+      "fullText": "4\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "q",
+      "fullText": "q ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "4",
+      "fullText": "4 ",
+      "isMissing": false
+    },
+    {
+      "kind": "GreaterThanEqualsToken",
+      "text": "\u003E=",
+      "fullText": "\u003E= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "4",
+      "fullText": "4\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "r",
+      "fullText": "r ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1 ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsEqualsToken",
+      "text": "==",
+      "fullText": "== ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "s",
+      "fullText": "s ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1 ",
+      "isMissing": false
+    },
+    {
+      "kind": "TildeEqualsToken",
+      "text": "~=",
+      "fullText": "~= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "t",
+      "fullText": "t ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022a\u0022",
+      "fullText": "\u0022a\u0022 ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsEqualsToken",
+      "text": "==",
+      "fullText": "== ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022a\u0022",
+      "fullText": "\u0022a\u0022\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "u",
+      "fullText": "u ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022a\u0022",
+      "fullText": "\u0022a\u0022 ",
+      "isMissing": false
+    },
+    {
+      "kind": "LessThanToken",
+      "text": "\u003C",
+      "fullText": "\u003C ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022b\u0022",
+      "fullText": "\u0022b\u0022\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "v",
+      "fullText": "v ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "TrueKeyword",
+      "text": "true",
+      "fullText": "true ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsEqualsToken",
+      "text": "==",
+      "fullText": "== ",
+      "isMissing": false
+    },
+    {
+      "kind": "FalseKeyword",
+      "text": "false",
+      "fullText": "false\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "w",
+      "fullText": "w ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "TrueKeyword",
+      "text": "true",
+      "fullText": "true ",
+      "isMissing": false
+    },
+    {
+      "kind": "AndKeyword",
+      "text": "and",
+      "fullText": "and ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "5",
+      "fullText": "5\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "x",
+      "fullText": "x ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "FalseKeyword",
+      "text": "false",
+      "fullText": "false ",
+      "isMissing": false
+    },
+    {
+      "kind": "OrKeyword",
+      "text": "or",
+      "fullText": "or ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "7",
+      "fullText": "7\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "y",
+      "fullText": "y ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NilKeyword",
+      "text": "nil",
+      "fullText": "nil ",
+      "isMissing": false
+    },
+    {
+      "kind": "OrKeyword",
+      "text": "or",
+      "fullText": "or ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u0022default\u0022",
+      "fullText": "\u0022default\u0022\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "z",
+      "fullText": "z ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1 ",
+      "isMissing": false
+    },
+    {
+      "kind": "PlusToken",
+      "text": "\u002B",
+      "fullText": "\u002B ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ") ",
+      "isMissing": false
+    },
+    {
+      "kind": "StarToken",
+      "text": "*",
+      "fullText": "* ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "3",
+      "fullText": "3\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "aa",
+      "fullText": "aa ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "4",
+      "fullText": "4",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "ac",
+      "fullText": "ac ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenParenthesisToken",
+      "text": "(",
+      "fullText": "(",
+      "isMissing": false
+    },
+    {
+      "kind": "OpenBraceToken",
+      "text": "{",
+      "fullText": "{ ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "y",
+      "fullText": "y ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2 ",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseBraceToken",
+      "text": "}",
+      "fullText": "}",
+      "isMissing": false
+    },
+    {
+      "kind": "CloseParenthesisToken",
+      "text": ")",
+      "fullText": ")",
+      "isMissing": false
+    },
+    {
+      "kind": "DotToken",
+      "text": ".",
+      "fullText": ".",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "y",
+      "fullText": "y\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "af",
+      "fullText": "af ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u002210\u0022",
+      "fullText": "\u002210\u0022 ",
+      "isMissing": false
+    },
+    {
+      "kind": "PlusToken",
+      "text": "\u002B",
+      "fullText": "\u002B ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "5",
+      "fullText": "5\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "ah",
+      "fullText": "ah ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "StringLiteralToken",
+      "text": "\u00221e2\u0022",
+      "fullText": "\u00221e2\u0022 ",
+      "isMissing": false
+    },
+    {
+      "kind": "PlusToken",
+      "text": "\u002B",
+      "fullText": "\u002B ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "ai",
+      "fullText": "ai ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1.5",
+      "fullText": "1.5 ",
+      "isMissing": false
+    },
+    {
+      "kind": "PlusToken",
+      "text": "\u002B",
+      "fullText": "\u002B ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "2",
+      "fullText": "2\n",
+      "isMissing": false
+    },
+    {
+      "kind": "LocalKeyword",
+      "text": "local",
+      "fullText": "local ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "aj",
+      "fullText": "aj ",
+      "isMissing": false
+    },
+    {
+      "kind": "EqualsToken",
+      "text": "=",
+      "fullText": "= ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "x",
+      "fullText": "x ",
+      "isMissing": false
+    },
+    {
+      "kind": "PlusToken",
+      "text": "\u002B",
+      "fullText": "\u002B ",
+      "isMissing": false
+    },
+    {
+      "kind": "NumericLiteralToken",
+      "text": "1",
+      "fullText": "1\n",
+      "isMissing": false
+    },
+    {
+      "kind": "ReturnKeyword",
+      "text": "return",
+      "fullText": "return ",
+      "isMissing": false
+    },
+    {
+      "kind": "IdentifierToken",
+      "text": "a",
+      "fullText": "a\n",
+      "isMissing": false
+    },
+    {
       "kind": "EndOfFileToken",
       "text": "",
       "fullText": "",
       "isMissing": false
     }
   ],
-  "count": 5,
+  "count": 202,
   "roundTrip": true
 }

@@ -286,6 +286,62 @@ pub fn messageprovider() -> Result<Json, String> {
     Ok(Json::Object(vec![("results".into(), Json::Array(results))]))
 }
 
+/// ConstantFolder oracle: parses the code, folds with both option presets
+/// (C# ConstantFoldingOptions(ExtractNumbersFromStrings: false/true)) and
+/// reports the original + folded texts, mirroring the C# reference's
+/// ConstantFoldOp. The C# hex-integer extraction throws ArgumentException on
+/// .NET 8+ (pinned by the constantfold-hex corpus case); the panic is caught
+/// here and reported as the reference's error entry.
+pub fn constantfold(code: &str, preset: &str) -> Result<Json, String> {
+    use loretta::experimental::constantfoldingoptions::ConstantFoldingOptions;
+    use loretta::experimental::syntaxextensions::constant_fold;
+
+    let ast = full_moon::parse(code).map_err(|errors| format!("parse failed: {errors:?}"))?;
+    let original = ast.to_string();
+    let fold_with = |options: ConstantFoldingOptions, original: &str| {
+        let folded = constant_fold(ast.clone(), options);
+        let folded_text = folded.to_string();
+        Json::Object(vec![
+            ("foldedText".into(), Json::String(folded_text.clone())),
+            ("same".into(), Json::Bool(folded_text == original)),
+        ])
+    };
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        let without_extraction = fold_with(
+            ConstantFoldingOptions {
+                extract_numbers_from_strings: false,
+            },
+            &original,
+        );
+        let with_extraction = fold_with(
+            ConstantFoldingOptions {
+                extract_numbers_from_strings: true,
+            },
+            &original,
+        );
+        Json::Object(vec![
+            ("original".into(), Json::String(original)),
+            ("withoutExtraction".into(), without_extraction),
+            ("withExtraction".into(), with_extraction),
+        ])
+    }));
+    match result {
+        Ok(j) => Ok(j),
+        Err(payload) => {
+            let msg = payload
+                .downcast_ref::<String>()
+                .cloned()
+                .or_else(|| payload.downcast_ref::<&str>().map(|s| s.to_string()))
+                .unwrap_or_default();
+            Ok(Json::Object(vec![
+                ("error".into(), Json::String(msg)),
+                ("op".into(), Json::String("constantfold".to_string())),
+                ("preset".into(), Json::String(preset.to_string())),
+            ]))
+        }
+    }
+}
+
 /// StringUtils oracle: Trim(string) and IsIdentifier(string) over a fixed
 /// sample set, mirroring the C# reference's StringUtilsOp.
 pub fn stringutils() -> Result<Json, String> {
