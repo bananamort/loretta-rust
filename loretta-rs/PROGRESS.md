@@ -461,7 +461,7 @@ Generated from `loretta-rs/nodes.json` (`744` distinct symbols, `803` MemberDecl
 | 452 | `Loretta.CLI.Program.PushMemoryUsage():Method@Program.cs:452` | `Loretta.CLI.Program.PushMemoryUsage()` | `src/Compilers/Lua/CommandLine/Program.cs:452` | `loretta-cli/src/main.rs` | done | — |
 | 453 | `Loretta.CLI.Program.CompareMemoryUsage():Method@Program.cs:462` | `Loretta.CLI.Program.CompareMemoryUsage()` | `src/Compilers/Lua/CommandLine/Program.cs:462` | `loretta-cli/src/main.rs` | done | — |
 | 454 | `Loretta.CLI.Program.PopMemoryUsage():Method@Program.cs:483` | `Loretta.CLI.Program.PopMemoryUsage()` | `src/Compilers/Lua/CommandLine/Program.cs:483` | `loretta-cli/src/main.rs` | done | — |
-| 455 | `Loretta.CLI.Program.InvokeGc(int):Method@Program.cs:497` | `Loretta.CLI.Program.InvokeGc(int)` | `src/Compilers/Lua/CommandLine/Program.cs:497` | `loretta-cli/src/main.rs` | pending | — |
+| 455 | `Loretta.CLI.Program.InvokeGc(int):Method@Program.cs:497` | `Loretta.CLI.Program.InvokeGc(int)` | `src/Compilers/Lua/CommandLine/Program.cs:497` | `loretta-cli/src/main.rs` | done | — |
 | 456 | `Loretta.CLI.Program.Program():Method@Program.cs:508` | `Loretta.CLI.Program.Program()` | `src/Compilers/Lua/CommandLine/Program.cs:508` | `loretta-cli/src/main.rs` | pending | — |
 | 457 | `Loretta.CLI.TimingLoggerConsole:NamedType@TimingLoggerConsole.cs:7` | `Loretta.CLI.TimingLoggerConsole` | `src/Compilers/Lua/CommandLine/TimingLoggerConsole.cs:7` | `loretta-cli/src/main.rs` | pending | — |
 | 458 | `Loretta.CLI.TimingLoggerConsole._outWriter:Field@TimingLoggerConsole.cs:9` | `Loretta.CLI.TimingLoggerConsole._outWriter` | `src/Compilers/Lua/CommandLine/TimingLoggerConsole.cs:9` | `loretta-cli/src/main.rs` | pending | — |
