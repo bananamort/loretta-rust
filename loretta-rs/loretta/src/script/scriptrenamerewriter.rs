@@ -100,8 +100,8 @@ pub fn rename_in_tree(
 
     let target_positions: HashSet<usize> = positions
         .iter()
-        .filter(|(node, _)| target_nodes.contains(&node.id))
-        .map(|(_, pos)| *pos)
+        .filter(|(node, _, _)| target_nodes.contains(&node.id))
+        .map(|(_, pos, _)| *pos)
         .collect();
 
     let mut rewriter = RenameRewriter::new(target_positions, new_name.to_string());
