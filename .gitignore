@@ -25,6 +25,11 @@ obj/
 *.swo
 *~
 
+# Node (opencode harness — keep on disk, not in git)
+package.json
+package-lock.json
+node_modules/
+
 # References (contain their own git, read-only)
 references/
 

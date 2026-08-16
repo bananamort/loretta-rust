@@ -37,7 +37,7 @@ Violating any of these is a revert.
 1. No stubs: `todo!()`, `unimplemented!()`, dummy returns, `// Logic elided`.
 2. No skipped surface: every member lands or is documented as intentionally dropped.
 3. No test tampering: never edit or ignore a ported test to pass; never edit reference outputs.
-4. No warning suppression: no `#[allow(...)]`, no `unsafe`.
+4. No warning suppression: no `#[allow(...)]`, no `unsafe` — except `#[allow(unreachable_patterns)]` on `#[non_exhaustive]` `full_moon` `TokenType`/`Symbol` matches (wildcard ` _ => unreachable!()` required), single `#[allow(clippy::module_inception)]` for `loretta/src/script/mod.rs` (`pub mod script`), and `#[allow(clippy::too_many_arguments)]` for `loretta/src/luasyntaxoptions.rs` `LuaSyntaxOptions::new`/`with` (27 args, C# `28` fields verbatim).
 5. No redesign: no renames beyond snake_case, no new dependencies.
 6. No scope creep: never port anything marked DROP; never edit `references/`.
 7. No translation from memory: you must `read`/`grep` per Source Protocol first.
