@@ -72,7 +72,11 @@ impl LexicalTestsBase {
 fn token_value(token: &Token, options: &LuaSyntaxOptions) -> Option<TokenValue> {
     match token.token_type() {
         TokenType::Number { .. } => number_value(&token.to_string(), options),
-        TokenType::StringLiteral { literal, multi_line_depth, .. } => {
+        TokenType::StringLiteral {
+            literal,
+            multi_line_depth,
+            ..
+        } => {
             let text = literal.as_str();
             let decoded = if *multi_line_depth > 0 {
                 // Long strings do not process escapes.
@@ -90,7 +94,10 @@ fn token_value(token: &Token, options: &LuaSyntaxOptions) -> Option<TokenValue> 
 /// decide long vs double.
 fn number_value(text: &str, options: &LuaSyntaxOptions) -> Option<TokenValue> {
     let clean: String = text.chars().filter(|c| *c != '_').collect();
-    if let Some(rest) = clean.strip_prefix("0x").or_else(|| clean.strip_prefix("0X")) {
+    if let Some(rest) = clean
+        .strip_prefix("0x")
+        .or_else(|| clean.strip_prefix("0X"))
+    {
         if is_hex_float(&clean) {
             let value = HexFloat::double_from_hex_string(&clean).ok()?;
             return Some(TokenValue::Float(value));
@@ -101,14 +108,20 @@ fn number_value(text: &str, options: &LuaSyntaxOptions) -> Option<TokenValue> {
             _ => TokenValue::Float(value as f64),
         });
     }
-    if let Some(rest) = clean.strip_prefix("0b").or_else(|| clean.strip_prefix("0B")) {
+    if let Some(rest) = clean
+        .strip_prefix("0b")
+        .or_else(|| clean.strip_prefix("0B"))
+    {
         let value = i64::from_str_radix(rest, 2).ok()?;
         return Some(match options.binary_integer_format {
             IntegerFormats::Int64 => TokenValue::Integer(value),
             _ => TokenValue::Float(value as f64),
         });
     }
-    if let Some(rest) = clean.strip_prefix("0o").or_else(|| clean.strip_prefix("0O")) {
+    if let Some(rest) = clean
+        .strip_prefix("0o")
+        .or_else(|| clean.strip_prefix("0O"))
+    {
         let value = i64::from_str_radix(rest, 8).ok()?;
         return Some(match options.octal_integer_format {
             IntegerFormats::Int64 => TokenValue::Integer(value),
@@ -154,16 +167,14 @@ fn unescape_lua_string(text: &str) -> String {
             Some('\\') => out.push('\\'),
             Some('"') => out.push('"'),
             Some('\'') => out.push('\''),
-            Some('z') => {
-                loop {
-                    match chars.clone().next() {
-                        Some(n) if n.is_ascii_whitespace() => {
-                            chars.next();
-                        }
-                        _ => break,
+            Some('z') => loop {
+                match chars.clone().next() {
+                    Some(n) if n.is_ascii_whitespace() => {
+                        chars.next();
                     }
+                    _ => break,
                 }
-            }
+            },
             Some('x') => {
                 let mut hex = String::new();
                 for _ in 0..2 {
