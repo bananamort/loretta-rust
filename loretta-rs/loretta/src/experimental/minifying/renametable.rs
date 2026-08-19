@@ -32,9 +32,10 @@ pub struct RenameTable {
     variable_map: HashMap<u64, (i32, String)>,
     /// C# _slotAllocator (RenameTable.cs:12).
     slot_allocator: Box<dyn ISlotAllocator>,
-    /// The identifier records of the current walk (node id -> (position,
-    /// scope)) — used for the last-use ordering and the scope collection.
-    records: HashMap<u64, (usize, Rc<RefCell<Scope>>)>,
+    /// The identifier records of the current walk (node id -> (node,
+    /// position, scope)) — used for the last-use ordering and the scope
+    /// collection.
+    records: HashMap<u64, (Node, usize, Rc<RefCell<Scope>>)>,
 }
 
 impl RenameTable {
@@ -60,7 +61,7 @@ impl RenameTable {
     pub fn prepare(&mut self, records: &[IdentifierRecord]) {
         self.records = records
             .iter()
-            .map(|(node, pos, scope)| (node.id, (*pos, scope.clone())))
+            .map(|(node, pos, scope)| (node.id, (node.clone(), *pos, scope.clone())))
             .collect();
     }
 
@@ -82,14 +83,14 @@ impl RenameTable {
         if !self.last_use_cache.contains_key(&key) {
             let mut best: Option<(usize, u64)> = None;
             for node in variable.borrow().read_locations() {
-                if let Some((pos, _)) = self.records.get(&node.id) {
+                if let Some((_, pos, _)) = self.records.get(&node.id) {
                     if best.map(|(b, _)| *pos > b).unwrap_or(true) {
                         best = Some((*pos, node.id));
                     }
                 }
             }
             for node in variable.borrow().write_locations() {
-                if let Some((pos, _)) = self.records.get(&node.id) {
+                if let Some((_, pos, _)) = self.records.get(&node.id) {
                     if best.map(|(b, _)| *pos > b).unwrap_or(true) {
                         best = Some((*pos, node.id));
                     }
@@ -119,32 +120,68 @@ impl RenameTable {
             let slot = self.slot_allocator.allocate_slot();
 
             // The scopes the variable's locations live in (the C# FindScope
-            // per location).
+            // per location). The statement nodes the variable carries (the
+            // declaration and the write-location statements) are not
+            // identifier records — the C# FindScope of a statement resolves
+            // to the scope of the names it declares, which the variable's
+            // own identifier records carry, so a missing location falls back
+            // to those record scopes (the C# node identity is shared; the
+            // port resolves the statement's scope via the variable).
             let mut scopes: Vec<Rc<RefCell<Scope>>> = Vec::new();
             let mut seen: Vec<usize> = Vec::new();
+            let mut fallback: Vec<Rc<RefCell<Scope>>> = Vec::new();
+            {
+                let snapshot: Vec<(Node, Rc<RefCell<Scope>>)> = self
+                    .records
+                    .values()
+                    .map(|(node, _, scope)| (node.clone(), scope.clone()))
+                    .collect();
+                for (node, scope) in snapshot {
+                    if let Some(v) = self.script.get_variable(&node) {
+                        if Rc::ptr_eq(&v, &variable)
+                            && !fallback.iter().any(|s| Rc::ptr_eq(s, &scope))
+                        {
+                            fallback.push(scope);
+                        }
+                    }
+                }
+            }
+            let push_scope = |scope: &Rc<RefCell<Scope>>,
+                              scopes: &mut Vec<Rc<RefCell<Scope>>>,
+                              seen: &mut Vec<usize>| {
+                let ptr = Rc::as_ptr(scope) as usize;
+                if !seen.contains(&ptr) {
+                    seen.push(ptr);
+                    scopes.push(scope.clone());
+                }
+            };
             for location in variable.borrow().read_locations() {
-                if let Some((_, scope)) = self.records.get(&location.id) {
-                    let scope_id = Rc::as_ptr(scope) as usize;
-                    if !seen.contains(&scope_id) {
-                        seen.push(scope_id);
-                        scopes.push(scope.clone());
+                match self.records.get(&location.id) {
+                    Some((_, _, scope)) => push_scope(scope, &mut scopes, &mut seen),
+                    None => {
+                        for scope in &fallback {
+                            push_scope(scope, &mut scopes, &mut seen);
+                        }
                     }
                 }
             }
             for location in variable.borrow().write_locations() {
-                if let Some((_, scope)) = self.records.get(&location.id) {
-                    let scope_id = Rc::as_ptr(scope) as usize;
-                    if !seen.contains(&scope_id) {
-                        seen.push(scope_id);
-                        scopes.push(scope.clone());
+                match self.records.get(&location.id) {
+                    Some((_, _, scope)) => push_scope(scope, &mut scopes, &mut seen),
+                    None => {
+                        for scope in &fallback {
+                            push_scope(scope, &mut scopes, &mut seen);
+                        }
                     }
                 }
             }
             if let Some(declaration) = variable.borrow().declaration() {
-                if let Some((_, scope)) = self.records.get(&declaration.id) {
-                    let scope_id = Rc::as_ptr(scope) as usize;
-                    if !seen.contains(&scope_id) {
-                        scopes.push(scope.clone());
+                match self.records.get(&declaration.id) {
+                    Some((_, _, scope)) => push_scope(scope, &mut scopes, &mut seen),
+                    None => {
+                        for scope in &fallback {
+                            push_scope(scope, &mut scopes, &mut seen);
+                        }
                     }
                 }
             }
