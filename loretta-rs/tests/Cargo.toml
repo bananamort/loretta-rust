@@ -25,3 +25,7 @@ path = "objectdisplay_tests.rs"
 [[test]]
 name = "constantfolder_tests"
 path = "constantfolder_tests.rs"
+
+[[test]]
+name = "experimental_regression_tests"
+path = "experimental_regression_tests.rs"
