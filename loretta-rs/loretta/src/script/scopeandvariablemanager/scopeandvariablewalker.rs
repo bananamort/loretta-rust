@@ -37,6 +37,14 @@ pub struct ScopeAndVariableWalker {
     /// the current scope) — used by the rename rewriter's token replacement
     /// and the minifier's rename table.
     pub identifier_positions: Vec<(Node, usize, Rc<RefCell<Scope>>)>,
+    /// The location scopes of every node the variables carry (node id ->
+    /// (start byte, scope)) — the port's FindScope store. The C# FindScope
+    /// walks a node's ancestors to the nearest scoped node; the port
+    /// precomputes the enclosing scope when the node is created (the
+    /// statement nodes the variables carry as declaration/write locations
+    /// are not identifier records, so the minifier resolves their scopes
+    /// here).
+    pub location_scopes: std::collections::HashMap<u64, (usize, Rc<RefCell<Scope>>)>,
 }
 
 impl ScopeAndVariableWalker {
@@ -62,6 +70,7 @@ impl ScopeAndVariableWalker {
                 HashMap::new(),
             ),
             identifier_positions: Vec::new(),
+            location_scopes: HashMap::new(),
         };
         walker.scope_stack.push(root_scope);
         walker
@@ -160,8 +169,17 @@ impl ScopeAndVariableWalker {
     /// Records an identifier token position for the rename rewriter (the
     /// current scope is the C# FindScope of the identifier).
     pub fn record_identifier(&mut self, node: Node, token: &TokenReference) {
-        self.identifier_positions
-            .push((node, token.start_position().bytes(), self.scope()));
+        let pos = token.start_position().bytes();
+        let scope = self.scope();
+        self.location_scopes.insert(node.id, (pos, scope.clone()));
+        self.identifier_positions.push((node, pos, scope));
+    }
+
+    /// Records the enclosing scope of a statement node (the C# FindScope of
+    /// the statement — the scope the statement lives in, or its own block
+    /// scope for the loop/function statements).
+    fn record_statement_scope(&mut self, node: &Node, pos: usize, scope: &Rc<RefCell<Scope>>) {
+        self.location_scopes.insert(node.id, (pos, scope.clone()));
     }
 
     /// C# VisitCompilationUnit (ScopeAndVariableWalker.cs:93-103).
@@ -201,6 +219,21 @@ impl ScopeAndVariableWalker {
                 for expr in assignment.expressions().iter() {
                     self.visit_expr(expr);
                 }
+                // The C# AddWriteLocation(node) shares ONE statement node for
+                // all of the statement's variables.
+                let stmt_node = self
+                    .base
+                    .make_node("AssignmentStatement", assignment.to_string());
+                let stmt_pos = assignment
+                    .variables()
+                    .iter()
+                    .next()
+                    .and_then(|v| match v {
+                        ast::Var::Name(t) => Some(t.token().start_position().bytes()),
+                        _ => None,
+                    })
+                    .unwrap_or(0);
+                self.record_statement_scope(&stmt_node, stmt_pos, &self.scope());
                 for var in assignment.variables().iter() {
                     match var {
                         ast::Var::Name(token) => {
@@ -213,13 +246,9 @@ impl ScopeAndVariableWalker {
                             self.record_identifier(node.clone(), token);
                             let variable = self.get_variable_or_create_global(&name);
                             self.variables.insert(node.clone(), variable.clone());
-                            variable.borrow_mut().add_write_location(
-                                self.base
-                                    .make_node("AssignmentStatement", assignment.to_string()),
-                            );
+                            variable.borrow_mut().add_write_location(stmt_node.clone());
                             variable.borrow_mut().add_referencing_scope(self.scope());
                             self.scope().borrow_mut().add_referenced_variable(&variable);
-                            let _ = node;
                         }
                         _ => self.visit_var(var),
                     }
@@ -237,10 +266,15 @@ impl ScopeAndVariableWalker {
                     self.record_identifier(node.clone(), token);
                     let variable = self.get_variable_or_create_global(&name);
                     self.variables.insert(node.clone(), variable.clone());
-                    variable.borrow_mut().add_write_location(
-                        self.base
-                            .make_node("CompoundAssignmentStatement", ca.to_string()),
+                    let stmt_node = self
+                        .base
+                        .make_node("CompoundAssignmentStatement", ca.to_string());
+                    self.record_statement_scope(
+                        &stmt_node,
+                        token.token().start_position().bytes(),
+                        &self.scope(),
                     );
+                    variable.borrow_mut().add_write_location(stmt_node);
                     variable.borrow_mut().add_referencing_scope(self.scope());
                     self.scope().borrow_mut().add_referenced_variable(&variable);
                 } else {
@@ -248,38 +282,42 @@ impl ScopeAndVariableWalker {
                 }
             }
             ast::Stmt::NumericFor(nf) => {
-                // C# VisitNumericForStatement (…:195-221).
+                // C# VisitNumericForStatement (…:195-221). The C# creates ONE
+                // statement node used for the block scope AND the iteration
+                // variable's declaration.
                 self.visit_expr(nf.start());
                 self.visit_expr(nf.end());
                 if let Some(step) = nf.step() {
                     self.visit_expr(step);
                 }
                 let node = self.base.make_node("NumericForStatement", nf.to_string());
-                let scope = self.create_block_scope(node);
+                let scope = self.create_block_scope(node.clone());
+                self.record_statement_scope(&node, nf.for_token().start_position().bytes(), &scope);
                 let index_token = nf.index_variable().token().to_string();
                 if !index_token.trim().is_empty() {
                     let variable = Scope::create_variable_in(
                         &scope,
                         VariableKind::Iteration,
                         &index_token,
-                        Some(self.base.make_node("NumericForStatement", nf.to_string())),
+                        Some(node.clone()),
                     );
                     let id_name = self.base.make_node("IdentifierName", index_token.clone());
                     self.record_identifier(id_name.clone(), nf.index_variable());
-                    let id_for = self.base.make_node("NumericForStatement", nf.to_string());
-                    self.variables.insert(id_name, variable.clone());
-                    self.variables.insert(id_for, variable);
+                    self.variables.insert(id_name, variable);
                 }
                 self.visit_block(nf.block());
                 self.pop_scope(&scope);
             }
             ast::Stmt::GenericFor(gf) => {
-                // C# VisitGenericForStatement (…:223-252).
+                // C# VisitGenericForStatement (…:223-252). The C# creates ONE
+                // statement node used for the block scope AND the iteration
+                // variables' declarations.
                 for expr in gf.expressions().iter() {
                     self.visit_expr(expr);
                 }
                 let node = self.base.make_node("GenericForStatement", gf.to_string());
-                let scope = self.create_block_scope(node);
+                let scope = self.create_block_scope(node.clone());
+                self.record_statement_scope(&node, gf.for_token().start_position().bytes(), &scope);
                 for name in gf.names().iter() {
                     let identifier_name = name.token().to_string();
                     if identifier_name.trim().is_empty() {
@@ -289,7 +327,7 @@ impl ScopeAndVariableWalker {
                         &scope,
                         VariableKind::Iteration,
                         &identifier_name,
-                        Some(self.base.make_node("GenericForStatement", gf.to_string())),
+                        Some(node.clone()),
                     );
                     let name_node = self.base.make_node("IdentifierName", identifier_name);
                     self.record_identifier(name_node.clone(), name);
@@ -338,10 +376,20 @@ impl ScopeAndVariableWalker {
                 }
             }
             ast::Stmt::LocalAssignment(la) => {
-                // C# VisitLocalVariableDeclarationStatement (…:327-345).
+                // C# VisitLocalVariableDeclarationStatement (…:327-345). The
+                // C# creates ONE statement node shared by the declaration AND
+                // the write location of every name.
                 for expr in la.expressions().iter() {
                     self.visit_expr(expr);
                 }
+                let stmt_node = self
+                    .base
+                    .make_node("LocalVariableDeclarationStatement", la.to_string());
+                self.record_statement_scope(
+                    &stmt_node,
+                    la.local_token().start_position().bytes(),
+                    &self.scope(),
+                );
                 for name in la.names().iter() {
                     let identifier_name = name.token().to_string();
                     if identifier_name.trim().is_empty() {
@@ -351,49 +399,44 @@ impl ScopeAndVariableWalker {
                         &self.scope(),
                         VariableKind::Local,
                         &identifier_name,
-                        Some(
-                            self.base
-                                .make_node("LocalVariableDeclarationStatement", la.to_string()),
-                        ),
+                        Some(stmt_node.clone()),
                     );
                     let name_node = self.base.make_node("IdentifierName", identifier_name);
                     self.record_identifier(name_node.clone(), name);
                     self.variables.insert(name_node, variable.clone());
-                    variable.borrow_mut().add_write_location(
-                        self.base
-                            .make_node("LocalVariableDeclarationStatement", la.to_string()),
-                    );
+                    variable.borrow_mut().add_write_location(stmt_node.clone());
                     variable.borrow_mut().add_referencing_scope(self.scope());
                     self.scope().borrow_mut().add_referenced_variable(&variable);
                 }
             }
             ast::Stmt::LocalFunction(lf) => {
-                // C# VisitLocalFunctionDeclarationStatement (…:347-374).
+                // C# VisitLocalFunctionDeclarationStatement (…:347-374). The
+                // C# creates ONE statement node shared by the declaration, the
+                // write location, and the function scope; the name flows
+                // through the rewriter's VisitSimpleFunctionName (renamed).
+                let node = self
+                    .base
+                    .make_node("LocalFunctionDeclarationStatement", lf.to_string());
+                self.record_statement_scope(
+                    &node,
+                    lf.local_token().start_position().bytes(),
+                    &self.scope(),
+                );
                 let name = lf.name().token().to_string();
                 if !name.trim().is_empty() {
                     let variable = Scope::create_variable_in(
                         &self.scope(),
                         VariableKind::Local,
                         &name,
-                        Some(
-                            self.base
-                                .make_node("LocalFunctionDeclarationStatement", lf.to_string()),
-                        ),
+                        Some(node.clone()),
                     );
-                    self.variables.insert(
-                        self.base.make_node("IdentifierName", name),
-                        variable.clone(),
-                    );
-                    variable.borrow_mut().add_write_location(
-                        self.base
-                            .make_node("LocalFunctionDeclarationStatement", lf.to_string()),
-                    );
+                    let name_node = self.base.make_node("IdentifierName", name);
+                    self.record_identifier(name_node.clone(), lf.name());
+                    self.variables.insert(name_node, variable.clone());
+                    variable.borrow_mut().add_write_location(node.clone());
                     variable.borrow_mut().add_referencing_scope(self.scope());
                     self.scope().borrow_mut().add_referenced_variable(&variable);
                 }
-                let node = self
-                    .base
-                    .make_node("LocalFunctionDeclarationStatement", lf.to_string());
                 let scope = self.create_function_scope(node);
                 for parameter in lf.body().parameters().iter() {
                     let parameter_variable = self.create_parameter(&scope, parameter);
@@ -515,15 +558,12 @@ impl ScopeAndVariableWalker {
             let node = self.base.make_node("SimpleFunctionName", name_text.clone());
             self.record_identifier(node.clone(), first);
             let variable = self.get_variable_or_create_global(&name_text);
-            self.variables.insert(node, variable.clone());
+            self.variables.insert(node.clone(), variable.clone());
             if is_plain {
-                variable
-                    .borrow_mut()
-                    .add_write_location(self.base.make_node("SimpleFunctionName", name_text));
+                // The C# AddWriteLocation(node) shares the visited node.
+                variable.borrow_mut().add_write_location(node);
             } else {
-                variable
-                    .borrow_mut()
-                    .add_read_location(self.base.make_node("SimpleFunctionName", name_text));
+                variable.borrow_mut().add_read_location(node);
             }
             variable.borrow_mut().add_referencing_scope(self.scope());
             self.scope().borrow_mut().add_referenced_variable(&variable);

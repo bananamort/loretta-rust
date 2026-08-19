@@ -45,7 +45,7 @@ impl RenamingRewriter {
         );
         walker.visit_ast(full_ast);
         let records: Vec<IdentifierRecord> = walker.identifier_positions;
-        self.rename_table.prepare(&records);
+        self.rename_table.prepare(&walker.location_scopes);
 
         // The token replacements: position -> new name.
         let mut replacements: HashMap<usize, String> = HashMap::new();
