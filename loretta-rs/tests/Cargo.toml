@@ -29,3 +29,7 @@ path = "constantfolder_tests.rs"
 [[test]]
 name = "experimental_regression_tests"
 path = "experimental_regression_tests.rs"
+
+[[test]]
+name = "lexical_error_tests"
+path = "lexical_error_tests.rs"

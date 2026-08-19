@@ -1,3 +1,4 @@
+pub mod lexerdiagnostics;
 pub mod luatestbase;
 pub mod luatestsource;
 pub mod randomspaceinserter;
