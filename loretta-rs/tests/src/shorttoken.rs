@@ -47,10 +47,19 @@ impl std::fmt::Display for TextSpan {
 pub enum TokenValue {
     /// A long integer value (the C# long).
     Integer(i64),
+    /// An unsigned long value (the C# ulong).
+    Unsigned(u64),
     /// A double value (the C# double).
     Float(f64),
+    /// An imaginary number (the C# Complex — the suffix-`i` literals; the
+    /// real part is always zero in the test data).
+    Complex(f64),
     /// A string value (the C# string — the decoded literal).
     String(String),
+    /// A boolean value (the C# bool — the true/false keyword constants).
+    Bool(bool),
+    /// The null value (the C# nil keyword constant).
+    Nil,
 }
 
 impl std::fmt::Display for TokenValue {
@@ -58,8 +67,12 @@ impl std::fmt::Display for TokenValue {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             TokenValue::Integer(v) => write!(f, "{v}"),
+            TokenValue::Unsigned(v) => write!(f, "{v}"),
             TokenValue::Float(v) => write!(f, "{v}"),
+            TokenValue::Complex(v) => write!(f, "(0, {v})"),
             TokenValue::String(v) => write!(f, "{v}"),
+            TokenValue::Bool(v) => write!(f, "{v}"),
+            TokenValue::Nil => write!(f, ""),
         }
     }
 }
