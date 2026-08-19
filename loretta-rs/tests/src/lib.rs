@@ -4,6 +4,7 @@ pub mod luatestbase;
 pub mod luatestsource;
 pub mod parsingtestsbase;
 pub mod randomspaceinserter;
+pub mod scripttestsbase;
 pub mod shorttoken;
 pub mod syntax_tree_extensions;
 pub mod syntaxextensions;
