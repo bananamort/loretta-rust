@@ -41,22 +41,44 @@ impl std::fmt::Display for TextSpan {
     }
 }
 
+/// A literal token value (the C# `object?` Value — the dropped lexer's
+/// typed literal values).
+#[derive(Debug, Clone, PartialEq)]
+pub enum TokenValue {
+    /// A long integer value (the C# long).
+    Integer(i64),
+    /// A double value (the C# double).
+    Float(f64),
+    /// A string value (the C# string — the decoded literal).
+    String(String),
+}
+
+impl std::fmt::Display for TokenValue {
+    /// The C# ToString of the boxed value.
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TokenValue::Integer(v) => write!(f, "{v}"),
+            TokenValue::Float(v) => write!(f, "{v}"),
+            TokenValue::String(v) => write!(f, "{v}"),
+        }
+    }
+}
+
 /// C# ShortToken (ShortToken.cs:6-26): the record struct the lexical tests use
 /// for expected token rows. The dropped SyntaxKind enum (Portable/Syntax/,
 /// Locked Decision 1) docks on the full_moon [`TokenType`]; the dropped
-/// `Option<object?>` token value docks on `Option<String>` (the literal
-/// value's text).
-#[derive(Debug, Clone, PartialEq, Eq)]
+/// `Option<object?>` token value docks on `Option<TokenValue>`.
+#[derive(Debug, Clone, PartialEq)]
 pub struct ShortToken {
     pub kind: TokenType,
     pub text: String,
     pub span: TextSpan,
-    pub value: Option<String>,
+    pub value: Option<TokenValue>,
 }
 
 impl ShortToken {
     /// C# primary record ctor (ShortToken.cs:6-11): kind, text, span, value.
-    pub fn new(kind: TokenType, text: String, span: TextSpan, value: Option<String>) -> Self {
+    pub fn new(kind: TokenType, text: String, span: TextSpan, value: Option<TokenValue>) -> Self {
         Self {
             kind,
             text,
@@ -66,7 +88,7 @@ impl ShortToken {
     }
 
     /// C# convenience ctor (ShortToken.cs:13-17): `new TextSpan(0, text.Length)`.
-    pub fn from_text(kind: TokenType, text: String, value: Option<String>) -> Self {
+    pub fn from_text(kind: TokenType, text: String, value: Option<TokenValue>) -> Self {
         let span = TextSpan::new(0, text.len());
         Self {
             kind,
