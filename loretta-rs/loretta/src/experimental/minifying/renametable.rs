@@ -27,15 +27,17 @@ pub struct RenameTable {
     naming_strategy: NamingStrategy,
     /// C# _lastUseCache (RenameTable.cs:10) — keyed by the variable's
     /// declaration node id (the C# reference-identity key).
-    last_use_cache: HashMap<u64, Option<u64>>,
+    last_use_cache: HashMap<usize, Option<u64>>,
     /// C# _variableMap (RenameTable.cs:11) — (slot, newName).
-    variable_map: HashMap<u64, (i32, String)>,
+    variable_map: HashMap<usize, (i32, String)>,
     /// C# _slotAllocator (RenameTable.cs:12).
     slot_allocator: Box<dyn ISlotAllocator>,
-    /// The identifier records of the current walk (node id -> (node,
-    /// position, scope)) — used for the last-use ordering and the scope
-    /// collection.
-    records: HashMap<u64, (Node, usize, Rc<RefCell<Scope>>)>,
+    /// The location scopes of the current walk (node id -> (position,
+    /// scope)) — the port's FindScope store for the nodes the variables
+    /// carry (the identifier records and the statement nodes that become
+    /// declaration/write locations). Used for the last-use ordering and the
+    /// scope collection.
+    location_scopes: HashMap<u64, (usize, Rc<RefCell<Scope>>)>,
 }
 
 impl RenameTable {
@@ -52,27 +54,20 @@ impl RenameTable {
             last_use_cache: HashMap::new(),
             variable_map: HashMap::new(),
             slot_allocator,
-            records: HashMap::new(),
+            location_scopes: HashMap::new(),
         }
     }
 
-    /// Prepares the identifier records for the walk (the location scopes and
-    /// positions).
-    pub fn prepare(&mut self, records: &[IdentifierRecord]) {
-        self.records = records
-            .iter()
-            .map(|(node, pos, scope)| (node.id, (node.clone(), *pos, scope.clone())))
-            .collect();
+    /// Prepares the location scopes for the walk (the C# FindScope of every
+    /// node the variables carry).
+    pub fn prepare(&mut self, location_scopes: &HashMap<u64, (usize, Rc<RefCell<Scope>>)>) {
+        self.location_scopes = location_scopes.clone();
     }
 
-    /// The variable's identity key (the declaration node id — unique per
-    /// variable; every renameable variable has a declaration).
-    fn variable_key(variable: &SharedVariable) -> u64 {
-        variable
-            .borrow()
-            .declaration()
-            .expect("renameable variables have a declaration")
-            .id
+    /// The variable's identity key (the C# IVariable reference identity — a
+    /// shared declaration node must not conflate its variables).
+    fn variable_key(variable: &SharedVariable) -> usize {
+        Rc::as_ptr(variable) as usize
     }
 
     /// C# GetLastUse (RenameTable.cs:27-41): the location the variable is
@@ -83,14 +78,14 @@ impl RenameTable {
         if !self.last_use_cache.contains_key(&key) {
             let mut best: Option<(usize, u64)> = None;
             for node in variable.borrow().read_locations() {
-                if let Some((_, pos, _)) = self.records.get(&node.id) {
+                if let Some((pos, _)) = self.location_scopes.get(&node.id) {
                     if best.map(|(b, _)| *pos > b).unwrap_or(true) {
                         best = Some((*pos, node.id));
                     }
                 }
             }
             for node in variable.borrow().write_locations() {
-                if let Some((_, pos, _)) = self.records.get(&node.id) {
+                if let Some((pos, _)) = self.location_scopes.get(&node.id) {
                     if best.map(|(b, _)| *pos > b).unwrap_or(true) {
                         best = Some((*pos, node.id));
                     }
@@ -120,32 +115,10 @@ impl RenameTable {
             let slot = self.slot_allocator.allocate_slot();
 
             // The scopes the variable's locations live in (the C# FindScope
-            // per location). The statement nodes the variable carries (the
-            // declaration and the write-location statements) are not
-            // identifier records — the C# FindScope of a statement resolves
-            // to the scope of the names it declares, which the variable's
-            // own identifier records carry, so a missing location falls back
-            // to those record scopes (the C# node identity is shared; the
-            // port resolves the statement's scope via the variable).
+            // per location — the walker precomputes the enclosing scope of
+            // every node the variable carries).
             let mut scopes: Vec<Rc<RefCell<Scope>>> = Vec::new();
             let mut seen: Vec<usize> = Vec::new();
-            let mut fallback: Vec<Rc<RefCell<Scope>>> = Vec::new();
-            {
-                let snapshot: Vec<(Node, Rc<RefCell<Scope>>)> = self
-                    .records
-                    .values()
-                    .map(|(node, _, scope)| (node.clone(), scope.clone()))
-                    .collect();
-                for (node, scope) in snapshot {
-                    if let Some(v) = self.script.get_variable(&node) {
-                        if Rc::ptr_eq(&v, &variable)
-                            && !fallback.iter().any(|s| Rc::ptr_eq(s, &scope))
-                        {
-                            fallback.push(scope);
-                        }
-                    }
-                }
-            }
             let push_scope = |scope: &Rc<RefCell<Scope>>,
                               scopes: &mut Vec<Rc<RefCell<Scope>>>,
                               seen: &mut Vec<usize>| {
@@ -156,33 +129,18 @@ impl RenameTable {
                 }
             };
             for location in variable.borrow().read_locations() {
-                match self.records.get(&location.id) {
-                    Some((_, _, scope)) => push_scope(scope, &mut scopes, &mut seen),
-                    None => {
-                        for scope in &fallback {
-                            push_scope(scope, &mut scopes, &mut seen);
-                        }
-                    }
+                if let Some((_, scope)) = self.location_scopes.get(&location.id) {
+                    push_scope(scope, &mut scopes, &mut seen);
                 }
             }
             for location in variable.borrow().write_locations() {
-                match self.records.get(&location.id) {
-                    Some((_, _, scope)) => push_scope(scope, &mut scopes, &mut seen),
-                    None => {
-                        for scope in &fallback {
-                            push_scope(scope, &mut scopes, &mut seen);
-                        }
-                    }
+                if let Some((_, scope)) = self.location_scopes.get(&location.id) {
+                    push_scope(scope, &mut scopes, &mut seen);
                 }
             }
             if let Some(declaration) = variable.borrow().declaration() {
-                match self.records.get(&declaration.id) {
-                    Some((_, _, scope)) => push_scope(scope, &mut scopes, &mut seen),
-                    None => {
-                        for scope in &fallback {
-                            push_scope(scope, &mut scopes, &mut seen);
-                        }
-                    }
+                if let Some((_, scope)) = self.location_scopes.get(&declaration.id) {
+                    push_scope(scope, &mut scopes, &mut seen);
                 }
             }
             let name = (slot, (self.naming_strategy)(slot, &scopes));
