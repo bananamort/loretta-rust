@@ -2,6 +2,7 @@ pub mod lexerdiagnostics;
 pub mod lexicaltestsbase;
 pub mod luatestbase;
 pub mod luatestsource;
+pub mod parsingtestsbase;
 pub mod randomspaceinserter;
 pub mod shorttoken;
 pub mod syntax_tree_extensions;
