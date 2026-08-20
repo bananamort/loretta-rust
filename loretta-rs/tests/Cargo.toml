@@ -49,3 +49,7 @@ path = "binary_operator_precedence_tests.rs"
 [[test]]
 name = "interpolated_string_tests"
 path = "interpolated_string_tests.rs"
+
+[[test]]
+name = "local_variable_attribute_tests"
+path = "local_variable_attribute_tests.rs"
