@@ -83,8 +83,17 @@ impl ScopeAndVariableManager {
         let walked_scopes = walker.scopes();
         let walked_labels = walker.labels();
         *variables = walked_variables;
-        *scopes = walked_scopes;
         *labels = walked_labels;
+        // The statement nodes the variables carry (the walker's
+        // location_scopes — the row-772 FindScope store) join the state's
+        // scopes map so the Script.FindScope ancestor walk can resolve them
+        // (the C# walks the node's parents; the port precomputes the
+        // enclosing scopes).
+        let mut merged_scopes = walked_scopes;
+        for (node, (_, scope)) in walker.location_scopes {
+            merged_scopes.insert(node, scope);
+        }
+        *scopes = merged_scopes;
         let _ = walker;
     }
 }

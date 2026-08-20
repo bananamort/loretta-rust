@@ -69,3 +69,19 @@ path = "type_parsing_regression_tests.rs"
 [[test]]
 name = "type_parsing_tests"
 path = "type_parsing_tests.rs"
+
+[[test]]
+name = "scope_find_variable_tests"
+path = "scope_find_variable_tests.rs"
+
+[[test]]
+name = "scope_find_scope_tests"
+path = "scope_find_scope_tests.rs"
+
+[[test]]
+name = "scope_rename_variable_tests"
+path = "scope_rename_variable_tests.rs"
+
+[[test]]
+name = "scope_can_be_accessed_in_tests"
+path = "scope_can_be_accessed_in_tests.rs"

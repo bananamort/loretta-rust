@@ -37,14 +37,15 @@ pub struct ScopeAndVariableWalker {
     /// the current scope) — used by the rename rewriter's token replacement
     /// and the minifier's rename table.
     pub identifier_positions: Vec<(Node, usize, Rc<RefCell<Scope>>)>,
-    /// The location scopes of every node the variables carry (node id ->
+    /// The location scopes of every node the variables carry (node ->
     /// (start byte, scope)) — the port's FindScope store. The C# FindScope
     /// walks a node's ancestors to the nearest scoped node; the port
     /// precomputes the enclosing scope when the node is created (the
     /// statement nodes the variables carry as declaration/write locations
     /// are not identifier records, so the minifier resolves their scopes
-    /// here).
-    pub location_scopes: std::collections::HashMap<u64, (usize, Rc<RefCell<Scope>>)>,
+    /// here; the manager merges the store into the state's scopes map so
+    /// the Script.FindScope ancestor walk can resolve the statement nodes).
+    pub location_scopes: std::collections::HashMap<Node, (usize, Rc<RefCell<Scope>>)>,
 }
 
 impl ScopeAndVariableWalker {
@@ -171,7 +172,8 @@ impl ScopeAndVariableWalker {
     pub fn record_identifier(&mut self, node: Node, token: &TokenReference) {
         let pos = token.start_position().bytes();
         let scope = self.scope();
-        self.location_scopes.insert(node.id, (pos, scope.clone()));
+        self.location_scopes
+            .insert(node.clone(), (pos, scope.clone()));
         self.identifier_positions.push((node, pos, scope));
     }
 
@@ -179,7 +181,8 @@ impl ScopeAndVariableWalker {
     /// the statement — the scope the statement lives in, or its own block
     /// scope for the loop/function statements).
     fn record_statement_scope(&mut self, node: &Node, pos: usize, scope: &Rc<RefCell<Scope>>) {
-        self.location_scopes.insert(node.id, (pos, scope.clone()));
+        self.location_scopes
+            .insert(node.clone(), (pos, scope.clone()));
     }
 
     /// C# VisitCompilationUnit (ScopeAndVariableWalker.cs:93-103).

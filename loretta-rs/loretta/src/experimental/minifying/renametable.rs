@@ -32,12 +32,12 @@ pub struct RenameTable {
     variable_map: HashMap<usize, (i32, String)>,
     /// C# _slotAllocator (RenameTable.cs:12).
     slot_allocator: Box<dyn ISlotAllocator>,
-    /// The location scopes of the current walk (node id -> (position,
-    /// scope)) — the port's FindScope store for the nodes the variables
-    /// carry (the identifier records and the statement nodes that become
+    /// The location scopes of the current walk (node -> (position, scope))
+    /// — the port's FindScope store for the nodes the variables carry (the
+    /// identifier records and the statement nodes that become
     /// declaration/write locations). Used for the last-use ordering and the
     /// scope collection.
-    location_scopes: HashMap<u64, (usize, Rc<RefCell<Scope>>)>,
+    location_scopes: HashMap<Node, (usize, Rc<RefCell<Scope>>)>,
 }
 
 impl RenameTable {
@@ -60,7 +60,7 @@ impl RenameTable {
 
     /// Prepares the location scopes for the walk (the C# FindScope of every
     /// node the variables carry).
-    pub fn prepare(&mut self, location_scopes: &HashMap<u64, (usize, Rc<RefCell<Scope>>)>) {
+    pub fn prepare(&mut self, location_scopes: &HashMap<Node, (usize, Rc<RefCell<Scope>>)>) {
         self.location_scopes = location_scopes.clone();
     }
 
@@ -78,14 +78,14 @@ impl RenameTable {
         if !self.last_use_cache.contains_key(&key) {
             let mut best: Option<(usize, u64)> = None;
             for node in variable.borrow().read_locations() {
-                if let Some((pos, _)) = self.location_scopes.get(&node.id) {
+                if let Some((pos, _)) = self.location_scopes.get(&node) {
                     if best.map(|(b, _)| *pos > b).unwrap_or(true) {
                         best = Some((*pos, node.id));
                     }
                 }
             }
             for node in variable.borrow().write_locations() {
-                if let Some((pos, _)) = self.location_scopes.get(&node.id) {
+                if let Some((pos, _)) = self.location_scopes.get(&node) {
                     if best.map(|(b, _)| *pos > b).unwrap_or(true) {
                         best = Some((*pos, node.id));
                     }
@@ -129,17 +129,17 @@ impl RenameTable {
                 }
             };
             for location in variable.borrow().read_locations() {
-                if let Some((_, scope)) = self.location_scopes.get(&location.id) {
+                if let Some((_, scope)) = self.location_scopes.get(&location) {
                     push_scope(scope, &mut scopes, &mut seen);
                 }
             }
             for location in variable.borrow().write_locations() {
-                if let Some((_, scope)) = self.location_scopes.get(&location.id) {
+                if let Some((_, scope)) = self.location_scopes.get(&location) {
                     push_scope(scope, &mut scopes, &mut seen);
                 }
             }
             if let Some(declaration) = variable.borrow().declaration() {
-                if let Some((_, scope)) = self.location_scopes.get(&declaration.id) {
+                if let Some((_, scope)) = self.location_scopes.get(declaration) {
                     push_scope(scope, &mut scopes, &mut seen);
                 }
             }

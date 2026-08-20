@@ -148,9 +148,22 @@ impl Script {
                     if let Some(conflicting) =
                         scope.borrow().find_variable(new_name, ScopeKind::Global)
                     {
-                        errors.push(RenameError::VariableConflict {
-                            variable_being_conflicted_with: conflicting,
+                        // The C# HashSet<RenameError> deduplicates the
+                        // conflicts (the shared declaration/write statement
+                        // node visits twice — Script.cs:145, 180-187).
+                        let already_present = errors.iter().any(|e| {
+                            matches!(
+                                e,
+                                RenameError::VariableConflict {
+                                    variable_being_conflicted_with: existing
+                                } if Rc::ptr_eq(existing, &conflicting)
+                            )
                         });
+                        if !already_present {
+                            errors.push(RenameError::VariableConflict {
+                                variable_being_conflicted_with: conflicting,
+                            });
+                        }
                     }
                 }
             };
