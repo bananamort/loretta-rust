@@ -93,6 +93,10 @@ enum Gate {
     /// The TwoColons token: disabled when !AcceptGoto && !AcceptTypedLua
     /// (SyntaxFacts.cs:94).
     GotoOrTypedLua,
+    /// The GotoKeyword is disabled by HasKeywordBeenDisabled when
+    /// !AcceptGoto (SyntaxFacts.cs:52); the identifier row replaces it
+    /// (LexicalTestData.cs:346).
+    AcceptGoto,
     /// The DoubleSlashEquals token: disabled when !AcceptFloorDivision
     /// (SyntaxFacts.cs:95-96) and, when enabled, also gated by
     /// AcceptCompoundAssignment (SyntaxFacts.cs:113).
@@ -107,6 +111,7 @@ impl Gate {
             Gate::AcceptFloorDivision => options.accept_floor_division,
             Gate::AcceptBitwiseOperators => options.accept_bitwise_operators,
             Gate::GotoOrTypedLua => options.accept_goto || options.accept_typed_lua,
+            Gate::AcceptGoto => options.accept_goto,
             Gate::FloorDivisionAndCompound => {
                 options.accept_floor_division && options.accept_compound_assignment
             }
@@ -139,10 +144,7 @@ const SYMBOL_ROWS: &[(Symbol, Gate)] = &[
     (Symbol::True, Gate::Always),
     (Symbol::Until, Gate::Always),
     (Symbol::While, Gate::Always),
-    // The GotoKeyword is disabled by HasKeywordBeenDisabled when
-    // !AcceptGoto (SyntaxFacts.cs:52); the identifier row replaces it
-    // (LexicalTestData.cs:346).
-    (Symbol::Goto, Gate::Always),
+    (Symbol::Goto, Gate::AcceptGoto),
     (Symbol::PlusEqual, Gate::AcceptCompoundAssignment),
     (Symbol::MinusEqual, Gate::AcceptCompoundAssignment),
     (Symbol::StarEqual, Gate::AcceptCompoundAssignment),

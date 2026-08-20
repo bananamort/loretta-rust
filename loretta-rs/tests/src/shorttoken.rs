@@ -1,7 +1,7 @@
 // Ported from Loretta.CodeAnalysis.Lua.UnitTests.Lexical.ShortToken (b767b4e): ShortToken
 // C# source: src/Compilers/Lua/Test/Portable/Lexical/ShortToken.cs
 
-use full_moon::tokenizer::{Symbol, Token, TokenKind, TokenType};
+use full_moon::tokenizer::{StringLiteralQuoteType, Symbol, Token, TokenKind, TokenType};
 
 use loretta::integerformats::IntegerFormats;
 use loretta::luasyntaxoptions::LuaSyntaxOptions;
@@ -200,13 +200,24 @@ fn token_value(token: &Token, options: &LuaSyntaxOptions) -> Option<TokenValue> 
         TokenType::Number { .. } => number_value(&token.to_string(), options),
         TokenType::StringLiteral {
             literal,
-            multi_line_depth,
+            quote_type,
             ..
         } => {
             let text = literal.as_str();
-            let decoded = if *multi_line_depth > 0 {
-                // Long strings do not process escapes.
-                text.to_string()
+            let decoded = if *quote_type == StringLiteralQuoteType::Brackets {
+                // Long strings do not process escapes; the C# skips the
+                // leading new line of the content (TryScanLongString,
+                // Lexer.cs:926-927) — the full_moon keeps it in the literal.
+                let content = if let Some(rest) = text.strip_prefix("\r\n") {
+                    rest
+                } else if let Some(rest) = text.strip_prefix('\n') {
+                    rest
+                } else if let Some(rest) = text.strip_prefix('\r') {
+                    rest
+                } else {
+                    text
+                };
+                content.to_string()
             } else {
                 unescape_lua_string(text, options)
             };

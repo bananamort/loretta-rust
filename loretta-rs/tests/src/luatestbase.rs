@@ -25,12 +25,20 @@ pub struct LuaTestBase;
 /// (the CLI's preset mapping is the reference; the test default options map
 /// to the all-features default version).
 pub fn options_to_version(options: &LuaParseOptions) -> full_moon::LuaVersion {
+    let syntax = &options.syntax_options;
     let mut version = full_moon::LuaVersion::new();
     // The full_moon's C-style comments (and the cfxlua-only symbols) require
     // the cfxlua version flag (tokenizer/lexer.rs:606-609); the
     // AcceptCCommentSyntax presets map to it.
-    if options.syntax_options.accept_c_comment_syntax {
+    if syntax.accept_c_comment_syntax {
         version = version.with_cfxlua();
+    }
+    // The goto-less, typed-lua-less presets (Lua 5.1) map to the lua51
+    // version — the `goto` lexes as the identifier and the `::` as two
+    // colons (the C# Lua51 behavior, RegressionTests.cs:96-120; the full_moon
+    // version_switch gates).
+    if !syntax.accept_goto && !syntax.accept_typed_lua {
+        version = full_moon::LuaVersion::lua51();
     }
     version
 }
