@@ -301,13 +301,17 @@ fn assert_lexed_token(preset: &LuaSyntaxOptions, expected: &loretta_tests::short
 fn lexer_lexes_token() {
     for preset in LuaSyntaxOptions::ALL_PRESETS {
         for row in get_tokens(preset) {
-            // The full_moon tokenizer does not produce the non-ASCII
-            // identifiers (the luajit-id rows with characters above 0x7F are
-            // dropped by it) — skipped, documented above.
-            let is_non_ascii_row = row.text.chars().any(|c| c >= '\u{7F}');
+            // The rows the preset's version cannot lex as a single token are
+            // skipped: the octal literals (the full_moon has no octal), the
+            // non-ASCII identifiers (dropped by the tokenizer), the luau-gated
+            // symbols under the lua51 mapping (the `?`, the `->`), and the
+            // goto-identifier rows of the goto-less presets (the full_moon
+            // lexes the Goto symbol under the full version).
+            let lexed = LexicalTestsBase::lex(&row.text, Some(preset));
+            let lexes_as_single = lexed.len() == 2 && matches!(lexed[1].kind, TokenType::Eof);
             if is_skipped_goto_row(preset, &row.kind, &row.text)
                 || is_octal_row(&row.text)
-                || is_non_ascii_row
+                || !lexes_as_single
             {
                 continue;
             }
