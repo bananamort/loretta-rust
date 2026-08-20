@@ -53,3 +53,7 @@ path = "interpolated_string_tests.rs"
 [[test]]
 name = "local_variable_attribute_tests"
 path = "local_variable_attribute_tests.rs"
+
+[[test]]
+name = "parsing_regression_tests"
+path = "parsing_regression_tests.rs"

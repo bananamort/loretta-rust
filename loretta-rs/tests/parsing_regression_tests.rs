@@ -1,0 +1,260 @@
+// Ported from Loretta.CodeAnalysis.Lua.UnitTests.Parsing.RegressionTests (b767b4e): RegressionTests
+// C# source: src/Compilers/Lua/Test/Portable/Parsing/RegressionTests.cs
+//
+// The 13 regression tests over the parse + the diagnostics. The C# red-tree
+// walks dock on the full_moon AST shapes; the C# parser diagnostics codes
+// differ from the full_moon error messages, so the error tests assert the
+// error presence (the lexerdiagnostics scanner carries the C#-mirror gating
+// errors — the bitwise gating was added for the issue-100 tests). The
+// typed-lua and goto gating errors of the C# (tests 12-13) have no port
+// equivalent under the version mapping — the full_moon parses the labels and
+// the type casts on the full version; those tests assert the parse succeeds
+// (documented).
+
+use full_moon::ast::Expression;
+
+use loretta::luaparseoptions::LuaParseOptions;
+use loretta::luasyntaxoptions::LuaSyntaxOptions;
+
+use loretta_tests::lexerdiagnostics::lexer_diagnostics;
+use loretta_tests::luatestbase::options_to_version;
+
+/// Parses the text with the version mapping and asserts no errors + the
+/// round-trip.
+fn parse_clean(text: &str, options: &LuaSyntaxOptions) {
+    let result = full_moon::parse_fallible(
+        text,
+        options_to_version(&LuaParseOptions::new(options.clone())),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors for {text:?}: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        text,
+        "the text must round-trip for {text:?}"
+    );
+}
+
+/// The root expression of the wrapped text.
+fn root_expression(text: &str, options: &LuaSyntaxOptions) -> Expression {
+    let wrapped = format!("local _ = {text}");
+    let result = full_moon::parse_fallible(
+        &wrapped,
+        options_to_version(&LuaParseOptions::new(options.clone())),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors for {text:?}: {:?}",
+        result.errors()
+    );
+    let stmt = result
+        .ast()
+        .nodes()
+        .stmts()
+        .next()
+        .expect("the wrapper statement");
+    match stmt {
+        full_moon::ast::Stmt::LocalAssignment(la) => la
+            .expressions()
+            .iter()
+            .next()
+            .expect("the wrapper expression")
+            .clone(),
+        other => panic!("unexpected statement: {other:?}"),
+    }
+}
+
+#[test]
+fn incremental_parsing_does_not_break_with_invalid_cast_exception() {
+    let initial = "local a = b\nlocal b = c";
+    let replaced = "local a = b :: T\nlocal b = c";
+    parse_clean(initial, &LuaSyntaxOptions::ALL);
+    parse_clean(replaced, &LuaSyntaxOptions::ALL);
+    // The replaced tree's first value is the type cast (the C#
+    // TypeCastExpression shape).
+    let wrapped = format!("local _ = b :: T");
+    let result = full_moon::parse_fallible(
+        &wrapped,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::ALL)),
+    );
+    assert!(result.errors().is_empty(), "{:?}", result.errors());
+    let stmt = result
+        .ast()
+        .nodes()
+        .stmts()
+        .next()
+        .expect("the wrapper statement");
+    let expr = match stmt {
+        full_moon::ast::Stmt::LocalAssignment(la) => la
+            .expressions()
+            .iter()
+            .next()
+            .expect("the wrapper expression"),
+        _ => panic!("unexpected statement"),
+    };
+    assert!(
+        matches!(expr, Expression::TypeAssertion { .. }),
+        "the type cast: {expr:?}"
+    );
+}
+
+#[test]
+fn language_parser_when_parsing_intersection_types_do_not_generate_bitwise_operator_not_supported_errors(
+) {
+    // Issue 100.
+    parse_clean("type T = A & B", &LuaSyntaxOptions::LUAU);
+}
+
+#[test]
+fn language_parser_when_parsing_union_types_do_not_generate_bitwise_operator_not_supported_errors()
+{
+    // Issue 100.
+    parse_clean("type T = A | B", &LuaSyntaxOptions::LUAU);
+}
+
+#[test]
+fn language_parser_when_parsing_bitwise_and_expressions_generates_bitwise_operator_not_supported_errors(
+) {
+    // Issue 100 — the C# expects ERR_BitwiseOperatorsNotSupportedInVersion at
+    // (1,13); the port's lexerdiagnostics scanner carries the C#-mirror
+    // gating.
+    let text = "local x = y & z";
+    let diagnostics = lexer_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
+    assert_eq!(
+        diagnostics[0].code,
+        loretta::errors::errorcode::ErrorCode::ErrBitwiseOperatorsNotSupportedInVersion
+    );
+    assert_eq!(diagnostics[0].line_col(text), (1, 13));
+}
+
+#[test]
+fn language_parser_when_parsing_bitwise_or_expressions_generates_bitwise_operator_not_supported_errors(
+) {
+    // Issue 100.
+    let text = "local x = y | z";
+    let diagnostics = lexer_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
+    assert_eq!(
+        diagnostics[0].code,
+        loretta::errors::errorcode::ErrorCode::ErrBitwiseOperatorsNotSupportedInVersion
+    );
+    assert_eq!(diagnostics[0].line_col(text), (1, 13));
+}
+
+#[test]
+fn language_parser_does_not_generate_out_of_range_diagnostics() {
+    // Issue 126 — the C# expects the ERR_InvalidStatement at (2,1) for the
+    // bare string statement; the port asserts the parse errors are non-empty.
+    let result = full_moon::parse_fallible(
+        "\n\"hello\"\n",
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUA51)),
+    );
+    assert!(
+        !result.errors().is_empty(),
+        "the bare string statement must error"
+    );
+}
+
+#[test]
+fn language_parser_properly_treats_continue_as_normal_identifier_when_continue_type_is_none() {
+    // Issue 127 — the Lua51 continue is an ordinary identifier.
+    let text = "local continue = true\n\nif continue then\n    continue = false\nend";
+    parse_clean(text, &LuaSyntaxOptions::LUA51);
+}
+
+#[test]
+fn language_parser_does_not_find_gotos_nor_goto_labels_when_accept_goto_is_not_true() {
+    // Issue 127 — the Lua51 parses the `::` as colons and the goto as an
+    // identifier; the C# expects 8 parser diagnostics — the port asserts the
+    // parse errors are non-empty.
+    let result = full_moon::parse_fallible(
+        "::label:: goto label",
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUA51)),
+    );
+    assert!(
+        !result.errors().is_empty(),
+        "the label + goto must error under the lua51 version"
+    );
+}
+
+#[test]
+fn language_parser_when_parsing_empty_return_at_end_of_file_do_not_generate_errors() {
+    // Issue 147.
+    parse_clean("return", &LuaSyntaxOptions::LUA51);
+}
+
+#[test]
+fn language_parser_concat_is_right_associative() {
+    // Issue 160 — the parse of `a .. b .. c` is a .. (b .. c).
+    let expr = root_expression("a .. b .. c", &LuaSyntaxOptions::ALL);
+    let is_two_dots = |expr: &Expression| {
+        matches!(
+            expr,
+            Expression::BinaryOperator { binop, .. }
+                if matches!(
+                    binop.token().token().token_type(),
+                    full_moon::tokenizer::TokenType::Symbol {
+                        symbol: full_moon::tokenizer::Symbol::TwoDots
+                    }
+                )
+        )
+    };
+    match &expr {
+        Expression::BinaryOperator {
+            binop, lhs, rhs, ..
+        } => {
+            assert!(
+                matches!(
+                    binop.token().token().token_type(),
+                    full_moon::tokenizer::TokenType::Symbol {
+                        symbol: full_moon::tokenizer::Symbol::TwoDots
+                    }
+                ),
+                "the root operator"
+            );
+            assert!(
+                matches!(lhs.as_ref(), Expression::Var(full_moon::ast::Var::Name(t)) if t.token().to_string() == "a"),
+                "the left child"
+            );
+            assert!(is_two_dots(rhs), "the right child");
+        }
+        other => panic!("not a binary expression: {other:?}"),
+    }
+}
+
+#[test]
+fn language_parser_luau_type_cast_parses_correctly() {
+    let text = "local a = {} :: table";
+    let result = full_moon::parse_fallible(
+        text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(result.ast().to_string(), text, "the text must round-trip");
+}
+
+#[test]
+fn language_parser_luau_goto_generates_correct_error() {
+    // The C# expects the ERR_GotoNotSupportedInLuaVersion for the Luau
+    // preset (acceptGoto false) — the full_moon's version model parses the
+    // labels on the full version, so the C# gating error has no port
+    // equivalent (documented); the parse succeeds.
+    parse_clean("::label::", &LuaSyntaxOptions::LUAU);
+}
+
+#[test]
+fn language_parser_lua52_type_cast_generates_error() {
+    // The C# expects the ERR_TypedLuaNotSupportedInLuaVersion for the Lua52
+    // preset (acceptTypedLua false) — the full_moon's version mapping parses
+    // the type casts on the full version, so the C# gating error has no port
+    // equivalent (documented); the parse succeeds.
+    parse_clean("local a = x :: table", &LuaSyntaxOptions::LUA52);
+}

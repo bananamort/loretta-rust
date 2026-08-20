@@ -1037,8 +1037,20 @@ pub fn lexer_diagnostics(source: &str, options: &LuaSyntaxOptions) -> Vec<LexerD
             c if c.is_ascii_alphabetic() || c == '_' || c >= '\u{7F}' => s.scan_identifier(),
             // The valid symbol/operator characters (the C# ScanToken cases) —
             // no diagnostics for the covered tests.
-            '#' | '+' | '-' | '*' | '/' | '^' | '<' | '>' | '=' | '&' | '|' | '~' | '%' | ','
-            | '.' | ':' | ';' | '?' | '!' | '(' | ')' | '[' | ']' | '{' | '}' => {
+            '&' | '|' => {
+                s.pos += 1;
+                if !s.options.accept_bitwise_operators {
+                    s.error_at(
+                        s.byte_pos() - 1,
+                        1,
+                        ErrorCode::ErrBitwiseOperatorsNotSupportedInVersion,
+                        Vec::new(),
+                    );
+                }
+                s.only_shebangs_and_newlines = false;
+            }
+            '#' | '+' | '-' | '*' | '/' | '^' | '<' | '>' | '=' | '~' | '%' | ',' | '.' | ':'
+            | ';' | '?' | '!' | '(' | ')' | '[' | ']' | '{' | '}' => {
                 s.pos += 1;
                 s.only_shebangs_and_newlines = false;
             }
