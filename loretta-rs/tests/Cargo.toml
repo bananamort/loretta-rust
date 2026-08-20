@@ -41,3 +41,7 @@ path = "lexical_tests.rs"
 [[test]]
 name = "lexical_regression_tests"
 path = "lexical_regression_tests.rs"
+
+[[test]]
+name = "binary_operator_precedence_tests"
+path = "binary_operator_precedence_tests.rs"
