@@ -62,6 +62,16 @@ pub fn parse_and_validate_async(
     ast
 }
 
+/// C# ParseAndValidateFirstAsync (ParsingTestsBase.cs:53-57): the first
+/// diagnostic must match the expected one (the C# GetDiagnostics().Take(1)).
+pub fn parse_and_validate_first_async(text: &str, expected: &ExpectedDiagnostic) -> Ast {
+    let ast = parse_tree(text, &LuaSyntaxOptions::ALL);
+    let produced = crate::lexerdiagnostics::lexer_diagnostics(text, &LuaSyntaxOptions::ALL);
+    assert!(!produced.is_empty(), "at least one diagnostic for {text:?}");
+    verify_diagnostics(text, &produced[..1], std::slice::from_ref(expected));
+    ast
+}
+
 /// The expected diagnostic (code + 1-based position + squiggled span text +
 /// message arguments) — the C# DiagnosticDescription.
 pub struct ExpectedDiagnostic {
