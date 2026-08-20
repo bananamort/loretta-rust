@@ -33,3 +33,7 @@ path = "experimental_regression_tests.rs"
 [[test]]
 name = "lexical_error_tests"
 path = "lexical_error_tests.rs"
+
+[[test]]
+name = "lexical_tests"
+path = "lexical_tests.rs"

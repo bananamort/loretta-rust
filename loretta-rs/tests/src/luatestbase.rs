@@ -24,8 +24,15 @@ pub struct LuaTestBase;
 /// The options -> full_moon LuaVersion mapping used by the parse factories
 /// (the CLI's preset mapping is the reference; the test default options map
 /// to the all-features default version).
-pub fn options_to_version(_options: &LuaParseOptions) -> full_moon::LuaVersion {
-    full_moon::LuaVersion::new()
+pub fn options_to_version(options: &LuaParseOptions) -> full_moon::LuaVersion {
+    let mut version = full_moon::LuaVersion::new();
+    // The full_moon's C-style comments (and the cfxlua-only symbols) require
+    // the cfxlua version flag (tokenizer/lexer.rs:606-609); the
+    // AcceptCCommentSyntax presets map to it.
+    if options.syntax_options.accept_c_comment_syntax {
+        version = version.with_cfxlua();
+    }
+    version
 }
 
 impl LuaTestBase {
