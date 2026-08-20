@@ -2,6 +2,7 @@
 
 pub mod errorcode;
 pub mod errorfacts;
+pub mod lexerdiagnostics;
 pub mod luadiagnostic;
 pub mod luadiagnosticformatter;
 pub mod luadiagnosticinfo;
