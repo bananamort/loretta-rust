@@ -45,3 +45,7 @@ path = "lexical_regression_tests.rs"
 [[test]]
 name = "binary_operator_precedence_tests"
 path = "binary_operator_precedence_tests.rs"
+
+[[test]]
+name = "interpolated_string_tests"
+path = "interpolated_string_tests.rs"
