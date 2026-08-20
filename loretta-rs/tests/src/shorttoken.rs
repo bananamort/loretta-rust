@@ -1,7 +1,7 @@
 // Ported from Loretta.CodeAnalysis.Lua.UnitTests.Lexical.ShortToken (b767b4e): ShortToken
 // C# source: src/Compilers/Lua/Test/Portable/Lexical/ShortToken.cs
 
-use full_moon::tokenizer::{Token, TokenKind, TokenType};
+use full_moon::tokenizer::{Symbol, Token, TokenKind, TokenType};
 
 use loretta::integerformats::IntegerFormats;
 use loretta::luasyntaxoptions::LuaSyntaxOptions;
@@ -188,9 +188,15 @@ fn kind_label(kind: &TokenType) -> &'static str {
     }
 }
 
-/// The C# token.Value (the dropped lexer's typed literal values).
+/// The C# token.Value (the dropped lexer's typed literal values). The C#
+/// lexer gives the non-literal tokens the constant value or the token text
+/// (the data rows mirror it); the InterpolatedString value is the full token
+/// text (the FiveM hash rows are skipped by the row-863 tests — the full_moon
+/// tokenizer does not hash).
 fn token_value(token: &Token, options: &LuaSyntaxOptions) -> Option<TokenValue> {
     match token.token_type() {
+        TokenType::Eof => Some(TokenValue::String(String::new())),
+        TokenType::Identifier { .. } => Some(TokenValue::String(token.to_string())),
         TokenType::Number { .. } => number_value(&token.to_string(), options),
         TokenType::StringLiteral {
             literal,
@@ -202,18 +208,47 @@ fn token_value(token: &Token, options: &LuaSyntaxOptions) -> Option<TokenValue> 
                 // Long strings do not process escapes.
                 text.to_string()
             } else {
-                unescape_lua_string(text)
+                unescape_lua_string(text, options)
             };
             Some(TokenValue::String(decoded))
         }
+        TokenType::InterpolatedString { .. } => Some(TokenValue::String(token.to_string())),
+        TokenType::Symbol { symbol } => symbol_value(*symbol, &token.to_string()),
         _ => None,
     }
 }
 
+/// The C# GetConstantValue.Or(text) (SyntaxFacts.cs:214-223) applied to a
+/// lexed symbol token — the keyword constants (true/false/nil) and the token
+/// text otherwise.
+fn symbol_value(symbol: Symbol, text: &str) -> Option<TokenValue> {
+    match symbol {
+        Symbol::True => Some(TokenValue::Bool(true)),
+        Symbol::False => Some(TokenValue::Bool(false)),
+        Symbol::Nil => Some(TokenValue::Nil),
+        _ => Some(TokenValue::String(text.to_string())),
+    }
+}
+
 /// The C# Lexer.Numbers.cs value computation — the integer-format options
-/// decide long vs double.
+/// decide long vs double; the LuaJIT suffixes decide the value kind
+/// regardless of the formats (the C# ParseBinaryNumber/ParseDecimalNumber/
+/// ParseHexadecimalNumber suffix handling).
 fn number_value(text: &str, options: &LuaSyntaxOptions) -> Option<TokenValue> {
     let clean: String = text.chars().filter(|c| *c != '_').collect();
+    let lower = clean.to_lowercase();
+    if lower.ends_with("ull") {
+        let digits = &clean[..clean.len() - 3];
+        return Some(TokenValue::Unsigned(parse_unsigned(digits)?));
+    }
+    if lower.ends_with("ll") {
+        let digits = &clean[..clean.len() - 2];
+        return Some(TokenValue::Integer(parse_signed(digits)?));
+    }
+    if lower.ends_with('i') {
+        let digits = &clean[..clean.len() - 1];
+        return Some(TokenValue::Complex(parse_complex(digits)?));
+    }
     if let Some(rest) = clean
         .strip_prefix("0x")
         .or_else(|| clean.strip_prefix("0X"))
@@ -260,6 +295,50 @@ fn number_value(text: &str, options: &LuaSyntaxOptions) -> Option<TokenValue> {
     })
 }
 
+/// The C# `ulong.Parse(text[..^3])` / `Convert.ToUInt64(text[2..^3], base)`
+/// of the suffix digits.
+fn parse_unsigned(text: &str) -> Option<u64> {
+    if let Some(rest) = text.strip_prefix("0x").or_else(|| text.strip_prefix("0X")) {
+        u64::from_str_radix(rest, 16).ok()
+    } else if let Some(rest) = text.strip_prefix("0b").or_else(|| text.strip_prefix("0B")) {
+        u64::from_str_radix(rest, 2).ok()
+    } else if let Some(rest) = text.strip_prefix("0o").or_else(|| text.strip_prefix("0O")) {
+        u64::from_str_radix(rest, 8).ok()
+    } else {
+        text.parse::<u64>().ok()
+    }
+}
+
+/// The C# `long.Parse(text[..^2])` / `Convert.ToInt64(text[2..^2], base)`.
+fn parse_signed(text: &str) -> Option<i64> {
+    if let Some(rest) = text.strip_prefix("0x").or_else(|| text.strip_prefix("0X")) {
+        i64::from_str_radix(rest, 16).ok()
+    } else if let Some(rest) = text.strip_prefix("0b").or_else(|| text.strip_prefix("0B")) {
+        i64::from_str_radix(rest, 2).ok()
+    } else if let Some(rest) = text.strip_prefix("0o").or_else(|| text.strip_prefix("0O")) {
+        i64::from_str_radix(rest, 8).ok()
+    } else {
+        text.parse::<i64>().ok()
+    }
+}
+
+/// The C# `new Complex(0, ParseDouble(text[..^1], @base))` of the suffix
+/// digits.
+fn parse_complex(text: &str) -> Option<f64> {
+    if let Some(rest) = text.strip_prefix("0x").or_else(|| text.strip_prefix("0X")) {
+        let value = i64::from_str_radix(rest, 16).ok()?;
+        Some(value as f64)
+    } else if let Some(rest) = text.strip_prefix("0b").or_else(|| text.strip_prefix("0B")) {
+        let value = i64::from_str_radix(rest, 2).ok()?;
+        Some(value as f64)
+    } else if let Some(rest) = text.strip_prefix("0o").or_else(|| text.strip_prefix("0O")) {
+        let value = i64::from_str_radix(rest, 8).ok()?;
+        Some(value as f64)
+    } else {
+        text.parse::<f64>().ok()
+    }
+}
+
 /// Whether the hex text is a hex float (has a '.' or a 'p' exponent).
 fn is_hex_float(text: &str) -> bool {
     text.contains('.') || text.contains('p') || text.contains('P')
@@ -268,8 +347,10 @@ fn is_hex_float(text: &str) -> bool {
 /// The C# token.Value<string> — the decoded string literal (the Lua escape
 /// decoding shared with the constant folder's literal decoding). The C# UTF-16
 /// lone surrogates (e.g. `\u{D800}`) have no valid UTF-8 encoding and are
-/// dropped (documented in the row-788 port).
-fn unescape_lua_string(text: &str) -> String {
+/// dropped (documented in the row-788 port). The invalid-escape presets keep
+/// the escape text minus the backslash (the C# ScanEscapeSequence `goto
+/// default` — Lexer.ShortString.cs:138-139, 167-171, 185-186).
+fn unescape_lua_string(text: &str, options: &LuaSyntaxOptions) -> String {
     let mut out = String::new();
     let mut chars = text.chars();
     while let Some(c) = chars.next() {
@@ -289,6 +370,10 @@ fn unescape_lua_string(text: &str) -> String {
             Some('\\') => out.push('\\'),
             Some('"') => out.push('"'),
             Some('\'') => out.push('\''),
+            Some('z') if options.accept_invalid_escapes && !options.accept_whitespace_escape => {
+                // The C# `goto default` — the escape char kept as-is.
+                out.push('z');
+            }
             Some('z') => loop {
                 match chars.clone().next() {
                     Some(n) if n.is_ascii_whitespace() => {
@@ -297,22 +382,30 @@ fn unescape_lua_string(text: &str) -> String {
                     _ => break,
                 }
             },
+            Some('x')
+                if options.accept_invalid_escapes && !options.accept_hex_escapes_in_strings =>
+            {
+                // The C# `goto default` — the escape char kept as-is.
+                out.push('x');
+            }
             Some('x') => {
                 let mut hex = String::new();
                 for _ in 0..2 {
-                    match chars.next() {
-                        Some(h) if h.is_ascii_hexdigit() => hex.push(h),
-                        other => {
-                            if let Some(o) = other {
-                                out.push(o);
-                            }
-                            break;
+                    match chars.clone().next() {
+                        Some(h) if h.is_ascii_hexdigit() => {
+                            chars.next();
+                            hex.push(h);
                         }
+                        _ => break,
                     }
                 }
                 if let Ok(v) = u8::from_str_radix(&hex, 16) {
                     out.push(v as char);
                 }
+            }
+            Some('u') if options.accept_invalid_escapes && !options.accept_unicode_escape => {
+                // The C# `goto default` — the escape char kept as-is.
+                out.push('u');
             }
             Some('u') => {
                 let mut digits = String::new();
@@ -334,14 +427,12 @@ fn unescape_lua_string(text: &str) -> String {
                 let mut digits = String::new();
                 digits.push(d);
                 for _ in 0..2 {
-                    match chars.next() {
-                        Some(n) if n.is_ascii_digit() => digits.push(n),
-                        other => {
-                            if let Some(o) = other {
-                                out.push(o);
-                            }
-                            break;
+                    match chars.clone().next() {
+                        Some(n) if n.is_ascii_digit() => {
+                            chars.next();
+                            digits.push(n);
                         }
+                        _ => break,
                     }
                 }
                 if let Ok(v) = digits.parse::<u32>() {

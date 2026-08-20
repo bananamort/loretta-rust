@@ -154,7 +154,8 @@ const SYMBOL_ROWS: &[(Symbol, Gate)] = &[
     (Symbol::Ampersand, Gate::AcceptBitwiseOperators),
     (Symbol::ThinArrow, Gate::Always),
     (Symbol::TwoColons, Gate::GotoOrTypedLua),
-    (Symbol::AtSign, Gate::Always),
+    // The C# has no AtSign kind — the `@` is the C# bad character
+    // (LexicalErrorTests.cs:299-323), so there is no data row.
     (Symbol::Caret, Gate::Always),
     (Symbol::Colon, Gate::Always),
     (Symbol::Comma, Gate::Always),
@@ -611,6 +612,19 @@ pub fn get_tokens(options: &LuaSyntaxOptions) -> Vec<ShortToken> {
     }
 
     if options.continue_type == loretta::continuetype::ContinueType::None {
+        // The C# tail row: the `continue` identifier when the keyword is
+        // disabled (LexicalTestData.cs:345).
+        tokens.push(ShortToken::from_text(
+            TokenType::Identifier {
+                identifier: "continue".into(),
+            },
+            "continue".to_string(),
+            Some(TokenValue::String("continue".to_string())),
+        ));
+    } else if options.continue_type == loretta::continuetype::ContinueType::Keyword {
+        // The C# ContinueKeyword row (the keyword enabled for the non-
+        // contextual continue types — LexicalTestData.cs:35-46); the full_moon
+        // tokenizer has no continue symbol — the row docks on the identifier.
         tokens.push(ShortToken::from_text(
             TokenType::Identifier {
                 identifier: "continue".into(),
@@ -630,6 +644,16 @@ pub fn get_tokens(options: &LuaSyntaxOptions) -> Vec<ShortToken> {
     }
 
     tokens
+}
+
+/// The enabled symbol rows for the options (the C# IsTokenOrTriviaKindEnabled
+/// enumeration — used by the row-863 Lexer_Covers_AllTokens check).
+pub fn enabled_symbols(options: &LuaSyntaxOptions) -> Vec<Symbol> {
+    SYMBOL_ROWS
+        .iter()
+        .filter(|(_, gate)| gate.enabled(options))
+        .map(|(symbol, _)| *symbol)
+        .collect()
 }
 
 /// C# GetSeparators (LexicalTestData.cs:400-418).
@@ -656,30 +680,34 @@ fn get_separators(options: &LuaSyntaxOptions) -> Vec<ShortToken> {
         ));
     }
     if options.accept_c_comment_syntax {
-        for comment in ["/**/", "/*\naaa\n*/"] {
+        // The full_moon CStyleComment stores the content between the `/*`
+        // and `*/` (not the full text).
+        for (content, full) in [("", "/**/"), ("\naaa\n", "/*\naaa\n*/")] {
             rows.push(ShortToken::from_text(
                 TokenType::CStyleComment {
-                    comment: comment.into(),
+                    comment: content.into(),
                 },
-                comment.to_string(),
+                full.to_string(),
                 None,
             ));
         }
     }
-    for comment in [
-        "--[[]]",
-        "--[[\naaa\n]]",
-        "--[=[]=]",
-        "--[=[\naaa\n]=]",
-        "--[====[]====]",
-        "--[====[\naaa\n]====]",
+    // The full_moon MultiLineComment stores the content between the `--[[`
+    // and `]]` and the number of `=` signs in the opener (the blocks).
+    for (content, equals, full) in [
+        ("", 0, "--[[]]"),
+        ("\naaa\n", 0, "--[[\naaa\n]]"),
+        ("", 1, "--[=[]=]"),
+        ("\naaa\n", 1, "--[=[\naaa\n]=]"),
+        ("", 4, "--[====[]====]"),
+        ("\naaa\n", 4, "--[====[\naaa\n]====]"),
     ] {
         rows.push(ShortToken::from_text(
             TokenType::MultiLineComment {
-                comment: comment.into(),
-                blocks: 0,
+                comment: content.into(),
+                blocks: equals,
             },
-            comment.to_string(),
+            full.to_string(),
             None,
         ));
     }
@@ -689,19 +717,21 @@ fn get_separators(options: &LuaSyntaxOptions) -> Vec<ShortToken> {
 /// C# LexicalTestData.GetTrivia (LexicalTestData.cs:392-398).
 pub fn get_trivia(options: &LuaSyntaxOptions) -> Vec<ShortToken> {
     let mut trivia = get_separators(options);
+    // The full_moon SingleLineComment stores the content after the `--`.
     trivia.push(ShortToken::from_text(
         TokenType::SingleLineComment {
-            comment: "-- hi".into(),
+            comment: " hi".into(),
         },
         "-- hi".to_string(),
         None,
     ));
     if options.accept_c_comment_syntax {
         // The C# `// hi` row is a SingleLineCommentTrivia; the full_moon
-        // tokenizes C-style comments as CStyleComment (documented).
+        // tokenizes C-style comments as CStyleComment (documented); the
+        // comment field holds the content after the `//`.
         trivia.push(ShortToken::from_text(
             TokenType::CStyleComment {
-                comment: "// hi".into(),
+                comment: " hi".into(),
             },
             "// hi".to_string(),
             None,

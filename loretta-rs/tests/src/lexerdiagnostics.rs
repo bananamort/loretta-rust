@@ -391,7 +391,7 @@ impl<'a> Scanner<'a> {
                         break;
                     }
                 }
-                if !self.options.accept_whitespace_escape {
+                if !self.options.accept_invalid_escapes && !self.options.accept_whitespace_escape {
                     self.error_at(
                         self.byte_of_char(escape_start),
                         self.byte_pos() - self.byte_of_char(escape_start),
@@ -444,7 +444,9 @@ impl<'a> Scanner<'a> {
                         Vec::new(),
                     );
                 }
-                if !self.options.accept_hex_escapes_in_strings {
+                if !self.options.accept_invalid_escapes
+                    && !self.options.accept_hex_escapes_in_strings
+                {
                     self.error_at(
                         self.byte_of_char(escape_start),
                         self.byte_pos() - self.byte_of_char(escape_start),
@@ -529,7 +531,7 @@ impl<'a> Scanner<'a> {
                 vec!["10FFFF".to_string()],
             );
         }
-        if !self.options.accept_unicode_escape {
+        if !self.options.accept_invalid_escapes && !self.options.accept_unicode_escape {
             self.error_at(
                 self.byte_of_char(escape_start),
                 self.byte_pos() - self.byte_of_char(escape_start),
@@ -560,6 +562,14 @@ impl<'a> Scanner<'a> {
                     self.pos += 1;
                     break;
                 }
+                Some('\\') => {
+                    // The escaped character (incl. the escaped newline) does
+                    // not end the string (the C# InterpolatedStringScanner).
+                    self.pos += 1;
+                    if !self.at_end() {
+                        self.pos += 1;
+                    }
+                }
                 Some(_) => {
                     self.pos += 1;
                 }
@@ -575,7 +585,10 @@ impl<'a> Scanner<'a> {
             );
             return;
         }
-        if self.options.backtick_string_type != BacktickStringType::InterpolatedStringLiteral {
+        // The C#: the interpolated gating error fires only for the None
+        // backtick type (the HashLiteral strings use the short-string
+        // scanner — Lexer.cs:622-625; Lexer.ShortString.cs:71-72).
+        if self.options.backtick_string_type == BacktickStringType::None {
             self.error_at(
                 self.byte_of_char(start),
                 self.byte_pos() - self.byte_of_char(start),
@@ -706,7 +719,7 @@ impl<'a> Scanner<'a> {
             if hex_float_overflows(text) {
                 self.error_current(ErrorCode::ErrDoubleOverflow);
             }
-        } else if num > i64::MAX as u64 {
+        } else if !is_unsigned_long && num > i64::MAX as u64 {
             self.error_current(ErrorCode::ErrNumericLiteralTooLarge);
         }
     }
@@ -975,9 +988,12 @@ fn decimal_value(c: char) -> u32 {
 }
 
 /// The C# HexFloat.DoubleFromHexString overflow (the exponent-driven
-/// overflow throws, e.g. 0x1p999999).
+/// overflow throws, e.g. 0x1p999999). The C# number builder strips the
+/// underscores before parsing (the C# ConsumeHexDigits appends only the
+/// non-underscore digits).
 fn hex_float_overflows(text: &str) -> bool {
-    match loretta::utilities::hexfloat::HexFloat::double_from_hex_string(text) {
+    let clean: String = text.chars().filter(|c| *c != '_').collect();
+    match loretta::utilities::hexfloat::HexFloat::double_from_hex_string(&clean) {
         Ok(value) => value.is_infinite() || value.is_nan(),
         Err(_) => true,
     }

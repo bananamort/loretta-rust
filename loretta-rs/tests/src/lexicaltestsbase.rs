@@ -38,6 +38,17 @@ impl LexicalTestsBase {
             .collect()
     }
 
+    /// The raw lexer stream of the text (including the trivia tokens — the
+    /// C# SyntaxFactory.ParseTokens stream the trivia is attached to).
+    pub fn lex_raw(text: &str, options: &LuaSyntaxOptions) -> Vec<full_moon::tokenizer::Token> {
+        let parse_options = LuaParseOptions::new(options.clone());
+        let lexer = Lexer::new(text, options_to_version(&parse_options));
+        match lexer.collect() {
+            LexerResult::Ok(tokens) | LexerResult::Recovered(tokens, _) => tokens,
+            LexerResult::Fatal(errors) => panic!("lex failed: {errors:?}"),
+        }
+    }
+
     /// C# LexToken (LexicalTestsBase.cs:10-23): the first token; any further
     /// non-EOF token fails the assertion.
     pub fn lex_token(text: &str, options: Option<&LuaSyntaxOptions>) -> ShortToken {
