@@ -257,9 +257,9 @@ fn run_check(expected_dir: &str, tmp_dir: &str) {
 fn run_operation(operation: &str, preset: &str, code: &str, label: &str) -> Result<Json, String> {
     match operation {
         "options" => ops::options(preset),
-        "diagnostics" => ops::diagnostics(code),
+        "diagnostics" => ops::diagnostics(code, preset),
         "lex" => ops::lex(code),
-        "parse" => ops::parse(code),
+        "parse" => ops::parse(code, preset),
         "scope" => ops::scope(code, label),
         "minify" => ops::minify(code),
         "messageprovider" => ops::messageprovider(),

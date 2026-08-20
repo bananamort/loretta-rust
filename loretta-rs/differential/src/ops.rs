@@ -4,6 +4,7 @@
 
 use crate::json::Json;
 use crate::{collect_tokens, kind_name, token_full_text, token_text};
+use loretta::errors::messageprovider::MessageProvider;
 use loretta::luasyntaxoptions::LuaSyntaxOptions;
 
 type Diagnostic = (String, String, String);
@@ -25,13 +26,29 @@ pub fn preset_options(preset: &str) -> LuaSyntaxOptions {
     }
 }
 
-pub fn compute_diagnostics(code: &str) -> Result<(Vec<Diagnostic>, bool), String> {
-    match full_moon::parse(code) {
-        Ok(_) => Ok((Vec::new(), false)),
-        Err(errors) => Err(format!(
-            "parser diagnostics mapping not ported yet; full_moon errors: {errors:?}"
-        )),
+/// The C# DiagnosticsOp (tools/differential/Program.cs:212-217): the tree
+/// diagnostics concatenated with the descendant tokens' diagnostics — the
+/// tree's GetDiagnostics aggregates the token diagnostics, so every lexer
+/// diagnostic appears twice (the tree pass + the tokens pass). The ids come
+/// from ErrorFacts.GetId ("LUA%04d"), the severities from the code, and the
+/// messages from MessageProvider (the format with the arguments).
+pub fn compute_diagnostics(code: &str, preset: &str) -> Result<(Vec<Diagnostic>, bool), String> {
+    use loretta::errors::errorfacts::ErrorFacts;
+
+    let options = preset_options(preset);
+    let scanner_diags = loretta::errors::lexerdiagnostics::lexer_diagnostics(code, &options);
+    let mut diagnostics: Vec<Diagnostic> = Vec::new();
+    for d in &scanner_diags {
+        let id = ErrorFacts::get_id(d.code);
+        let severity = if d.is_warning { "Warning" } else { "Error" };
+        let args: Vec<&str> = d.arguments.iter().map(String::as_str).collect();
+        let message = MessageProvider::create_diagnostic(d.code, &args).message;
+        // The tree.GetDiagnostics() + the tokens' GetDiagnostics() concat.
+        diagnostics.push((id.clone(), severity.to_string(), message.clone()));
+        diagnostics.push((id, severity.to_string(), message));
     }
+    let has_errors = scanner_diags.iter().any(|d| !d.is_warning);
+    Ok((diagnostics, has_errors))
 }
 
 pub fn options(preset: &str) -> Result<Json, String> {
@@ -93,8 +110,8 @@ pub fn options(preset: &str) -> Result<Json, String> {
     ]))
 }
 
-pub fn diagnostics(code: &str) -> Result<Json, String> {
-    let (diagnostics, has_errors) = compute_diagnostics(code)?;
+pub fn diagnostics(code: &str, preset: &str) -> Result<Json, String> {
+    let (diagnostics, has_errors) = compute_diagnostics(code, preset)?;
     let diags: Vec<Json> = diagnostics
         .iter()
         .map(|d| {
@@ -133,9 +150,9 @@ pub fn lex(code: &str) -> Result<Json, String> {
     ]))
 }
 
-pub fn parse(code: &str) -> Result<Json, String> {
+pub fn parse(code: &str, preset: &str) -> Result<Json, String> {
     let ast = full_moon::parse(code).map_err(|errors| format!("parse failed: {errors:?}"))?;
-    let (_, has_errors) = compute_diagnostics(code)?;
+    let (_, has_errors) = compute_diagnostics(code, preset)?;
     Ok(Json::Object(vec![
         ("treeText".into(), Json::String(ast.to_string())),
         (
