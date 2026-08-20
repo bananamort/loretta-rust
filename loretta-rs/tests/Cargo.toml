@@ -61,3 +61,7 @@ path = "parsing_regression_tests.rs"
 [[test]]
 name = "type_parsing_error_tests"
 path = "type_parsing_error_tests.rs"
+
+[[test]]
+name = "type_parsing_regression_tests"
+path = "type_parsing_regression_tests.rs"
