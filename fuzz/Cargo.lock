@@ -107,10 +107,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "loretta"
+version = "0.1.0"
+dependencies = [
+ "full_moon",
+]
+
+[[package]]
 name = "loretta-fuzz"
 version = "0.1.0"
 dependencies = [
  "full_moon",
+ "loretta",
 ]
 
 [[package]]
