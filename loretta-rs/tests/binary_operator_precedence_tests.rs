@@ -13,10 +13,7 @@
 // expression kind is absent from the full_moon BinOp set (like the C#
 // untested exclusion of the FloorDivide).
 
-use full_moon::ast::BinOp;
 use full_moon::tokenizer::Symbol;
-
-use loretta::luasyntaxoptions::LuaSyntaxOptions;
 
 /// The binary operator kinds under test (the C# GetBinaryExpressionKinds
 /// minus the untested TypeCast/FloorDivide — the TypeCast has no full_moon

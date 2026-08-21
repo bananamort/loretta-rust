@@ -41,9 +41,7 @@ fn lex_token_with_leading_trivia(
         .cloned()
         .collect();
     let first = raw
-        .iter()
-        .skip(leading.len())
-        .next()
+        .get(leading.len())
         .expect("the lexer must produce at least the EOF token");
     let token = loretta_tests::shorttoken::ShortToken::from_token(first, options);
     (leading, token)
@@ -53,26 +51,25 @@ fn lex_token_with_leading_trivia(
 fn lexer_does_not_count_number_digits_naively() {
     // The C# second case (0o0000000000000000000001) is dropped — the
     // full_moon tokenizer has no octal literals (documented above).
-    for text in ["0b00000000000000000000000000000000000000000000000000000000000000001"] {
-        let token = LexicalTestsBase::lex_token(text, None);
-        assert_eq!(
-            token.kind,
-            TokenType::Number { text: text.into() },
-            "kind for {text}"
-        );
-        assert_eq!(
-            token.value,
-            Some(TokenValue::Float(1.0)),
-            "value for {text}"
-        );
-        assert_eq!(token.text, text, "text for {text}");
-        assert_eq!(token.span, TextSpan::new(0, text.len()), "span for {text}");
-        let diagnostics = lexer_diagnostics(text, &LuaSyntaxOptions::ALL);
-        assert!(
-            diagnostics.is_empty(),
-            "diagnostics for {text}: {diagnostics:?}"
-        );
-    }
+    let text = "0b00000000000000000000000000000000000000000000000000000000000000001";
+    let token = LexicalTestsBase::lex_token(text, None);
+    assert_eq!(
+        token.kind,
+        TokenType::Number { text: text.into() },
+        "kind for {text}"
+    );
+    assert_eq!(
+        token.value,
+        Some(TokenValue::Float(1.0)),
+        "value for {text}"
+    );
+    assert_eq!(token.text, text, "text for {text}");
+    assert_eq!(token.span, TextSpan::new(0, text.len()), "span for {text}");
+    let diagnostics = lexer_diagnostics(text, &LuaSyntaxOptions::ALL);
+    assert!(
+        diagnostics.is_empty(),
+        "diagnostics for {text}: {diagnostics:?}"
+    );
 }
 
 #[test]

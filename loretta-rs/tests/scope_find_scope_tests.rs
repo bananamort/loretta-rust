@@ -13,7 +13,6 @@ use std::rc::Rc;
 
 use loretta::scoping::iscope::{IScope, Scope};
 use loretta::scoping::scopekind::ScopeKind;
-use loretta::script::script::Script;
 
 use loretta_tests::scripttestsbase::ScriptTestsBase;
 

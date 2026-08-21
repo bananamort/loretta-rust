@@ -75,9 +75,8 @@ fn incremental_parsing_does_not_break_with_invalid_cast_exception() {
     parse_clean(replaced, &LuaSyntaxOptions::ALL);
     // The replaced tree's first value is the type cast (the C#
     // TypeCastExpression shape).
-    let wrapped = format!("local _ = b :: T");
     let result = full_moon::parse_fallible(
-        &wrapped,
+        "local _ = b :: T",
         options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::ALL)),
     );
     assert!(result.errors().is_empty(), "{:?}", result.errors());

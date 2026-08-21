@@ -12,7 +12,6 @@ use std::rc::Rc;
 
 use loretta::scoping::iscope::{IScope, Scope};
 use loretta::scoping::ivariable::{IVariable, SharedVariable};
-use loretta::script::script::Script;
 
 use loretta_tests::scripttestsbase::ScriptTestsBase;
 
