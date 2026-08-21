@@ -245,7 +245,6 @@ mod tests {
         match result {
             RenameResult::Ok(new_script) => {
                 let text = &new_script.syntax_trees()[0];
-                println!("renamed text: {text:?}");
                 assert!(text.contains("local renamed = 1"));
                 assert!(text.contains("print(renamed)"));
                 assert!(!text.contains("local a = 1"));
