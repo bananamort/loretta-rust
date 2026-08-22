@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesNilType:Method@TypeParsingTests.cs:1082",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesNilType",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 1082
-  },
-  {
     "Id": "Parser_ParsesParenthesizedTypes:Method@TypeParsingTests.cs:1094",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
     "SymbolName": "Parser_ParsesParenthesizedTypes",
