@@ -661,3 +661,25 @@ fn parser_parsestruetype() {
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParsesFalseType (TypeParsingTests.cs:1070): 'false' parses as the singleton false type.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parsesfalsetype() {
+    let parsed_text = "type A = false";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
