@@ -1145,3 +1145,25 @@ fn parser_parsetypedeclarationstatementwithpow() {
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParseEmptyTypePack (TypeParsingTests.cs:1818): 'function a(): () end' parses as the empty type pack return type.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parseemptytypepack() {
+    let parsed_text = "function a(): () end";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
