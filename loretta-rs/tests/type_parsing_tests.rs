@@ -436,3 +436,26 @@ fn parser_parsesfunctiontypes_withouttypeparameters_andtrailingvariadicpack_andt
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParsesFunctionTypes_WithoutTypeParameters_AndTrailingVariadicPack_AndTypePackReturn_AndParameterNameOnFirstParameter (TypeParsingTests.cs:445): '(p1: T, ...T) -> (T, ...T)' parses as the function type with a named first parameter and a trailing variadic pack.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parsesfunctiontypes_withouttypeparameters_andtrailingvariadicpack_andtypepackreturn_andparameternameonfirstparameter(
+) {
+    let parsed_text = "type A = (p1: T, ...T) -> (T, ...T)";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
