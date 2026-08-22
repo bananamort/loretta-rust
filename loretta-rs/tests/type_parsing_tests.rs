@@ -370,3 +370,25 @@ fn parser_parsestabletype_withindexer() {
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParsesTypeTable_WithProperty (TypeParsingTests.cs:325): '{prop1: Type1, prop2: Type2, prop3: Type3}' parses as the table type with properties.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parsestypetable_withproperty() {
+    let parsed_text = "type A = {prop1: Type1, prop2: Type2, prop3: Type3}";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
