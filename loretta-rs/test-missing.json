@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesNilableTypes:Method@TypeParsingTests.cs:1111",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesNilableTypes",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 1111
-  },
-  {
     "Id": "Parser_ParsesIntersectionType:Method@TypeParsingTests.cs:1132",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
     "SymbolName": "Parser_ParsesIntersectionType",
