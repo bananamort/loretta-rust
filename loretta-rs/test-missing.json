@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesFunctionTypes_WithoutTypeParameters_AndTypePackReturn_AndParameterNameOnBothParameters:Method@TypeParsingTests.cs:602",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesFunctionTypes_WithoutTypeParameters_AndTypePackReturn_AndParameterNameOnBothParameters",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 602
-  },
-  {
     "Id": "Parser_ParsesFunctionType_WithTypeParameters_AndTrailingVariadicPack_AndTypeReturn:Method@TypeParsingTests.cs:655",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
     "SymbolName": "Parser_ParsesFunctionType_WithTypeParameters_AndTrailingVariadicPack_AndTypeReturn",
