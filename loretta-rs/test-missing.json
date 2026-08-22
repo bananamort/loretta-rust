@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesArrayType_WithCompositeTypeNameElement:Method@TypeParsingTests.cs:246",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesArrayType_WithCompositeTypeNameElement",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 246
-  },
-  {
     "Id": "Parser_ParsesArrayType_WithArrayTypeElement:Method@TypeParsingTests.cs:270",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
     "SymbolName": "Parser_ParsesArrayType_WithArrayTypeElement",
