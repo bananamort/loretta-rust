@@ -304,3 +304,25 @@ fn parser_parsesarraytype_withsimpletypenameelement() {
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParsesArrayType_WithCompositeTypeNameElement (TypeParsingTests.cs:246): '{Type.Member}' parses as the array type over a composite type name.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parsesarraytype_withcompositetypenameelement() {
+    let parsed_text = "type A = {Type.Member}";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
