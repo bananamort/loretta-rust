@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesExportedTypeFunctionDeclarationStatement:Method@TypeParsingTests.cs:1909",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesExportedTypeFunctionDeclarationStatement",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 1909
-  },
-  {
     "Id": "Parser_ParsesTypeFunctionDeclarationStatementWithParameters:Method@TypeParsingTests.cs:1946",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
     "SymbolName": "Parser_ParsesTypeFunctionDeclarationStatementWithParameters",
