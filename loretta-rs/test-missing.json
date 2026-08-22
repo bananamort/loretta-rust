@@ -1,0 +1,572 @@
+[
+  {
+    "Id": "Parser_ParsesSimpleTypeName:Method@TypeParsingTests.cs:46",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesSimpleTypeName",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 46
+  },
+  {
+    "Id": "Parser_ParsesSimpleTypeName_WithTypeArgumentList:Method@TypeParsingTests.cs:58",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesSimpleTypeName_WithTypeArgumentList",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 58
+  },
+  {
+    "Id": "Parser_ParsesCompositeTypeName:Method@TypeParsingTests.cs:71",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesCompositeTypeName",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 71
+  },
+  {
+    "Id": "Parser_ParsesCompositeTypeName_WithTypeArgumentList:Method@TypeParsingTests.cs:88",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesCompositeTypeName_WithTypeArgumentList",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 88
+  },
+  {
+    "Id": "Parser_ParsesTypeofType_WithStrings:Method@TypeParsingTests.cs:106",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTypeofType_WithStrings",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 106
+  },
+  {
+    "Id": "Parser_ParsesTypeofType_WithNumbers:Method@TypeParsingTests.cs:126",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTypeofType_WithNumbers",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 126
+  },
+  {
+    "Id": "Parser_ParsesTypeofType_WithTables:Method@TypeParsingTests.cs:145",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTypeofType_WithTables",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 145
+  },
+  {
+    "Id": "Parser_ParsesTypeofType_WithComplexExpression:Method@TypeParsingTests.cs:173",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTypeofType_WithComplexExpression",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 173
+  },
+  {
+    "Id": "Parser_ParsesArrayType_WithSimpleTypeNameElement:Method@TypeParsingTests.cs:227",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesArrayType_WithSimpleTypeNameElement",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 227
+  },
+  {
+    "Id": "Parser_ParsesArrayType_WithCompositeTypeNameElement:Method@TypeParsingTests.cs:246",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesArrayType_WithCompositeTypeNameElement",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 246
+  },
+  {
+    "Id": "Parser_ParsesArrayType_WithArrayTypeElement:Method@TypeParsingTests.cs:270",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesArrayType_WithArrayTypeElement",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 270
+  },
+  {
+    "Id": "Parser_ParsesTableType_WithIndexer:Method@TypeParsingTests.cs:296",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTableType_WithIndexer",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 296
+  },
+  {
+    "Id": "Parser_ParsesTypeTable_WithProperty:Method@TypeParsingTests.cs:325",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTypeTable_WithProperty",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 325
+  },
+  {
+    "Id": "Parser_ParsesFunctionTypes_WithoutTypeParameters_AndNoTrailingVariadicPack_AndTypeReturn:Method@TypeParsingTests.cs:367",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesFunctionTypes_WithoutTypeParameters_AndNoTrailingVariadicPack_AndTypeReturn",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 367
+  },
+  {
+    "Id": "Parser_ParsesFunctionTypes_WithoutTypeParameters_AndTrailingVariadicPack_AndTypePackReturn:Method@TypeParsingTests.cs:392",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesFunctionTypes_WithoutTypeParameters_AndTrailingVariadicPack_AndTypePackReturn",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 392
+  },
+  {
+    "Id": "Parser_ParsesFunctionTypes_WithoutTypeParameters_AndTrailingVariadicPack_AndTypePackReturn_AndParameterNameOnFirstParameter:Method@TypeParsingTests.cs:445",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesFunctionTypes_WithoutTypeParameters_AndTrailingVariadicPack_AndTypePackReturn_AndParameterNameOnFirstParameter",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 445
+  },
+  {
+    "Id": "Parser_ParsesFunctionTypes_WithoutTypeParameters_AndTypePackReturn_AndParameterNameOnFirstParameter:Method@TypeParsingTests.cs:500",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesFunctionTypes_WithoutTypeParameters_AndTypePackReturn_AndParameterNameOnFirstParameter",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 500
+  },
+  {
+    "Id": "Parser_ParsesFunctionTypes_WithoutTypeParameters_AndTypePackReturn_AndParameterNameOnSecondParameter:Method@TypeParsingTests.cs:551",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesFunctionTypes_WithoutTypeParameters_AndTypePackReturn_AndParameterNameOnSecondParameter",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 551
+  },
+  {
+    "Id": "Parser_ParsesFunctionTypes_WithoutTypeParameters_AndTypePackReturn_AndParameterNameOnBothParameters:Method@TypeParsingTests.cs:602",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesFunctionTypes_WithoutTypeParameters_AndTypePackReturn_AndParameterNameOnBothParameters",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 602
+  },
+  {
+    "Id": "Parser_ParsesFunctionType_WithTypeParameters_AndTrailingVariadicPack_AndTypeReturn:Method@TypeParsingTests.cs:655",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesFunctionType_WithTypeParameters_AndTrailingVariadicPack_AndTypeReturn",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 655
+  },
+  {
+    "Id": "Parser_ParsesFunctionType_WithTypeParameters_AndTrailingVariadicPack_AndTypeReturn_AndParameterNameOnFirstParameter:Method@TypeParsingTests.cs:754",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesFunctionType_WithTypeParameters_AndTrailingVariadicPack_AndTypeReturn_AndParameterNameOnFirstParameter",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 754
+  },
+  {
+    "Id": "Parser_ParsesFunctionType_WithTypeParameters_AndTypeReturn_AndParameterNameOnSecondParameter:Method@TypeParsingTests.cs:854",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesFunctionType_WithTypeParameters_AndTypeReturn_AndParameterNameOnSecondParameter",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 854
+  },
+  {
+    "Id": "Parser_ParsesFunctionType_WithTypeParameters_AndTypeReturn_AndParameterNameOnBothParameters:Method@TypeParsingTests.cs:949",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesFunctionType_WithTypeParameters_AndTypeReturn_AndParameterNameOnBothParameters",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 949
+  },
+  {
+    "Id": "Parser_ParsesStringType:Method@TypeParsingTests.cs:1046",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesStringType",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1046
+  },
+  {
+    "Id": "Parser_ParsesTrueType:Method@TypeParsingTests.cs:1058",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTrueType",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1058
+  },
+  {
+    "Id": "Parser_ParsesFalseType:Method@TypeParsingTests.cs:1070",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesFalseType",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1070
+  },
+  {
+    "Id": "Parser_ParsesNilType:Method@TypeParsingTests.cs:1082",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesNilType",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1082
+  },
+  {
+    "Id": "Parser_ParsesParenthesizedTypes:Method@TypeParsingTests.cs:1094",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesParenthesizedTypes",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1094
+  },
+  {
+    "Id": "Parser_ParsesNilableTypes:Method@TypeParsingTests.cs:1111",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesNilableTypes",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1111
+  },
+  {
+    "Id": "Parser_ParsesIntersectionType:Method@TypeParsingTests.cs:1132",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesIntersectionType",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1132
+  },
+  {
+    "Id": "Parser_ParsesUnionType:Method@TypeParsingTests.cs:1152",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesUnionType",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1152
+  },
+  {
+    "Id": "Parser_ParsesLocalVariableWithTypeBinding:Method@TypeParsingTests.cs:1172",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesLocalVariableWithTypeBinding",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1172
+  },
+  {
+    "Id": "Parser_ParsesNumericForLoop:Method@TypeParsingTests.cs:1208",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesNumericForLoop",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1208
+  },
+  {
+    "Id": "Parser_ParsesGenericForLoop:Method@TypeParsingTests.cs:1249",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesGenericForLoop",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1249
+  },
+  {
+    "Id": "Parser_ParsesGenericForLoopWithOccasionalTyping:Method@TypeParsingTests.cs:1293",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesGenericForLoopWithOccasionalTyping",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1293
+  },
+  {
+    "Id": "Parser_ParsesTypedNamedParameters:Method@TypeParsingTests.cs:1345",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTypedNamedParameters",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1345
+  },
+  {
+    "Id": "Parser_ParsesOccasionallyTypedNamedParameters:Method@TypeParsingTests.cs:1393",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesOccasionallyTypedNamedParameters",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1393
+  },
+  {
+    "Id": "Parser_ParsesNamedParameterAndVararg:Method@TypeParsingTests.cs:1433",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesNamedParameterAndVararg",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1433
+  },
+  {
+    "Id": "Parser_ParsesAnonymousFunctionParameters:Method@TypeParsingTests.cs:1481",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesAnonymousFunctionParameters",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1481
+  },
+  {
+    "Id": "Parser_ParsesNamedFunctionReturnType:Method@TypeParsingTests.cs:1540",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesNamedFunctionReturnType",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1540
+  },
+  {
+    "Id": "Parser_ParsesAnonymousFunctionReturnType:Method@TypeParsingTests.cs:1571",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesAnonymousFunctionReturnType",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1571
+  },
+  {
+    "Id": "Parser_ParsesTypeDeclarationStatement:Method@TypeParsingTests.cs:1613",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTypeDeclarationStatement",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1613
+  },
+  {
+    "Id": "Parser_ParsesExportedTypeDeclarationStatement:Method@TypeParsingTests.cs:1631",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesExportedTypeDeclarationStatement",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1631
+  },
+  {
+    "Id": "Parser_ParsesTypeCastExpression:Method@TypeParsingTests.cs:1650",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTypeCastExpression",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1650
+  },
+  {
+    "Id": "Parser_ParsesTypeDeclarationStatementWithAdding:Method@TypeParsingTests.cs:1685",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTypeDeclarationStatementWithAdding",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1685
+  },
+  {
+    "Id": "Parser_ParsesTypeDeclarationStatementWithUnary:Method@TypeParsingTests.cs:1736",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTypeDeclarationStatementWithUnary",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1736
+  },
+  {
+    "Id": "Parser_ParseTypeDeclarationStatementWithPow:Method@TypeParsingTests.cs:1775",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParseTypeDeclarationStatementWithPow",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1775
+  },
+  {
+    "Id": "Parser_ParseEmptyTypePack:Method@TypeParsingTests.cs:1818",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParseEmptyTypePack",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1818
+  },
+  {
+    "Id": "Parser_ParseEmptyTypeArgument:Method@TypeParsingTests.cs:1850",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParseEmptyTypeArgument",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1850
+  },
+  {
+    "Id": "Parser_ParsesTypeFunctionDeclarationStatement:Method@TypeParsingTests.cs:1873",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTypeFunctionDeclarationStatement",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1873
+  },
+  {
+    "Id": "Parser_ParsesExportedTypeFunctionDeclarationStatement:Method@TypeParsingTests.cs:1909",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesExportedTypeFunctionDeclarationStatement",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1909
+  },
+  {
+    "Id": "Parser_ParsesTypeFunctionDeclarationStatementWithParameters:Method@TypeParsingTests.cs:1946",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTypeFunctionDeclarationStatementWithParameters",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1946
+  },
+  {
+    "Id": "Parser_ParsesTypeFunctionDeclarationStatementWithReturnType:Method@TypeParsingTests.cs:1981",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTypeFunctionDeclarationStatementWithReturnType",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 1981
+  },
+  {
+    "Id": "Parser_ParsesTypeFunctionDeclarationStatementWithTypedParameters:Method@TypeParsingTests.cs:2025",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "SymbolName": "Parser_ParsesTypeFunctionDeclarationStatementWithTypedParameters",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
+    "Line": 2025
+  },
+  {
+    "Id": "SyntaxNormalizer_CorrectlyInsertsExpressionSpaces:Method@SyntaxNormalizerTests.cs:1697",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Syntax/SyntaxNormalizerTests.cs",
+    "SymbolName": "SyntaxNormalizer_CorrectlyInsertsExpressionSpaces",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Syntax/SyntaxNormalizerTests.cs",
+    "Line": 1697
+  },
+  {
+    "Id": "SyntaxFacts_GetKeywordKindString_ReturnsTheCorrectKindForEachKeyword:Method@SyntaxFactsGetKeywordKindTests.cs:8",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Syntax/SyntaxFactsGetKeywordKindTests.cs",
+    "SymbolName": "SyntaxFacts_GetKeywordKindString_ReturnsTheCorrectKindForEachKeyword",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Syntax/SyntaxFactsGetKeywordKindTests.cs",
+    "Line": 8
+  },
+  {
+    "Id": "SyntaxFacts_GetKeywordKindSpan_ReturnsTheCorrectKindForEachKeyword:Method@SyntaxFactsGetKeywordKindTests.cs:18",
+    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Syntax/SyntaxFactsGetKeywordKindTests.cs",
+    "SymbolName": "SyntaxFacts_GetKeywordKindSpan_ReturnsTheCorrectKindForEachKeyword",
+    "SymbolKind": "Method",
+    "TypeKind": null,
+    "ContainingType": null,
+    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Syntax/SyntaxFactsGetKeywordKindTests.cs",
+    "Line": 18
+  }
+]
