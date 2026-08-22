@@ -18,9 +18,10 @@ use loretta_tests::luatestbase::options_to_version;
 /// The parsed type and statement forms of the C# tests: (text, whether it is
 /// a type-only form that needs the type-declaration wrapper).
 const CASES: &[(&str, bool)] = &[
-    // The C# `Type{...}` type-argument-brace syntax (cases 1 and 3) has no
-    // full_moon equivalent (the full_moon parses the `{...}` as a table
-    // type) — the two cases are dropped (documented).
+    // The C# `<...>` type-argument-list forms (the two WithTypeArgumentList
+    // cases) parse cleanly through the full_moon Generic instantiation
+    // (GenericPack / VariadicPack arguments) — covered by the individual
+    // parser_parses_*_with_type_argument_list tests below.
     ("Type", true),
     ("Type.Member", true),
     ("typeof('hi')", true),
@@ -112,6 +113,28 @@ fn parser_parses_typed_lua_structures() {
 #[test]
 fn parser_parsessimpletypename() {
     let parsed_text = "type A = Type";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
+
+/// C# Parser_ParsesSimpleTypeName_WithTypeArgumentList (TypeParsingTests.cs:58): 'Type<Type, Type..., ...Type, Type.Member>' parses as the simple type name with a type argument list.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parsessimpletypename_withtypeargumentlist() {
+    let parsed_text = "type A = Type<Type, Type..., ...Type, Type.Member>";
     let result = full_moon::parse_fallible(
         parsed_text,
         options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
