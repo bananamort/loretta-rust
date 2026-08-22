@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesGenericForLoopWithOccasionalTyping:Method@TypeParsingTests.cs:1293",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesGenericForLoopWithOccasionalTyping",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 1293
-  },
-  {
     "Id": "Parser_ParsesTypedNamedParameters:Method@TypeParsingTests.cs:1345",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
     "SymbolName": "Parser_ParsesTypedNamedParameters",
