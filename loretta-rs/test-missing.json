@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesLocalVariableWithTypeBinding:Method@TypeParsingTests.cs:1172",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesLocalVariableWithTypeBinding",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 1172
-  },
-  {
     "Id": "Parser_ParsesNumericForLoop:Method@TypeParsingTests.cs:1208",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
     "SymbolName": "Parser_ParsesNumericForLoop",

@@ -793,3 +793,25 @@ fn parser_parsesuniontype() {
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParsesLocalVariableWithTypeBinding (TypeParsingTests.cs:1172): 'local Var: T = true' parses as the local variable with a type binding.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parseslocalvariablewithtypebinding() {
+    let parsed_text = "local Var: T = true";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
