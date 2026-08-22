@@ -85,3 +85,6 @@ path = "scope_rename_variable_tests.rs"
 [[test]]
 name = "scope_can_be_accessed_in_tests"
 path = "scope_can_be_accessed_in_tests.rs"
+[[test]]
+name = "syntax_normalizer_tests"
+path = "syntax_normalizer_tests.rs"

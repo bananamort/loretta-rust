@@ -1,15 +1,5 @@
 [
   {
-    "Id": "SyntaxNormalizer_CorrectlyInsertsExpressionSpaces:Method@SyntaxNormalizerTests.cs:1697",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Syntax/SyntaxNormalizerTests.cs",
-    "SymbolName": "SyntaxNormalizer_CorrectlyInsertsExpressionSpaces",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Syntax/SyntaxNormalizerTests.cs",
-    "Line": 1697
-  },
-  {
     "Id": "SyntaxFacts_GetKeywordKindString_ReturnsTheCorrectKindForEachKeyword:Method@SyntaxFactsGetKeywordKindTests.cs:8",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Syntax/SyntaxFactsGetKeywordKindTests.cs",
     "SymbolName": "SyntaxFacts_GetKeywordKindString_ReturnsTheCorrectKindForEachKeyword",
