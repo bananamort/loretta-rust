@@ -392,3 +392,25 @@ fn parser_parsestypetable_withproperty() {
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParsesFunctionTypes_WithoutTypeParameters_AndNoTrailingVariadicPack_AndTypeReturn (TypeParsingTests.cs:367): '(T) -> T' parses as the function type without type parameters returning a type.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parsesfunctiontypes_withouttypeparameters_andnotrailingvariadicpack_andtypereturn() {
+    let parsed_text = "type A = (T) -> T";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
