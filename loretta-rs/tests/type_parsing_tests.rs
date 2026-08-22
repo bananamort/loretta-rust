@@ -881,3 +881,25 @@ fn parser_parsesgenericforloopwithoccasionaltyping() {
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParsesTypedNamedParameters (TypeParsingTests.cs:1345): 'function a(b:T, c:A) end' parses as the function declaration with typed named parameters.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parsestypednamedparameters() {
+    let parsed_text = "function a(b:T, c:A) end";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
