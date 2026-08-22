@@ -969,3 +969,25 @@ fn parser_parsesanonymousfunctionparameters() {
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParsesNamedFunctionReturnType (TypeParsingTests.cs:1540): 'function a() : T end' parses as the named function with a return type.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parsesnamedfunctionreturntype() {
+    let parsed_text = "function a() : T end";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
