@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesTypeofType_WithTables:Method@TypeParsingTests.cs:145",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesTypeofType_WithTables",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 145
-  },
-  {
     "Id": "Parser_ParsesTypeofType_WithComplexExpression:Method@TypeParsingTests.cs:173",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
     "SymbolName": "Parser_ParsesTypeofType_WithComplexExpression",

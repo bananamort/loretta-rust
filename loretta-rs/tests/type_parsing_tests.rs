@@ -238,3 +238,25 @@ fn parser_parsestypeoftype_withnumbers() {
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParsesTypeofType_WithTables (TypeParsingTests.cs:145): 'typeof({ 1 })' parses as the typeof type over a table constructor.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parsestypeoftype_withtables() {
+    let parsed_text = "type A = typeof({ 1 })";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
