@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesTableType_WithIndexer:Method@TypeParsingTests.cs:296",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesTableType_WithIndexer",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 296
-  },
-  {
     "Id": "Parser_ParsesTypeTable_WithProperty:Method@TypeParsingTests.cs:325",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
     "SymbolName": "Parser_ParsesTypeTable_WithProperty",
