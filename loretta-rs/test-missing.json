@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesTypeFunctionDeclarationStatementWithTypedParameters:Method@TypeParsingTests.cs:2025",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesTypeFunctionDeclarationStatementWithTypedParameters",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 2025
-  },
-  {
     "Id": "SyntaxNormalizer_CorrectlyInsertsExpressionSpaces:Method@SyntaxNormalizerTests.cs:1697",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Syntax/SyntaxNormalizerTests.cs",
     "SymbolName": "SyntaxNormalizer_CorrectlyInsertsExpressionSpaces",
