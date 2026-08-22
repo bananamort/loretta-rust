@@ -60,7 +60,7 @@ C# paths are under `../references/Loretta/src/`.
 | `Compilers/Lua/Test/Portable/` + `Test.Utilities` | PORT | `loretta-rs/tests/` |
 | `InternalBenchmarks/samples/benchies/*.lua` | REUSE | `loretta-rs/corpus/` |
 
-- Counts: `Lua/Portable` 99 hand + 6 generated (108 with `obj/`), `Experimental` 14, `Core/Portable` 217, `Test/Portable` 31 (30 hand + 1 generated, 637 `[Test]`s excluding generated).
+- Counts: `Lua/Portable` 99 hand + 6 generated (108 with `obj/`), `Experimental` 14, `Core/Portable` 217, `Test/Portable` 31 (30 hand + 1 generated, 172 hand `[Test]`s + 480 Generated, Generated is DROP).
 - When a dropped type is needed (e.g. `TextSpan`, `SourceText`), use the full-moon equivalent (`Position.bytes`, `&str`).
 - `LuaExtensions.cs` in `Portable/` is syntax helpers over dropped nodes — DROP. `Experimental/LuaExtensions.cs` (`ConstantFold`/`Minify`) is PORT.
 - Full table with file-level detail is in `PLAN.md` §3.
