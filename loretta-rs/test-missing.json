@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesTypeCastExpression:Method@TypeParsingTests.cs:1650",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesTypeCastExpression",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 1650
-  },
-  {
     "Id": "Parser_ParsesTypeDeclarationStatementWithAdding:Method@TypeParsingTests.cs:1685",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
     "SymbolName": "Parser_ParsesTypeDeclarationStatementWithAdding",
