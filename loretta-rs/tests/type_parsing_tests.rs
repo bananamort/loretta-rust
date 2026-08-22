@@ -172,3 +172,25 @@ fn parser_parsescompositetypename() {
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParsesCompositeTypeName_WithTypeArgumentList (TypeParsingTests.cs:88): 'Type.Member<Type, Type..., ...Type, Type.Member>' parses as the composite type name with a type argument list.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parsescompositetypename_withtypeargumentlist() {
+    let parsed_text = "type A = Type.Member<Type, Type..., ...Type, Type.Member>";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
