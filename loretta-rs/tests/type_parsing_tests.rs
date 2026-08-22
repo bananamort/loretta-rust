@@ -1035,3 +1035,25 @@ fn parser_parsestypedeclarationstatement() {
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParsesExportedTypeDeclarationStatement (TypeParsingTests.cs:1631): 'export type a = T' parses as the exported type declaration statement.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parsesexportedtypedeclarationstatement() {
+    let parsed_text = "export type a = T";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
