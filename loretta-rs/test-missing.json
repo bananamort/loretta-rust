@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesNamedParameterAndVararg:Method@TypeParsingTests.cs:1433",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesNamedParameterAndVararg",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 1433
-  },
-  {
     "Id": "Parser_ParsesAnonymousFunctionParameters:Method@TypeParsingTests.cs:1481",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
     "SymbolName": "Parser_ParsesAnonymousFunctionParameters",
