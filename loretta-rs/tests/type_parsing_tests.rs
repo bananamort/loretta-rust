@@ -260,3 +260,25 @@ fn parser_parsestypeoftype_withtables() {
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParsesTypeofType_WithComplexExpression (TypeParsingTests.cs:173): "typeof(tbl[1].member:method { 'hi' })" parses as the typeof type over a complex call expression.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parsestypeoftype_withcomplexexpression() {
+    let parsed_text = "type A = typeof(tbl[1].member:method { 'hi' })";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
