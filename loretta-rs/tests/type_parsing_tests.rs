@@ -837,3 +837,25 @@ fn parser_parsesnumericforloop() {
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParsesGenericForLoop (TypeParsingTests.cs:1249): 'for i:T in iter() do end' parses as the generic for loop with a typed loop variable.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parsesgenericforloop() {
+    let parsed_text = "for i:T in iter() do end";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
