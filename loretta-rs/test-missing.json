@@ -1,12 +1,1 @@
-[
-  {
-    "Id": "SyntaxFacts_GetKeywordKindSpan_ReturnsTheCorrectKindForEachKeyword:Method@SyntaxFactsGetKeywordKindTests.cs:18",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Syntax/SyntaxFactsGetKeywordKindTests.cs",
-    "SymbolName": "SyntaxFacts_GetKeywordKindSpan_ReturnsTheCorrectKindForEachKeyword",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Syntax/SyntaxFactsGetKeywordKindTests.cs",
-    "Line": 18
-  }
-]
+[]

@@ -41,3 +41,20 @@ fn syntaxfacts_getkeywordkindstring_returnsthecorrectkindforeachkeyword() {
         );
     }
 }
+
+/// C# SyntaxFacts_GetKeywordKindSpan_ReturnsTheCorrectKindForEachKeyword
+/// (SyntaxFactsGetKeywordKindTests.cs:18-26): the span overload is a wrapper
+/// over the string overload — the port asserts the same mapping.
+#[test]
+fn syntaxfacts_getkeywordkindspan_returnsthecorrectkindforeachkeyword() {
+    for text in KEYWORDS {
+        let symbol = keyword_symbol(text);
+        assert_eq!(symbol.to_string(), text, "the keyword round-trips its text");
+    }
+    for text in NON_KEYWORDS {
+        assert!(
+            Symbol::from_str(text, LuaVersion::new()).is_none(),
+            "{text:?} is not a keyword — it must map to IdentifierToken"
+        );
+    }
+}
