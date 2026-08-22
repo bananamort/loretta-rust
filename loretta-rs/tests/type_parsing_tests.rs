@@ -41,8 +41,13 @@ const CASES: &[(&str, bool)] = &[
     ("(p1: T, p2: T) -> (T, ...T)", true),
     // The C# generic-list forms with the type-parameter defaults and the
     // pack defaults (`<T, T = T, T... = ...T, T... = T...>`, cases 17-20)
-    // have no full_moon equivalent (its generic-list syntax lacks the
-    // defaults) — the four cases are dropped (documented).
+    // are a Loretta extension beyond Luau: the Luau RFC "Default type alias
+    // type parameters" limits defaults to type-alias parameter lists, and
+    // full_moon is Luau-faithful by design (TypeListStyle::WithDefaults only
+    // on type declarations — ast/parsers.rs:1708; Plain on function types
+    // and function bodies — 3337/2404). The four cases are dropped
+    // (documented; the GMod precedent — AGENTS.md:17 — makes parser
+    // forking a DROP trigger).
     ("'value'", true),
     ("true", true),
     ("false", true),
@@ -530,16 +535,23 @@ fn parser_parsesfunctiontypes_withouttypeparameters_andtypepackreturn_andparamet
 }
 
 /// C# Parser_ParsesFunctionType_WithTypeParameters_AndTrailingVariadicPack_AndTypeReturn (TypeParsingTests.cs:655): '<T, T = T, T... = ...T, T... = T...> (T, ...T) -> T' parses as the function type with type parameters and a trailing variadic pack returning a type.
-/// The C# type-parameter list supports defaults (`T = T`) and pack defaults
-/// (`T... = ...T`); full_moon's generic-list syntax lacks the defaults, so
-/// the C# shape is dropped (documented in the file header). The port pins
-/// the drop: the unsupported syntax must be reported.
+/// The C# type-parameter defaults (`T = T`) and pack defaults (`T... = ...T`)
+/// in function-type generic lists are a Loretta extension beyond Luau (the
+/// Luau RFC "Default type alias type parameters" limits defaults to
+/// type-alias parameter lists); full_moon is Luau-faithful by design
+/// (TypeListStyle::WithDefaults only on type declarations,
+/// ast/parsers.rs:1708), so the C# shape is dropped (the GMod precedent —
+/// AGENTS.md:17 — makes parser forking a DROP trigger). The port pins the
+/// drop: the unsupported syntax must be reported.
 #[test]
 fn parser_parsesfunctiontype_withtypeparameters_andtrailingvariadicpack_andtypereturn() {
-    // The C# type-parameter list supports defaults (`T = T`) and pack
-    // defaults (`T... = ...T`); full_moon's generic-list syntax lacks the
-    // defaults, so the C# shape is dropped (documented in the file header).
-    // The port pins the drop: the unsupported syntax must be reported.
+    // The C# type-parameter defaults (`T = T`) and pack defaults (`T... = ...T`)
+    // in function-type generic lists are a Loretta extension beyond Luau (its
+    // RFC limits defaults to type-alias parameter lists); full_moon is
+    // Luau-faithful by design (WithDefaults only on type declarations,
+    // ast/parsers.rs:1708), so the C# shape is dropped (the GMod precedent —
+    // AGENTS.md:17). The port pins the drop: the unsupported syntax must be
+    // reported.
     let parsed_text = "type A = <T, T = T, T... = ...T, T... = T...> (T, ...T) -> T";
     let result = full_moon::parse_fallible(
         parsed_text,
@@ -552,17 +564,24 @@ fn parser_parsesfunctiontype_withtypeparameters_andtrailingvariadicpack_andtyper
 }
 
 /// C# Parser_ParsesFunctionType_WithTypeParameters_AndTrailingVariadicPack_AndTypeReturn_AndParameterNameOnFirstParameter (TypeParsingTests.cs:754): '<T, T = T, T... = ...T, T... = T...> (p1: T, ...T) -> T' parses as the function type with type parameters, a named first parameter and a trailing variadic pack.
-/// The C# type-parameter list supports defaults (`T = T`) and pack defaults
-/// (`T... = ...T`); full_moon's generic-list syntax lacks the defaults, so
-/// the C# shape is dropped (documented in the file header). The port pins
-/// the drop: the unsupported syntax must be reported.
+/// The C# type-parameter defaults (`T = T`) and pack defaults (`T... = ...T`)
+/// in function-type generic lists are a Loretta extension beyond Luau (the
+/// Luau RFC "Default type alias type parameters" limits defaults to
+/// type-alias parameter lists); full_moon is Luau-faithful by design
+/// (TypeListStyle::WithDefaults only on type declarations,
+/// ast/parsers.rs:1708), so the C# shape is dropped (the GMod precedent —
+/// AGENTS.md:17 — makes parser forking a DROP trigger). The port pins the
+/// drop: the unsupported syntax must be reported.
 #[test]
 fn parser_parsesfunctiontype_withtypeparameters_andtrailingvariadicpack_andtypereturn_andparameternameonfirstparameter(
 ) {
-    // The C# type-parameter list supports defaults (`T = T`) and pack
-    // defaults (`T... = ...T`); full_moon's generic-list syntax lacks the
-    // defaults, so the C# shape is dropped (documented in the file header).
-    // The port pins the drop: the unsupported syntax must be reported.
+    // The C# type-parameter defaults (`T = T`) and pack defaults (`T... = ...T`)
+    // in function-type generic lists are a Loretta extension beyond Luau (its
+    // RFC limits defaults to type-alias parameter lists); full_moon is
+    // Luau-faithful by design (WithDefaults only on type declarations,
+    // ast/parsers.rs:1708), so the C# shape is dropped (the GMod precedent —
+    // AGENTS.md:17). The port pins the drop: the unsupported syntax must be
+    // reported.
     let parsed_text = "type A = <T, T = T, T... = ...T, T... = T...> (p1: T, ...T) -> T";
     let result = full_moon::parse_fallible(
         parsed_text,
@@ -575,16 +594,23 @@ fn parser_parsesfunctiontype_withtypeparameters_andtrailingvariadicpack_andtyper
 }
 
 /// C# Parser_ParsesFunctionType_WithTypeParameters_AndTypeReturn_AndParameterNameOnSecondParameter (TypeParsingTests.cs:854): '<T, T = T, T... = ...T, T... = T...> (T, p2: T) -> T' parses as the function type with type parameters and a named second parameter.
-/// The C# type-parameter list supports defaults (`T = T`) and pack defaults
-/// (`T... = ...T`); full_moon's generic-list syntax lacks the defaults, so
-/// the C# shape is dropped (documented in the file header). The port pins
-/// the drop: the unsupported syntax must be reported.
+/// The C# type-parameter defaults (`T = T`) and pack defaults (`T... = ...T`)
+/// in function-type generic lists are a Loretta extension beyond Luau (the
+/// Luau RFC "Default type alias type parameters" limits defaults to
+/// type-alias parameter lists); full_moon is Luau-faithful by design
+/// (TypeListStyle::WithDefaults only on type declarations,
+/// ast/parsers.rs:1708), so the C# shape is dropped (the GMod precedent —
+/// AGENTS.md:17 — makes parser forking a DROP trigger). The port pins the
+/// drop: the unsupported syntax must be reported.
 #[test]
 fn parser_parsesfunctiontype_withtypeparameters_andtypereturn_andparameternameonsecondparameter() {
-    // The C# type-parameter list supports defaults (`T = T`) and pack
-    // defaults (`T... = ...T`); full_moon's generic-list syntax lacks the
-    // defaults, so the C# shape is dropped (documented in the file header).
-    // The port pins the drop: the unsupported syntax must be reported.
+    // The C# type-parameter defaults (`T = T`) and pack defaults (`T... = ...T`)
+    // in function-type generic lists are a Loretta extension beyond Luau (its
+    // RFC limits defaults to type-alias parameter lists); full_moon is
+    // Luau-faithful by design (WithDefaults only on type declarations,
+    // ast/parsers.rs:1708), so the C# shape is dropped (the GMod precedent —
+    // AGENTS.md:17). The port pins the drop: the unsupported syntax must be
+    // reported.
     let parsed_text = "type A = <T, T = T, T... = ...T, T... = T...> (T, p2: T) -> T";
     let result = full_moon::parse_fallible(
         parsed_text,
@@ -597,16 +623,23 @@ fn parser_parsesfunctiontype_withtypeparameters_andtypereturn_andparameternameon
 }
 
 /// C# Parser_ParsesFunctionType_WithTypeParameters_AndTypeReturn_AndParameterNameOnBothParameters (TypeParsingTests.cs:949): '<T, T = T, T... = ...T, T... = T...> (p1: T, p2: T) -> T' parses as the function type with type parameters and both parameters named.
-/// The C# type-parameter list supports defaults (`T = T`) and pack defaults
-/// (`T... = ...T`); full_moon's generic-list syntax lacks the defaults, so
-/// the C# shape is dropped (documented in the file header). The port pins
-/// the drop: the unsupported syntax must be reported.
+/// The C# type-parameter defaults (`T = T`) and pack defaults (`T... = ...T`)
+/// in function-type generic lists are a Loretta extension beyond Luau (the
+/// Luau RFC "Default type alias type parameters" limits defaults to
+/// type-alias parameter lists); full_moon is Luau-faithful by design
+/// (TypeListStyle::WithDefaults only on type declarations,
+/// ast/parsers.rs:1708), so the C# shape is dropped (the GMod precedent —
+/// AGENTS.md:17 — makes parser forking a DROP trigger). The port pins the
+/// drop: the unsupported syntax must be reported.
 #[test]
 fn parser_parsesfunctiontype_withtypeparameters_andtypereturn_andparameternameonbothparameters() {
-    // The C# type-parameter list supports defaults (`T = T`) and pack
-    // defaults (`T... = ...T`); full_moon's generic-list syntax lacks the
-    // defaults, so the C# shape is dropped (documented in the file header).
-    // The port pins the drop: the unsupported syntax must be reported.
+    // The C# type-parameter defaults (`T = T`) and pack defaults (`T... = ...T`)
+    // in function-type generic lists are a Loretta extension beyond Luau (its
+    // RFC limits defaults to type-alias parameter lists); full_moon is
+    // Luau-faithful by design (WithDefaults only on type declarations,
+    // ast/parsers.rs:1708), so the C# shape is dropped (the GMod precedent —
+    // AGENTS.md:17). The port pins the drop: the unsupported syntax must be
+    // reported.
     let parsed_text = "type A = <T, T = T, T... = ...T, T... = T...> (p1: T, p2: T) -> T";
     let result = full_moon::parse_fallible(
         parsed_text,
