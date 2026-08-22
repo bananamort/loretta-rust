@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesOccasionallyTypedNamedParameters:Method@TypeParsingTests.cs:1393",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesOccasionallyTypedNamedParameters",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 1393
-  },
-  {
     "Id": "Parser_ParsesNamedParameterAndVararg:Method@TypeParsingTests.cs:1433",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
     "SymbolName": "Parser_ParsesNamedParameterAndVararg",
