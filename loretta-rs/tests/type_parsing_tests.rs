@@ -528,3 +528,25 @@ fn parser_parsesfunctiontypes_withouttypeparameters_andtypepackreturn_andparamet
         "the text must round-trip"
     );
 }
+
+/// C# Parser_ParsesFunctionType_WithTypeParameters_AndTrailingVariadicPack_AndTypeReturn (TypeParsingTests.cs:655): '<T, T = T, T... = ...T, T... = T...> (T, ...T) -> T' parses as the function type with type parameters and a trailing variadic pack returning a type.
+/// The C# type-parameter list supports defaults (`T = T`) and pack defaults
+/// (`T... = ...T`); full_moon's generic-list syntax lacks the defaults, so
+/// the C# shape is dropped (documented in the file header). The port pins
+/// the drop: the unsupported syntax must be reported.
+#[test]
+fn parser_parsesfunctiontype_withtypeparameters_andtrailingvariadicpack_andtypereturn() {
+    // The C# type-parameter list supports defaults (`T = T`) and pack
+    // defaults (`T... = ...T`); full_moon's generic-list syntax lacks the
+    // defaults, so the C# shape is dropped (documented in the file header).
+    // The port pins the drop: the unsupported syntax must be reported.
+    let parsed_text = "type A = <T, T = T, T... = ...T, T... = T...> (T, ...T) -> T";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        !result.errors().is_empty(),
+        "the C# type-parameter defaults are unsupported: expected parse errors"
+    );
+}
