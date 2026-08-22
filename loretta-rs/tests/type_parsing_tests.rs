@@ -617,3 +617,25 @@ fn parser_parsesfunctiontype_withtypeparameters_andtypereturn_andparameternameon
         "the C# type-parameter defaults are unsupported: expected parse errors"
     );
 }
+
+/// C# Parser_ParsesStringType (TypeParsingTests.cs:1046): "'value'" parses as the singleton string type.
+/// The C# red-tree shapes have no full_moon equivalent; the port asserts
+/// the clean parse + the round-trip.
+#[test]
+fn parser_parsesstringtype() {
+    let parsed_text = "type A = 'value'";
+    let result = full_moon::parse_fallible(
+        parsed_text,
+        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
+    );
+    assert!(
+        result.errors().is_empty(),
+        "no parse errors: {:?}",
+        result.errors()
+    );
+    assert_eq!(
+        result.ast().to_string(),
+        parsed_text,
+        "the text must round-trip"
+    );
+}
