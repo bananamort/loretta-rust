@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesUnionType:Method@TypeParsingTests.cs:1152",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesUnionType",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 1152
-  },
-  {
     "Id": "Parser_ParsesLocalVariableWithTypeBinding:Method@TypeParsingTests.cs:1172",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
     "SymbolName": "Parser_ParsesLocalVariableWithTypeBinding",
