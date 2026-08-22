@@ -1,15 +1,5 @@
 [
   {
-    "Id": "Parser_ParsesNumericForLoop:Method@TypeParsingTests.cs:1208",
-    "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "SymbolName": "Parser_ParsesNumericForLoop",
-    "SymbolKind": "Method",
-    "TypeKind": null,
-    "ContainingType": null,
-    "FilePath": "/Users/jasonhuang/Desktop/Loretta-RS/references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
-    "Line": 1208
-  },
-  {
     "Id": "Parser_ParsesGenericForLoop:Method@TypeParsingTests.cs:1249",
     "Document": "references/Loretta/src/Compilers/Lua/Test/Portable/Parsing/TypeParsingTests.cs",
     "SymbolName": "Parser_ParsesGenericForLoop",
