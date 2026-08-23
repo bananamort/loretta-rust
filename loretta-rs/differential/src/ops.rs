@@ -4,6 +4,8 @@
 
 use crate::json::Json;
 use crate::{collect_tokens, kind_name, token_full_text, token_text};
+use loretta::errors::errorfacts::ErrorFacts;
+use loretta::errors::lexerdiagnostics::LexerDiagnostic;
 use loretta::errors::messageprovider::MessageProvider;
 use loretta::luasyntaxoptions::LuaSyntaxOptions;
 
@@ -29,26 +31,42 @@ pub fn preset_options(preset: &str) -> LuaSyntaxOptions {
 /// The C# DiagnosticsOp (tools/differential/Program.cs:212-217): the tree
 /// diagnostics concatenated with the descendant tokens' diagnostics — the
 /// tree's GetDiagnostics aggregates the token diagnostics, so every lexer
-/// diagnostic appears twice (the tree pass + the tokens pass). The ids come
-/// from ErrorFacts.GetId ("LUA%04d"), the severities from the code, and the
+/// diagnostic appears twice (the tree pass + the tokens pass). The parser
+/// diagnostics (the version-gated statement rules — `continue` as an
+/// identifier expression statement under ContinueType::None) appear once,
+/// merged with the token diagnostics in source order. The ids come from
+/// ErrorFacts.GetId ("LUA%04d"), the severities from the code, and the
 /// messages from MessageProvider (the format with the arguments).
 pub fn compute_diagnostics(code: &str, preset: &str) -> Result<(Vec<Diagnostic>, bool), String> {
-    use loretta::errors::errorfacts::ErrorFacts;
+    use loretta::errors::parserdiagnostics::parser_diagnostics;
 
     let options = preset_options(preset);
     let scanner_diags = loretta::errors::lexerdiagnostics::lexer_diagnostics(code, &options);
+    let parser_diags = full_moon::parse(code)
+        .map(|ast| parser_diagnostics(&ast, &options))
+        .unwrap_or_default();
+    // The tree pass: the parser diagnostics and the token diagnostics merged
+    // in source position order (the C# tree.GetDiagnostics()).
+    let mut tree: Vec<&LexerDiagnostic> = parser_diags.iter().chain(scanner_diags.iter()).collect();
+    tree.sort_by_key(|d| d.start);
     let mut diagnostics: Vec<Diagnostic> = Vec::new();
-    for d in &scanner_diags {
-        let id = ErrorFacts::get_id(d.code);
-        let severity = if d.is_warning { "Warning" } else { "Error" };
-        let args: Vec<&str> = d.arguments.iter().map(String::as_str).collect();
-        let message = MessageProvider::create_diagnostic(d.code, &args).message;
-        // The tree.GetDiagnostics() + the tokens' GetDiagnostics() concat.
-        diagnostics.push((id.clone(), severity.to_string(), message.clone()));
-        diagnostics.push((id, severity.to_string(), message));
+    for d in &tree {
+        push_diagnostic(&mut diagnostics, d);
     }
-    let has_errors = scanner_diags.iter().any(|d| !d.is_warning);
+    // The tokens pass: the token diagnostics again (source order).
+    for d in &scanner_diags {
+        push_diagnostic(&mut diagnostics, d);
+    }
+    let has_errors = tree.iter().any(|d| !d.is_warning);
     Ok((diagnostics, has_errors))
+}
+
+fn push_diagnostic(diagnostics: &mut Vec<Diagnostic>, d: &LexerDiagnostic) {
+    let id = ErrorFacts::get_id(d.code);
+    let severity = if d.is_warning { "Warning" } else { "Error" };
+    let args: Vec<&str> = d.arguments.iter().map(String::as_str).collect();
+    let message = MessageProvider::create_diagnostic(d.code, &args).message;
+    diagnostics.push((id, severity.to_string(), message));
 }
 
 pub fn options(preset: &str) -> Result<Json, String> {
