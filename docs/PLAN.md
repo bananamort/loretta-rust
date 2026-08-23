@@ -137,5 +137,5 @@ Failures after 3 genuine attempts: revert, re-queue at end of topo order with ri
 | `Compilers/Lua/Test/Portable/` + `Test.Utilities` | PORT | `loretta-rs/tests/` | 1 |
 | `InternalBenchmarks/samples/benchies/*.lua` | REUSE | `loretta-rs/corpus/` | 2 (seed) |
 
-- Counts: `Lua/Portable` 99 hand + 6 generated (108 with `obj/`), `Experimental` 14, `Core/Portable` 217, `Test/Portable` 31 (30 hand + 1 generated, 637 `[Test]`s excluding generated).
+- Counts: `Lua/Portable` 99 hand + 6 generated (108 with `obj/`), `Experimental` 14, `Core/Portable` 217, `Test/Portable` 31 (30 hand + 1 generated, 157 `[Test]`s excluding generated, 637 including Generated).
 - `LuaExtensions.cs` in `Portable/` is syntax helpers over dropped nodes — DROP. `Experimental/LuaExtensions.cs` is PORT.
