@@ -92,7 +92,7 @@ Failures after 3 genuine attempts: revert, re-queue at end of topo order with ri
 
 #### Oracles (also on every landing)
 
-1. **Oracle 1 — Ported Unit Suite.** `cargo test --workspace --all-features` green. 637 TUnit tests translated to `#[test]` case tables. Covers each ported subsystem (see §3).
+1. **Oracle 1 — Ported Unit Suite.** `cargo test --workspace --all-features` green. The 157 hand TUnit tests land as 172 `#[test]` case tables (637 including Generated; Generated is DROP). Covers each ported subsystem (see §3).
    - `GreenNodeTests`/`RedNodeTests` test dropped infrastructure and are not ported.
 
 2. **Oracle 2 — Differential / Conformance Suite.** `loretta-rs/tools/differential` (C# reference) vs Rust, compared byte-for-byte on `corpus/`:
