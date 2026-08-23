@@ -73,13 +73,13 @@ C# paths are under `../references/Loretta/src/`.
 
 3. **Gate every landing.** A translated node must compile in-tree and pass a drift check — it may not silently drop declarations, fake green by deleting `mod` entries, or stub out logic — before it lands. Failures are reverted and re-queued. Drift is checked immediately after every change, not at the end.
 
-4. **Two oracles, not spot checks.** Equivalence is proven twice: Loretta's own test suite, ported to 637 Rust `#[test]`s, plus a byte-exact differential — the same inputs run on the C# reference and on the Rust port must produce identical results.
+4. **Two oracles, not spot checks.** Equivalence is proven twice: Loretta's own test suite, ported to 172 Rust `#[test]`s (the 157 hand `[Test]`s of the 637 total; Generated is DROP), plus a byte-exact differential — the same inputs run on the C# reference and on the Rust port must produce identical results.
 
 Details for each step, including the C# constructs covered and the per-node prompt layout, are in `PLAN.md` §2. The full pipeline diagram is there.
 
 ## Oracles
 
-- **Oracle 1 — Ported test suite.** 637 `[Test]`s translated to `#[test]` case tables. See `PLAN.md` §3 for the subsystem breakdown.
+- **Oracle 1 — Ported test suite.** The 157 hand `[Test]`s land as 172 `#[test]` case tables (637 total including Generated; Generated is DROP). See `PLAN.md` §3 for the subsystem breakdown.
 - **Oracle 2 — Byte-exact differential.** `loretta-rs/tools/differential` (C# reference) and the Rust port produce the same outputs per input and per `LuaVersion` preset. Compared byte-for-byte on `corpus/`. Outputs: diagnostics, normalized AST dump, scope tree, constant-folded output, minified output, symbol-display samples. CLI is covered by `loretta-cli` integration tests.
 
 A mismatch is a bug in Rust. Never edit reference outputs to match Rust.
