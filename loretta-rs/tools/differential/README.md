@@ -15,14 +15,14 @@ Outputs per `corpus/*.lua` + `corpus/features/*.lua` (small, covers every `PORT`
 - `constantfold` `{original, withoutExtraction, withExtraction}` (`ConstantFoldingOptions`)
 - `minify` `{minified}` (`NamingStrategies.Alphabetical`)
 
-Expected committed at `loretta-rs/corpus/expected/<preset>/<file>/<operation>.json` (88 files for `anim.lua` + 7 `features/*.lua` × 11 presets, `rustic.lua` omitted for size). `loretta-rs/corpus/features/` are tiny per-feature inputs that hit every `PORT` node via its feature group.
+Expected committed at `loretta-rs/corpus/expected/<preset>/<file>/<operation>.json` (1848 files for `anim.lua` + 13 `features/*.lua` × 11 presets × 12 ops; `rustic.lua` (6.1 MB) is throttled to `diagnostics` + `parse` only (>500 KB) — 1870 files total). `loretta-rs/corpus/features/` are tiny per-feature inputs that hit every `PORT` node via its feature group.
 
 Rust oracle: agents port `diagnostics`→`loretta/src/errors`, `scope`→`loretta/src/scoping`/`script`, `fold`→`loretta/src/experimental`, etc., and implement `loretta-rs/tools/differential` Rust side that writes same JSON for `cargo test` Oracle 1 + differential Oracle 2. Drift is byte-exact `diff` of Rust vs C# `expected`.
 
 Rust side lives in `loretta-rs/differential/` (workspace member `differential`, no new dependencies; hand-rolled System.Text.Json-compatible writer in `src/json.rs`):
 
 - `cargo run -p differential -- <operation> <preset> <code|file> [--out <dir>]` — same CLI as the C# oracle. `operation`: `options` `diagnostics` `lex` `parse` (implemented); `scope` `rename` `constantfold` `minify` land with their subsystems. `all <preset> <file> --out <dir>` writes `dir/<preset>/<stem>/<op>.json` exactly like the C# reference.
-- `cargo run -p differential -- check corpus/expected --out <tmp>` — Oracle 2 gate (run by CI). Compares every implemented op against the committed C# reference for `corpus/anim.lua` + `corpus/features/*.lua` × 11 presets, byte-for-byte. Pairs whose reference output has `hasErrors: true` are reported as pending coverage until the per-preset version-gating diagnostics land; any other difference is a hard failure (drift = bug in Rust).
+- `cargo run -p differential -- check corpus/expected --out <tmp>` — Oracle 2 gate (run by CI). Compares every implemented op against the committed C# reference for `corpus/anim.lua` + `corpus/features/*.lua` + `corpus/rustic.lua` × 11 presets, byte-for-byte (rustic runs `diagnostics`/`parse` only — throttled >500 KB). Pairs whose reference output has `hasErrors: true` are reported as pending coverage until the per-preset version-gating diagnostics land; any other difference is a hard failure (drift = bug in Rust).
 - Token kind names are oracle data: symbol→kind table from `Portable/Syntax/SyntaxKind.cs`, keyword/literal naming verified against the expected `lex.json` files.
 
 Run: `NUGET_PACKAGES=/tmp/loretta-differential-packages dotnet run --project loretta-rs/tools/differential/Differential.csproj -c Release -- <op> <preset> <code>`
