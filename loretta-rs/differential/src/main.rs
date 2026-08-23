@@ -33,10 +33,30 @@ const PRESETS: [&str; 11] = [
 ];
 
 fn main() {
+    // full_moon's parser recursion on large real-world inputs (the ~6 MB
+    // corpus/rustic.lua) exceeds the default 8 MB main-thread stack in
+    // debug builds (release frames fit, debug frames do not), so all work
+    // runs on a worker thread with a large stack — the gate (CI) and the
+    // check subprocess get the same headroom.
+    let worker = std::thread::Builder::new()
+        .stack_size(64 * 1024 * 1024)
+        .spawn(run)
+        .expect("failed to spawn worker thread");
+    let code = match worker.join() {
+        Ok(code) => code,
+        Err(_) => {
+            eprintln!("worker thread panicked");
+            1
+        }
+    };
+    std::process::exit(code);
+}
+
+fn run() -> i32 {
     let args: Vec<String> = env::args().skip(1).collect();
     if args.len() < 2 {
         eprintln!("Usage: differential <operation> <preset> <code|file> [--out <dir>]");
-        std::process::exit(2);
+        return 2;
     }
     let operation = args[0].clone();
     let preset = args[1].clone();
@@ -70,7 +90,7 @@ fn main() {
     if operation == "check" {
         let out_dir = out_dir.expect("check requires --out <tmpdir>");
         run_check(&preset, &out_dir);
-        return;
+        return 0;
     }
 
     if operation == "all" && is_file {
@@ -109,7 +129,7 @@ fn main() {
                 }
             }
             println!("Wrote expected for {input_arg} to {out_dir}");
-            return;
+            return 0;
         }
     }
 
@@ -117,7 +137,7 @@ fn main() {
         Ok(j) => j,
         Err(e) => {
             eprintln!("{e}");
-            std::process::exit(1);
+            return 1;
         }
     };
     let rendered = json::render(&result);
@@ -134,6 +154,7 @@ fn main() {
     } else {
         println!("{}", String::from_utf8(rendered).expect("json is utf8"));
     }
+    0
 }
 
 fn file_stem(path: &str) -> String {
@@ -178,6 +199,9 @@ fn run_check(expected_dir: &str, tmp_dir: &str) {
                 files.push(path.to_string_lossy().into_owned());
             }
         }
+    }
+    if std::path::Path::new("corpus/rustic.lua").exists() {
+        files.push("corpus/rustic.lua".to_string());
     }
 
     for file in &files {
