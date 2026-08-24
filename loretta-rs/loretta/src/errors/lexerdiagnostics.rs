@@ -631,10 +631,17 @@ impl<'a> Scanner<'a> {
         let mut digits = 0usize;
         let mut is_hex_float = false;
         let mut num: u64 = 0;
+        // Set when a shift would exceed 64 bits (the C# TryParse failure
+        // on values wider than u64::MAX, Lexer.Numbers.cs:364-378, 415-428;
+        // Finding 20).
+        let mut overflowed = false;
         loop {
             match self.peek() {
                 Some(c) if is_hexadecimal(c) => {
                     self.pos += 1;
+                    if num > u64::MAX >> 4 {
+                        overflowed = true;
+                    }
                     num = (num << 4)
                         | (if is_decimal(c) {
                             decimal_value(c) as u64
@@ -730,10 +737,14 @@ impl<'a> Scanner<'a> {
                 self.error_current(ErrorCode::ErrDoubleOverflow);
             }
         } else if self.options.hex_integer_format != IntegerFormats::NotSupported {
-            // The digit-less builder fails both TryParses; the value
-            // check keeps the C# ulong-escape (the ull suffix parses past
-            // i64::MAX, Lexer.Numbers.cs:364-371).
-            if digits == 0 || (!is_unsigned_long && num > i64::MAX as u64) {
+            // The C# TryParse failure semantics (Lexer.Numbers.cs:364-378,
+            // 415-428): the digit-less builder fails, and values wider
+            // than 64 bits fail. The 64-bit bit patterns parse as
+            // two's-complement signed longs (0xffffffffffffffff = -1,
+            // 0x8000000000000000 = i64::MIN — no error), and the ull
+            // suffix parses the full u64 range — so only the overflow
+            // past u64::MAX matters (Finding 20).
+            if digits == 0 || overflowed {
                 self.error_current(ErrorCode::ErrNumericLiteralTooLarge);
             }
         }
