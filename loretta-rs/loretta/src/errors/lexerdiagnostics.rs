@@ -1124,21 +1124,35 @@ pub fn lexer_diagnostics(source: &str, options: &LuaSyntaxOptions) -> Vec<LexerD
             '0'..='9' => s.scan_number(),
             c if c.is_ascii_alphabetic() || c == '_' || c >= '\u{7F}' => s.scan_identifier(),
             // The valid symbol/operator characters (the C# ScanToken cases) —
-            // no diagnostics for the covered tests.
-            '&' | '|' => {
+            // no diagnostics for the covered tests. The single '&' and '|'
+            // have NO lexer rule — the C# parser reports the binary-operator
+            // gating (LanguageParser.cs:908-912, ported in
+            // parserdiagnostics.rs); the lexer reports only '<<'
+            // (Lexer.cs:501-507 — Finding 22).
+            '&' | '|' | '#' | '+' | '-' | '*' | '/' | '^' | '=' | '~' | '%' | ',' | '.' | ':'
+            | ';' | '?' | '!' | '(' | ')' | '[' | ']' | '{' | '}' => {
                 s.pos += 1;
-                if !s.options.accept_bitwise_operators {
-                    s.error_at(
-                        s.byte_pos() - 1,
-                        1,
-                        ErrorCode::ErrBitwiseOperatorsNotSupportedInVersion,
-                        Vec::new(),
-                    );
+                s.only_shebangs_and_newlines = false;
+            }
+            '<' => {
+                s.pos += 1;
+                if s.peek() == Some('<') {
+                    // C# Lexer.cs:501-507: the '<<' token carries the
+                    // bitwise gating (the C# AddError at the lexeme extent
+                    // — both characters).
+                    s.pos += 1;
+                    if !s.options.accept_bitwise_operators {
+                        s.error_at(
+                            s.byte_pos() - 2,
+                            2,
+                            ErrorCode::ErrBitwiseOperatorsNotSupportedInVersion,
+                            Vec::new(),
+                        );
+                    }
                 }
                 s.only_shebangs_and_newlines = false;
             }
-            '#' | '+' | '-' | '*' | '/' | '^' | '<' | '>' | '=' | '~' | '%' | ',' | '.' | ':'
-            | ';' | '?' | '!' | '(' | ')' | '[' | ']' | '{' | '}' => {
+            '>' => {
                 s.pos += 1;
                 s.only_shebangs_and_newlines = false;
             }
