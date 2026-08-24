@@ -135,9 +135,10 @@ impl Scope {
 
     /// C# FindVariable (IScope.cs:164-174).
     pub fn find_variable(&self, name: &str, kind: ScopeKind) -> Option<SharedVariable> {
-        if name.is_empty() {
-            panic!("name must not be null");
-        }
+        // The C# null-check (IScope.cs:166) maps to the port's &str —
+        // an empty name is NOT the null case: it falls through to the
+        // identifier validation and panics like the C# ArgumentException
+        // (IScope.cs:167 — Finding 44).
         if !StringUtils::is_identifier(name) {
             panic!("'{name}' must be a valid identifier.");
         }
