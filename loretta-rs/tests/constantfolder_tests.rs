@@ -536,3 +536,29 @@ fn constant_folder_folds_operations_correctly_with_string_extraction_enabled() {
         assert_value(&actual, expected);
     }
 }
+
+#[test]
+fn unary_folds_take_the_operands_trivia() {
+    // Finding 27: the C# folded literal takes the OPERAND's trivia
+    // (LiteralExpressionWithTriviaFrom(value, operand),
+    // ConstantFolder.cs:31-43) — not the whole unary node's. Every case
+    // pinned against the C# oracle on AllWithIntegers (the space before
+    // the operator stays with the preceding token; the trailing space
+    // after the operand is carried).
+    let fold = |code: &str| {
+        let ast = full_moon::parse(code).expect("parse");
+        let folded = constant_fold(
+            ast,
+            ConstantFoldingOptions {
+                extract_numbers_from_strings: false,
+            },
+        );
+        folded.to_string()
+    };
+    assert_eq!(fold("print(- 1)"), "print(-1)");
+    assert_eq!(fold("print(- 1 )"), "print(-1 )");
+    assert_eq!(fold("print( - 1)"), "print( -1)");
+    assert_eq!(fold("print(- - 1)"), "print(1)");
+    assert_eq!(fold("print(not true )"), "print(false )");
+    assert_eq!(fold("print(-(1 + 2))"), "print(-3)");
+}
