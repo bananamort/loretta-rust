@@ -8,7 +8,7 @@ use std::rc::Rc;
 use full_moon::ast::lua52;
 
 use crate::scoping::igotolabel::GotoLabel;
-use crate::scoping::ivariable::{IVariable, SharedVariable, Variable};
+use crate::scoping::ivariable::{IVariable, IVariableInternal, SharedVariable, Variable};
 use crate::scoping::node::Node;
 use crate::scoping::scopekind::ScopeKind;
 use crate::scoping::variablekind::VariableKind;
@@ -214,18 +214,28 @@ impl Scope {
         variable
     }
 
-    /// C# AddReferencedVariable (IScope.cs:203-209).
-    pub fn add_referenced_variable(&mut self, variable: &SharedVariable) {
-        if self
+    /// C# AddReferencedVariable (IScope.cs:203-209) with the FunctionScope
+    /// override (IFunctionScope.cs:55-62) — the shared handle is passed
+    /// explicitly (the C# `this`; the override records the capturing scope
+    /// on the variable). Variables referenced in a function scope without
+    /// being declared there are captured (the C# captured-variable set).
+    pub fn add_referenced_variable_in(scope: &Rc<RefCell<Scope>>, variable: &SharedVariable) {
+        let mut scope_ref = scope.borrow_mut();
+        if scope_ref
             .declared_variables
             .iter()
             .any(|v| Rc::ptr_eq(v, variable))
         {
             return;
         }
-        self.referenced_variables.push(variable.clone());
-        if let Some(parent) = &self.parent {
-            parent.borrow_mut().add_referenced_variable(variable);
+        // C# FunctionScope.AddReferencedVariable (IFunctionScope.cs:55-62).
+        if let Some(data) = scope_ref.function_data.as_mut() {
+            data.captured_variables.push(variable.clone());
+            variable.borrow_mut().add_capturing_scope(scope.clone());
+        }
+        scope_ref.referenced_variables.push(variable.clone());
+        if let Some(parent) = &scope_ref.parent {
+            Scope::add_referenced_variable_in(parent, variable);
         }
     }
 
