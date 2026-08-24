@@ -361,7 +361,11 @@ fn is_hex_float(text: &str) -> bool {
 /// dropped (documented in the row-788 port). The invalid-escape presets keep
 /// the escape text minus the backslash (the C# ScanEscapeSequence `goto
 /// default` — Lexer.ShortString.cs:138-139, 167-171, 185-186).
-fn unescape_lua_string(text: &str, options: &LuaSyntaxOptions) -> String {
+/// The C# Lexer.ShortString escape processing for a short-string token's
+/// literal content (the dropped lexer's decoded value). Exposed for the
+/// interpolated-string tests (the C# InterpolatedStringTextToken value is
+/// the decoded text — Finding 60).
+pub fn unescape_lua_string(text: &str, options: &LuaSyntaxOptions) -> String {
     let mut out = String::new();
     let mut chars = text.chars();
     while let Some(c) = chars.next() {

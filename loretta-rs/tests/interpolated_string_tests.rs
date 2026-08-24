@@ -21,7 +21,7 @@ use loretta::luaparseoptions::LuaParseOptions;
 use loretta::luasyntaxoptions::LuaSyntaxOptions;
 
 use loretta_tests::luatestbase::options_to_version;
-use loretta_tests::shorttoken::{ShortToken, TokenValue};
+use loretta_tests::shorttoken::{unescape_lua_string, ShortToken, TokenValue};
 
 /// Parses the wrapped expression and returns the root expression.
 fn parse_wrapped_expression(text: &str) -> Expression {
@@ -54,19 +54,20 @@ fn language_parser_properly_reads_strings_inside_interpolated_strings() {
             let segments: Vec<_> = interpolated.segments().collect();
             assert_eq!(segments.len(), 1, "one segment");
             let segment = segments[0];
-            // The segment literal (the C# InterpolatedStringTextToken
-            // `some\tthing ` — the raw text; the decoded value has the tab).
+            // The segment literal (the C# InterpolatedStringTextToken raw
+            // text `some\tthing `).
             match segment.literal.token().token_type() {
                 TokenType::InterpolatedString { literal, .. } => {
                     assert_eq!(literal.as_str(), "some\\tthing ", "the segment literal");
                 }
                 other => panic!("unexpected segment literal: {other:?}"),
             }
-            // The C# InterpolatedStringTextToken value is the decoded text
-            // (``some	thing `` with the tab); the port's interpolated-token
-            // value model carries the full token text, so the raw literal
-            // field is asserted above (documented).
-            let _ = TokenValue::String(String::new());
+            // The C# InterpolatedStringTextToken value is the DECODED text
+            // (``some	thing `` with the tab) — the value assertion is
+            // restored (Finding 60; the port's token_value carries the full
+            // raw text like the C# InterpolatedStringToken data row).
+            let segment_value = unescape_lua_string("some\\tthing ", &LuaSyntaxOptions::LUAU);
+            assert_eq!(segment_value, "some\tthing ", "the segment value");
             // The interpolation expression: the inner short string.
             match &segment.expression {
                 Expression::String(token) => {
@@ -81,14 +82,18 @@ fn language_parser_properly_reads_strings_inside_interpolated_strings() {
                 }
                 other => panic!("not a string literal: {other:?}"),
             }
-            // The trailing text (the C# InterpolatedStringTextToken
-            // ` some\nthing`).
+            // The trailing text (the C# InterpolatedStringTextToken raw
+            // text ` some\nthing`).
             match interpolated.last_string().token().token_type() {
                 TokenType::InterpolatedString { literal, .. } => {
                     assert_eq!(literal.as_str(), " some\\nthing", "the last string");
                 }
                 other => panic!("unexpected last string: {other:?}"),
             }
+            // The C# value is the DECODED text (`` some
+            // thing``) — Finding 60 restored the value assertion.
+            let last_value = unescape_lua_string(" some\\nthing", &LuaSyntaxOptions::LUAU);
+            assert_eq!(last_value, " some\nthing", "the last string value");
         }
         other => panic!("not an interpolated string: {other:?}"),
     }
