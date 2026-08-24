@@ -1411,11 +1411,37 @@ fn set_first_leading(expr: ast::Expression, leading: Vec<Token>) -> ast::Express
             ast::Expression::IfExpression(if_expr.with_if_token(new_token))
         }
 
-        ast::Expression::InterpolatedString(_) => {
-            // No fold rule reaches an interpolated string's first token (the
-            // C# has no folding for them either); the token walk helpers
-            // cover the leading trivia reads.
-            unreachable!("interpolated string first token never rewritten")
+        ast::Expression::InterpolatedString(interpolated) => {
+            // Defensive arm (Finding 4): no fold rule reaches an
+            // interpolated string's first token today — constants can't
+            // contain one (it carries no expression flags), the
+            // parenthesized arm never descends into its inner expression,
+            // and full_moon prefixes are only `(`-wrapped or names
+            // (parsers.rs:1765-1813) — so the arm is dead, matching the C#
+            // (no folding for them either). Implemented rather than
+            // unreachable!() so a future fold rule that does reach it
+            // rewrites the first token instead of panicking: the first
+            // segment's literal (kind Begin) for strings with expressions,
+            // or the last_string for segment-less strings (the parser
+            // keeps the Begin token there, parsers.rs:2747-2750).
+            let mut segments: Vec<_> = interpolated.segments().cloned().collect();
+            match segments.first_mut() {
+                Some(first) => {
+                    first.literal = replace_leading(first.literal.clone(), leading);
+                    ast::Expression::InterpolatedString(
+                        full_moon::ast::luau::InterpolatedString::new(
+                            segments,
+                            interpolated.last_string().clone(),
+                        ),
+                    )
+                }
+                None => ast::Expression::InterpolatedString(
+                    full_moon::ast::luau::InterpolatedString::new(
+                        Vec::new(),
+                        replace_leading(interpolated.last_string().clone(), leading),
+                    ),
+                ),
+            }
         }
         ast::Expression::TableConstructor(tc) => {
             let (first, second) = tc.braces().tokens();
@@ -1529,5 +1555,76 @@ mod tests {
             extract_numbers_from_strings: false,
         });
         folder.fold(ast).to_string()
+    }
+
+    #[test]
+    fn set_first_leading_rewrites_interpolated_string_first_token() {
+        // Finding 4: the arm is dead through the fold rules (no constant
+        // can contain an interpolated string) but must still rewrite the
+        // first token correctly if ever reached.
+        use full_moon::ast::luau::{InterpolatedString, InterpolatedStringSegment};
+        use full_moon::tokenizer::InterpolatedStringKind;
+
+        let begin = TokenReference::new(
+            vec![Token::new(TokenType::Whitespace {
+                characters: ShortString::new("  "),
+            })],
+            Token::new(TokenType::InterpolatedString {
+                literal: ShortString::new("x"),
+                kind: InterpolatedStringKind::Begin,
+            }),
+            vec![],
+        );
+        let end = TokenReference::new(
+            vec![],
+            Token::new(TokenType::InterpolatedString {
+                literal: ShortString::new("y"),
+                kind: InterpolatedStringKind::End,
+            }),
+            vec![],
+        );
+        let new_leading = vec![Token::new(TokenType::Whitespace {
+            characters: ShortString::new("    "),
+        })];
+
+        // With an expression: the first segment's literal is the first
+        // token.
+        let expr = ast::Expression::InterpolatedString(InterpolatedString::new(
+            vec![InterpolatedStringSegment {
+                literal: begin.clone(),
+                expression: ast::Expression::Number(TokenReference::new(
+                    vec![],
+                    Token::new(TokenType::Number {
+                        text: ShortString::new("1"),
+                    }),
+                    vec![],
+                )),
+            }],
+            end.clone(),
+        ));
+        let rewritten = set_first_leading(expr, new_leading.clone());
+        let ast::Expression::InterpolatedString(rewritten) = &rewritten else {
+            panic!("must stay an interpolated string");
+        };
+        let first = rewritten.segments().next().expect("one segment");
+        let trivia: Vec<String> = first
+            .literal
+            .leading_trivia()
+            .map(|t| t.to_string())
+            .collect();
+        assert_eq!(trivia, vec!["    ".to_string()]);
+
+        // Without an expression: the last_string carries the first token.
+        let bare = ast::Expression::InterpolatedString(InterpolatedString::new(Vec::new(), begin));
+        let rewritten_bare = set_first_leading(bare, new_leading);
+        let ast::Expression::InterpolatedString(rewritten_bare) = &rewritten_bare else {
+            panic!("must stay an interpolated string");
+        };
+        let trivia: Vec<String> = rewritten_bare
+            .last_string()
+            .leading_trivia()
+            .map(|t| t.to_string())
+            .collect();
+        assert_eq!(trivia, vec!["    ".to_string()]);
     }
 }
