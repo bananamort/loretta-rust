@@ -240,13 +240,20 @@ impl Scope {
         })
     }
 
+    /// The scope's own label map lookup — no block ascent (the C# label
+    /// walker's CreateLabel targets only the current scope; Finding 6).
+    pub fn try_get_label_in_scope(&self, name: &str) -> Option<Rc<RefCell<GotoLabel>>> {
+        self.labels.get(name).cloned()
+    }
+
     /// C# GetOrCreateLabel (IScope.cs:215-224).
     pub fn get_or_create_label_in(
         scope: &Rc<RefCell<Scope>>,
         name: &str,
     ) -> Rc<RefCell<GotoLabel>> {
         debug_assert!(!name.is_empty(), "label name must not be empty");
-        match scope.borrow().try_get_label(name) {
+        let existing = scope.borrow().try_get_label(name);
+        match existing {
             Some(label) => label,
             None => Self::create_label_in(scope, name),
         }
