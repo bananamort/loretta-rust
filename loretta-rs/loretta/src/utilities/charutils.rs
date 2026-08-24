@@ -133,12 +133,41 @@ impl CharUtils {
             let byte01 = (0b11000000 | ((n >> 6) & 0b11111)) as u8;
             let byte02 = (0b10000000 | (n & 0b111111)) as u8;
             format!("\\x{byte01:02X}\\x{byte02:02X}")
-        } else {
+        } else if n < 0x10000 {
             // zzzzyyyy yyxxxxxx -> [ 1110zzzz 10yyyyyy 10xxxxxx ]
             let byte01 = (0b11100000 | ((n >> 12) & 0b1111)) as u8;
             let byte02 = (0b10000000 | ((n >> 6) & 0b111111)) as u8;
             let byte03 = (0b10000000 | (n & 0b111111)) as u8;
             format!("\\x{byte01:02X}\\x{byte02:02X}\\x{byte03:02X}")
+        } else {
+            // Astral chars are unreachable in the C# `char`, but reachable
+            // here — the old code dropped bits 16-20 in the 3-byte branch
+            // (Finding 48). 000uuuuu zzzzyyyy yyxxxxxx ->
+            // [ 11110uuu 10uuzzzz 10yyyyyy 10xxxxxx ]
+            let byte01 = (0b11110000 | ((n >> 18) & 0b111)) as u8;
+            let byte02 = (0b10000000 | ((n >> 12) & 0b111111)) as u8;
+            let byte03 = (0b10000000 | ((n >> 6) & 0b111111)) as u8;
+            let byte04 = (0b10000000 | (n & 0b111111)) as u8;
+            format!("\\x{byte01:02X}\\x{byte02:02X}\\x{byte03:02X}\\x{byte04:02X}")
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn encode_char_to_utf8_handles_astral_chars() {
+        // Finding 48: the encoder only handled 1-3 byte forms; the astral
+        // fell into the 3-byte branch and (n >> 12) & 0xF dropped bits
+        // 16-20. The emoji U+1F600 encodes as F0 9F 98 80.
+        assert_eq!(
+            CharUtils::encode_char_to_utf8('\u{1F600}'),
+            "\\xF0\\x9F\\x98\\x80"
+        );
+        assert_eq!(CharUtils::encode_char_to_utf8('\u{FF}'), "\\xC3\\xBF");
+        assert_eq!(CharUtils::encode_char_to_utf8('a'), "\\x61");
+        assert_eq!(CharUtils::encode_char_to_utf8('\u{7FE}'), "\\xDF\\xBE");
     }
 }
