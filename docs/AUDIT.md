@@ -31,9 +31,13 @@ Four findings were re-checked against both sides by direct reads and corrected:
   `(getMaxDigits + MaxPrefixCount − digitCount) − minPrefixCount` and is always ≥ 4 with the
   real constants, so the draft's "throws immediately at ≤0 / `getMaxDigits ≤1` ⇒ zero
   attempts" case cannot occur.
-- **Finding 57** — recursion claim withdrawn: the `default_visit_*` helpers call the full_moon
-  trait's default methods, which are empty no-op hooks — no recursion. The real defect is that
-  the helpers are dead (imported by nothing) and never descend.
+- **Finding 57** — mechanism corrected: the `default_visit_*` helpers re-dispatch through
+  `full_moon::visitors::Visitor::visit_stmt(self, …)` back into the overrides — trait-qualified
+  calls dispatch to the concrete type's override in Rust (verified by a minimal probe:
+  `visit_stmt → default_visit_stmt → visit_stmt → …` recurses past 1000 frames), so the
+  collector infinitely recurses if ever driven; full_moon's trait defaults are empty no-ops
+  regardless, so it neither terminates nor descends. The v3 errata's "no recursion" wording is
+  withdrawn; the defect stands as dead, non-functional scaffolding.
 - **Finding 63** — the missing `!=` row is boundary-forced (GLua-only syntax, GMod DROP, no
   full_moon Symbol); only the `SYMBOL_ROWS` header comment's drop enumeration is incomplete.
 
@@ -295,9 +299,12 @@ One bullet per issue. Grouped by area; numbering is authoritative for fix tracki
     `parsing_regression_tests.rs:243-258`). Errors are PORT scope (PLAN §3); implement the
     gates (LUA0018 precedent), then restore C# expectations.
 57. Dead/misleading test infrastructure: `tests/src/parsingtestsbase.rs` is imported by nothing
-    and its `default_visit_*` helpers call the full_moon trait's default methods, which are
-    empty no-op hooks — no recursion, but the row-collector never descends and never records
-    anything, so it is dead and non-functional as the C# tree enumerator it claims to port
+    and its `default_visit_*` helpers re-dispatch through
+    `full_moon::visitors::Visitor::visit_stmt(self, …)` back into the overrides — in Rust,
+    trait-qualified calls dispatch to the concrete type's override, so the chain
+    `visit_stmt → default_visit_stmt → visit_stmt → …` is infinite recursion if ever driven
+    (verified by probe) — and full_moon's trait defaults are empty no-ops regardless, so the
+    collector neither terminates nor descends; it is dead, non-functional scaffolding
     (`:196-204`); `tests/src/syntaxextensions.rs` likewise unused — delete or repair-and-wire.
     Also delete
     the misleading `tests/syntax_normalizer_tests.rs` stub: the normalizer is DROP surface
