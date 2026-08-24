@@ -29,9 +29,11 @@ impl ErrorFacts {
         false
     }
 
-    /// Returns true if the error code is hidden.
-    pub fn is_hidden(code: ErrorCode) -> bool {
-        matches!(code, ErrorCode::Void | ErrorCode::Unknown)
+    /// The C# generated IsHidden (ErrorFacts.g.cs:34-41) — the switch has
+    /// no cases, so every code (Void and Unknown included) is false
+    /// (Finding 45; the port's Void/Unknown match was a fabrication).
+    pub fn is_hidden(_code: ErrorCode) -> bool {
+        false
     }
 
     /// Gets the severity for the given error code.
@@ -71,5 +73,22 @@ impl ErrorFacts {
     /// (Core Diagnostic.cs) since the categories map is always empty.
     pub fn get_category(_code: ErrorCode) -> String {
         "Compiler".to_string()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn is_hidden_is_false_for_every_code() {
+        // Finding 45: the C# generated IsHidden has no cases — all codes
+        // (Void and Unknown included) are false (ErrorFacts.g.cs:34-41).
+        assert!(!ErrorFacts::is_hidden(ErrorCode::Void));
+        assert!(!ErrorFacts::is_hidden(ErrorCode::Unknown));
+        assert!(!ErrorFacts::is_hidden(ErrorCode::ErrInvalidStringEscape));
+        assert!(!ErrorFacts::is_hidden(
+            ErrorCode::WrnLineBreakMayAffectErrorReporting
+        ));
     }
 }
