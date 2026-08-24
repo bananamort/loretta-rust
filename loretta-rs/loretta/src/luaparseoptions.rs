@@ -62,10 +62,23 @@ impl LuaParseOptions {
     }
 
     /// Validates the options, appending diagnostics to the builder.
-    /// C# delegates to the Core ParseOptions.ValidateOptions; with
-    /// DocumentationMode = Parse (fixed by the ctor) and empty features it
-    /// adds nothing — the docs say the options "don't do anything currently".
-    pub fn validate_options(&self, _builder: &mut Vec<String>) {}
+    /// C# delegates to the base ParseOptions.ValidateOptions
+    /// (ParseOptions.cs:49-55), which reports ERR_BadDocumentationMode
+    /// for an invalid documentation mode (the valid modes are None,
+    /// Parse and Diagnose — DocumentationMode.cs:12-32). Finding 64
+    /// restored the validation path (the old empty body dropped it).
+    pub fn validate_options(&self, builder: &mut Vec<String>) {
+        if !matches!(
+            self.documentation_mode.as_str(),
+            "None" | "Parse" | "Diagnose"
+        ) {
+            builder.push(format!(
+                "LUA{}: Provided documentation mode is unsupported or invalid: '{}'",
+                crate::errors::errorcode::ErrorCode::ErrBadDocumentationMode as i32,
+                self.documentation_mode
+            ));
+        }
+    }
 
     /// Creates a new instance with the features replaced by the provided ones.
     /// C# `WithFeatures` -> `new LuaParseOptions(this) { _features = ... }`.
@@ -88,5 +101,35 @@ impl LuaParseOptions {
         } else {
             self.clone()
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn validate_options_reports_an_invalid_documentation_mode() {
+        // Finding 64: the empty validate_options dropped the C# base
+        // ParseOptions.ValidateOptions (ParseOptions.cs:49-55), which
+        // reports ERR_BadDocumentationMode for an invalid documentation
+        // mode (the valid modes are None, Parse and Diagnose).
+        let mut builder = Vec::new();
+        LuaParseOptions::default_options().validate_options(&mut builder);
+        assert!(builder.is_empty(), "the default Parse mode is valid");
+        let options = LuaParseOptions::default_options().with_documentation_mode("None");
+        let mut builder = Vec::new();
+        options.validate_options(&mut builder);
+        assert!(builder.is_empty(), "None is a valid mode");
+        let options = LuaParseOptions::default_options().with_documentation_mode("Bogus");
+        let mut builder = Vec::new();
+        options.validate_options(&mut builder);
+        assert_eq!(
+            builder,
+            vec![
+                "LUA2000: Provided documentation mode is unsupported or invalid: 'Bogus'"
+                    .to_string()
+            ]
+        );
     }
 }
