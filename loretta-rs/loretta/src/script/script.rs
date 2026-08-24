@@ -147,11 +147,14 @@ impl Script {
     }
 
     /// C# Script.RenameVariable (Script.cs:141-188): attempts to rename the
-    /// provided variable with the new name.
+    /// provided variable with the new name. The C# argument checks are the
+    /// nulls (Script.cs:143-144) — there is NO empty-string check: the
+    /// empty name flows into the location handling, where the C#
+    /// FindVariable rejects it with an ArgumentException (IScope.cs:166-167)
+    /// and the port's find_variable panics with the same message (Finding
+    /// 44); a variable without locations renames to an empty string with no
+    /// changes, like the C# Ok result.
     pub fn rename_variable(&mut self, variable: &SharedVariable, new_name: &str) -> RenameResult {
-        if new_name.is_empty() {
-            panic!("newName cannot be null or empty");
-        }
         let mut errors: Vec<RenameError> = Vec::new();
         let mut trees_with_locations: Vec<usize> = Vec::new();
 
@@ -284,6 +287,34 @@ impl Script {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn empty_rename_names_follow_the_csharp_validation() {
+        // Finding 44: the port's top-level panic on an empty new name
+        // was not the C# behavior — RenameVariable has no empty-string
+        // check (Script.cs:143-144); the empty name flows into the
+        // location handling, where the C# FindVariable rejects it with
+        // an ArgumentException ("'name' must be a valid identifier.",
+        // IScope.cs:166-167) and the port's find_variable panics with
+        // the same message.
+        let mut script = Script::new(vec!["local a = 1\nprint(a)\n".to_string()]);
+        let root = script.root_scope();
+        let file = root.borrow().contained_scopes()[0].clone();
+        let variable = file
+            .borrow()
+            .declared_variables()
+            .iter()
+            .find(|v| v.borrow().name() == "a")
+            .expect("the a variable")
+            .clone();
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            script.rename_variable(&variable, "")
+        }));
+        assert!(
+            result.is_err(),
+            "the empty name must panic like the C# ArgumentException"
+        );
+    }
 
     #[test]
     fn renames_a_local_variable() {
