@@ -125,3 +125,22 @@ fn objectdisplay_format_literal_complex_outputs_hexadecimal_numbers_when_asked_t
         format!("{}i", HexFloat::double_to_hex_string(imaginary))
     );
 }
+
+#[test]
+fn objectdisplay_format_literal_string_escapes_astral_chars_as_surrogate_halves() {
+    // Finding 49: the C# char-based FormatLiteral escapes an astral char
+    // as its UTF-16 surrogate halves (\u{D83D}\u{DE00}) — the port
+    // emitted one combined \u{1F600}. Pinned against the C# oracle (the
+    // folded concat of "\u{1F600}" .. "x" -> "\u{D83D}\u{DE00}x").
+    let escaped = ObjectDisplay::format_literal_str(
+        "😀",
+        ObjectDisplayOptions::USE_QUOTES | ObjectDisplayOptions::ESCAPE_NON_PRINTABLE_CHARACTERS,
+    );
+    assert_eq!(escaped, "\"\\u{D83D}\\u{DE00}\"");
+    // The BMP chars keep the single combined form.
+    let escaped = ObjectDisplay::format_literal_str(
+        "\u{200B}",
+        ObjectDisplayOptions::USE_QUOTES | ObjectDisplayOptions::ESCAPE_NON_PRINTABLE_CHARACTERS,
+    );
+    assert_eq!(escaped, "\"\\u{200B}\"");
+}
