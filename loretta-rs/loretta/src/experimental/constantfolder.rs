@@ -1321,7 +1321,12 @@ fn unescape_lua_string(text: &str) -> String {
                 }
             }
             Some(d) if d.is_ascii_digit() => {
-                // \ddd up to three decimal digits.
+                // \ddd up to three decimal digits — the C# keeps values
+                // up to 255 (ParseDecimalInteger, ShortString.cs:223-226);
+                // larger values report ERR_InvalidStringEscape and the
+                // escape char is the sentinel, so the escape is SKIPPED
+                // entirely in the string value (Finding 33) — the port
+                // used to push the decoded char.
                 let mut digits = String::new();
                 digits.push(d);
                 for _ in 0..2 {
@@ -1336,7 +1341,9 @@ fn unescape_lua_string(text: &str) -> String {
                     }
                 }
                 if let Ok(v) = digits.parse::<u32>() {
-                    out.push(char::from_u32(v).unwrap_or('\u{FFFD}'));
+                    if v <= 255 {
+                        out.push(char::from_u32(v).expect("values up to 255 are valid chars"));
+                    }
                 }
             }
             Some(other) => out.push(other),
