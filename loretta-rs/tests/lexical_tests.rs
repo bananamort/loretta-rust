@@ -209,6 +209,15 @@ fn lexer_covers_all_tokens() {
             .map(|t| t.kind.clone())
             .chain(trivia.iter().map(|t| t.kind.clone()))
             .collect();
+        // The C# enum-wide sweep (LexicalTests.cs:93-109): every enabled
+        // token/trivia kind must be covered by a data row (the C#
+        // excludes the BadToken, the EndOfFileToken and the
+        // SkippedTokensTrivia). The port's vocabulary is the full_moon
+        // TokenType equivalent of the C# SyntaxKind sweep — the enabled
+        // symbol rows (per-symbol, the payload distinguishes them) plus
+        // the non-symbol variants (the discriminant level — the payloads
+        // differ per row; Finding 59 replaced the weaker hardcoded
+        // symbol-only sweep).
         for symbol in enabled_symbols(preset) {
             assert!(
                 kinds.iter().any(|kind| matches!(
@@ -218,34 +227,60 @@ fn lexer_covers_all_tokens() {
                 "preset {preset:?}: symbol {symbol:?} not covered"
             );
         }
-        assert!(kinds
-            .iter()
-            .any(|k| matches!(k, TokenType::Whitespace { .. })));
-        assert!(kinds
-            .iter()
-            .any(|k| matches!(k, TokenType::SingleLineComment { .. })));
-        assert!(kinds
-            .iter()
-            .any(|k| matches!(k, TokenType::MultiLineComment { .. })));
-        assert!(kinds.iter().any(|k| matches!(k, TokenType::Shebang { .. })));
-        if preset.accept_c_comment_syntax {
-            assert!(kinds
-                .iter()
-                .any(|k| matches!(k, TokenType::CStyleComment { .. })));
-        }
-        assert!(kinds.iter().any(|k| matches!(k, TokenType::Number { .. })));
-        assert!(kinds
-            .iter()
-            .any(|k| matches!(k, TokenType::StringLiteral { .. })));
-        assert!(kinds
-            .iter()
-            .any(|k| matches!(k, TokenType::Identifier { .. })));
-        if preset.backtick_string_type != BacktickStringType::None {
-            assert!(kinds
-                .iter()
-                .any(|k| matches!(k, TokenType::InterpolatedString { .. })));
+        for sample in non_symbol_vocabulary(preset) {
+            assert!(
+                kinds
+                    .iter()
+                    .any(|kind| std::mem::discriminant(kind) == std::mem::discriminant(&sample)),
+                "preset {preset:?}: variant {sample:?} not covered"
+            );
         }
     }
+}
+
+/// The C# enum-wide NON-SYMBOL token/trivia vocabulary (the IsToken/
+/// IsTrivia kinds enabled for the preset — the full_moon TokenType
+/// equivalent). The payloads are placeholders — the coverage check
+/// compares the variants via the discriminant.
+fn non_symbol_vocabulary(preset: &LuaSyntaxOptions) -> Vec<TokenType> {
+    let mut vocabulary = vec![
+        TokenType::Whitespace {
+            characters: String::new().into(),
+        },
+        TokenType::SingleLineComment {
+            comment: String::new().into(),
+        },
+        TokenType::MultiLineComment {
+            blocks: 0,
+            comment: String::new().into(),
+        },
+        TokenType::Shebang {
+            line: String::new().into(),
+        },
+        TokenType::Number {
+            text: String::new().into(),
+        },
+        TokenType::StringLiteral {
+            literal: String::new().into(),
+            multi_line_depth: 0,
+            quote_type: StringLiteralQuoteType::Double,
+        },
+        TokenType::Identifier {
+            identifier: String::new().into(),
+        },
+    ];
+    if preset.accept_c_comment_syntax {
+        vocabulary.push(TokenType::CStyleComment {
+            comment: String::new().into(),
+        });
+    }
+    if preset.backtick_string_type != BacktickStringType::None {
+        vocabulary.push(TokenType::InterpolatedString {
+            literal: String::new().into(),
+            kind: full_moon::tokenizer::InterpolatedStringKind::Simple,
+        });
+    }
+    vocabulary
 }
 
 /// Whether the row is a `goto`-identifier row of a goto-less preset whose
