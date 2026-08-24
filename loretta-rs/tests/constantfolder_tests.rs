@@ -189,6 +189,16 @@ fn constant_folder_folds_operations_correctly() {
         ("0x1_0 + 1", LuaValue::Integer(17)),
         ("0b1_0 + 1", LuaValue::Integer(3)),
         ("-9223372036854775808 + 1", LuaValue::Integer(1)),
+        // Hex digits containing 'e'/'E' (Finding 19): 0xE5 and 0x1e5 are
+        // integers — only '.'/'p'/'P' make a hex literal a double — so
+        // they fold with exact i64 arithmetic (visible beyond 2^53).
+        ("0xE5 + 1", LuaValue::Integer(230)),
+        ("0x1e5 + 1", LuaValue::Integer(486)),
+        (
+            "0xE0000000000000 == 0xE0000000000001",
+            LuaValue::Bool(false),
+        ),
+        ("0xE0000000000000 == 0xE0000000000000", LuaValue::Bool(true)),
         // Subtraction.
         ("1 - 1", LuaValue::Integer(0)),
         ("1.5 - 1.5", LuaValue::Float(0.0)),
