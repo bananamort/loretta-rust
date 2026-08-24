@@ -82,6 +82,10 @@ struct Scanner<'a> {
     /// Whether only shebangs and newlines were seen so far (the C#
     /// onlyShebangsAndNewlines in the trivia scanner).
     only_shebangs_and_newlines: bool,
+    /// The cumulative bad-token count (the C# _badTokenCount, Lexer.cs:
+    /// 44) — past 200 the current bad token absorbs the rest of the
+    /// input (Finding 26).
+    bad_token_count: usize,
     /// Whether the last long-string scan was terminated (the C# out
     /// isTerminated).
     long_string_terminated: bool,
@@ -105,6 +109,7 @@ impl<'a> Scanner<'a> {
             diagnostics: Vec::new(),
             options,
             only_shebangs_and_newlines: true,
+            bad_token_count: 0,
             long_string_terminated: false,
         }
     }
@@ -1071,20 +1076,35 @@ impl<'a> Scanner<'a> {
     /// token (the port emits both, as the reference tests expect).
     fn scan_other(&mut self) {
         let start = self.pos;
-        let c = self.peek().expect("a char");
-        self.pos += 1;
-        self.error_at(
-            self.byte_of_char(start),
-            1,
-            ErrorCode::ErrBadCharacter,
-            vec![c.to_string()],
-        );
-        self.error_at(
-            self.byte_of_char(start),
-            1,
-            ErrorCode::ErrInvalidStatement,
-            Vec::new(),
-        );
+        let start_byte = self.byte_of_char(start);
+        let count = self.bad_token_count;
+        self.bad_token_count += 1;
+        if count > 200 {
+            // C# Lexer.cs:700-713: past 200 bad tokens the current token
+            // absorbs the rest of the input — one BadCharacter with the
+            // remainder as the argument, one InvalidStatement over the
+            // remainder.
+            let text = self.source[start_byte..].to_string();
+            let width = self.source.len() - start_byte;
+            self.pos = self.chars.len();
+            self.error_at(start_byte, width, ErrorCode::ErrBadCharacter, vec![text]);
+            self.error_at(
+                start_byte,
+                width,
+                ErrorCode::ErrInvalidStatement,
+                Vec::new(),
+            );
+        } else {
+            let c = self.peek().expect("a char");
+            self.pos += 1;
+            self.error_at(
+                start_byte,
+                1,
+                ErrorCode::ErrBadCharacter,
+                vec![c.to_string()],
+            );
+            self.error_at(start_byte, 1, ErrorCode::ErrInvalidStatement, Vec::new());
+        }
         // A token ends the trivia run — the next run re-arms the shebang
         // guard (the C# per-run init, Lexer.cs:729; Finding 25).
         self.only_shebangs_and_newlines = true;
