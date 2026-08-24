@@ -630,6 +630,31 @@ local \u{200C} = 1 -- ZERO WIDTH NON-JOINER";
 }
 
 #[test]
+fn lexer_absorbs_bad_character_runaways_past_200_tokens() {
+    // Finding 26: the C# absorbs the rest of the input when the bad-token
+    // count passes 200 (Lexer.cs:700-713) — the 202nd bad token is one
+    // BadCharacter + one InvalidStatement over the remainder instead of
+    // per-character errors.
+    let source = "@".repeat(205);
+    let mut expected: Vec<Expected> = Vec::new();
+    for i in 1..=201 {
+        expected.push(exp_args(ErrorCode::ErrBadCharacter, 1, i, "@", vec!["@"]));
+        expected.push(exp(ErrorCode::ErrInvalidStatement, 1, i, "@"));
+    }
+    // The 202nd token absorbs the remaining four characters (the C#
+    // BadCharacter argument is the absorbed text).
+    expected.push(exp_args(
+        ErrorCode::ErrBadCharacter,
+        1,
+        202,
+        "@@@@",
+        vec!["@@@@"],
+    ));
+    expected.push(exp(ErrorCode::ErrInvalidStatement, 1, 202, "@@@@"));
+    parse_and_validate_lex(&source, &LuaSyntaxOptions::ALL, &expected);
+}
+
+#[test]
 fn lexer_emits_diagnostic_when_bad_characters_are_found() {
     let source = "@$\\";
     parse_and_validate_lex(
