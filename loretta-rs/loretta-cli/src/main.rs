@@ -1109,6 +1109,7 @@ fn parse(
             loretta::experimental::constantfoldingoptions::ConstantFoldingOptions {
                 extract_numbers_from_strings: assume_no_overrides,
             },
+            preset_enum_to_preset_options(preset).syntax_options,
         )
     } else {
         ast

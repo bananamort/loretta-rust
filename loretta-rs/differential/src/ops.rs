@@ -431,8 +431,9 @@ pub fn constantfold(code: &str, preset: &str) -> Result<Json, String> {
 
     let ast = full_moon::parse(code).map_err(|errors| format!("parse failed: {errors:?}"))?;
     let original = ast.to_string();
+    let syntax_options = preset_options(preset);
     let fold_with = |options: ConstantFoldingOptions, original: &str| {
-        let folded = constant_fold(ast.clone(), options);
+        let folded = constant_fold(ast.clone(), options, syntax_options.clone());
         let folded_text = folded.to_string();
         Json::Object(vec![
             ("foldedText".into(), Json::String(folded_text.clone())),

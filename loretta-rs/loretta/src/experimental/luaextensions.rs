@@ -17,12 +17,15 @@ pub struct LuaExtensions;
 
 /// C# LuaExtensions.ConstantFold (LuaExtensions.cs:14-15):
 /// `new ConstantFolder(options).Visit(node)` — runs constant folding on the
-/// tree rooted by the provided node.
+/// tree rooted by the provided node. The syntax options mirror the C#
+/// tree's LuaParseOptions (the lexer computes the token values with them —
+/// the escape echo/skip is preset-dependent, Finding 36).
 pub fn constant_fold(
     ast: full_moon::ast::Ast,
     options: crate::experimental::constantfoldingoptions::ConstantFoldingOptions,
+    syntax_options: crate::luasyntaxoptions::LuaSyntaxOptions,
 ) -> full_moon::ast::Ast {
-    crate::experimental::constantfolder::ConstantFolder::new(options).fold(ast)
+    crate::experimental::constantfolder::ConstantFolder::new(options, syntax_options).fold(ast)
 }
 
 /// C# LuaExtensions.Minify(SyntaxTree) (LuaExtensions.cs:18-19): minifies
