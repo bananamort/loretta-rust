@@ -538,6 +538,30 @@ fn constant_folder_folds_operations_correctly_with_string_extraction_enabled() {
 }
 
 #[test]
+fn signed_strings_extract_like_the_csharp_realparser() {
+    // Finding 29: the C# RealParser rejects leading signs ("does not
+    // support a leading sign character", RealParser.cs:14-15) — the
+    // mantissa is empty, NoDigits returns true with 0.0 (RealParser.cs:
+    // 384-388) — while the decInteger path (long.TryParse
+    // AllowLeadingSign) accepts them. Every case pinned against the C#
+    // oracle on AllWithIntegers.
+    let cases: &[(&str, LuaValue)] = &[
+        ("'-1.5' + 1", LuaValue::Integer(1)),
+        ("'+1.5' + 1", LuaValue::Integer(1)),
+        ("'-1.5e2' + 1", LuaValue::Integer(1)),
+        ("'-1.5x' + 1", LuaValue::Integer(1)),
+        ("'+1' + 1", LuaValue::Integer(2)),
+        ("'-1' + 1", LuaValue::Integer(0)),
+    ];
+    for (source, expected) in cases {
+        let folded = fold_expression(source, true);
+        let actual = folded_value(&folded)
+            .unwrap_or_else(|| panic!("the fold of {source:?} must produce a literal: {folded:?}"));
+        assert_value(&actual, expected);
+    }
+}
+
+#[test]
 fn string_number_extraction_is_unanchored() {
     // Finding 28: the C# decFloat regex is UNANCHORED (the string only
     // needs to contain a match, NumberParsing.cs:16-18) and the
