@@ -392,7 +392,13 @@ impl ConstantFolder {
                     && has_e_flag(right_flags, FLAG_IS_STR | FLAG_IS_BOOL)
                 {
                     // C# left.Kind()/right.Kind() switch (ConstantFolder.cs:122-135).
-                    let left_str = match get_inner_expression(&left) {
+                    // The C# left.Kind()/right.Kind() switch
+                    // (ConstantFolder.cs:122-135) checks the DIRECT kind
+                    // and throws ExceptionUtilities.Unreachable for
+                    // anything else — a parenthesized operand crashes the
+                    // C# fold; the port's paren-stripping folded it (a
+                    // crash/success asymmetry — Finding 38).
+                    let left_str = match left.as_ref() {
                         ast::Expression::Symbol(t) if t.is_symbol(Symbol::True) => {
                             "true".to_string()
                         }
@@ -402,9 +408,9 @@ impl ConstantFolder {
                         ast::Expression::String(_) => {
                             get_string_value(&left, self.syntax_options.accept_invalid_escapes)
                         }
-                        _ => unreachable!("concat operand must be a literal"),
+                        _ => unreachable!("concat operand must be a direct literal"),
                     };
-                    let right_str = match get_inner_expression(&right) {
+                    let right_str = match right.as_ref() {
                         ast::Expression::Symbol(t) if t.is_symbol(Symbol::True) => {
                             "true".to_string()
                         }
@@ -414,7 +420,7 @@ impl ConstantFolder {
                         ast::Expression::String(_) => {
                             get_string_value(&right, self.syntax_options.accept_invalid_escapes)
                         }
-                        _ => unreachable!("concat operand must be a literal"),
+                        _ => unreachable!("concat operand must be a direct literal"),
                     };
                     return literal_str(format!("{left_str}{right_str}"), &leading, &trailing);
                 }
