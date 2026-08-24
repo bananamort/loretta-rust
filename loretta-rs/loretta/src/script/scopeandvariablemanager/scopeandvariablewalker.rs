@@ -10,7 +10,7 @@ use full_moon::tokenizer::{Symbol, TokenReference};
 
 use crate::scoping::igotolabel::GotoLabel;
 use crate::scoping::iscope::Scope;
-use crate::scoping::ivariable::{IVariableInternal, SharedVariable};
+use crate::scoping::ivariable::{IVariable, IVariableInternal, SharedVariable};
 use crate::scoping::node::Node;
 use crate::scoping::scopekind::ScopeKind;
 use crate::scoping::variablekind::VariableKind;
@@ -139,7 +139,10 @@ impl ScopeAndVariableWalker {
     }
 
     /// C# CreateParameter(FunctionScope, ParameterSyntax) — the named /
-    /// vararg parameters.
+    /// vararg parameters. The port's node is the parameter's declaration
+    /// and identifier record; the variables-map entry is added by the
+    /// callers, keyed on that same node (the C# `_variables.Add(parameter,
+    /// ...)` — one entry per parameter, Finding 15).
     fn create_parameter(
         &mut self,
         scope: &Rc<RefCell<Scope>>,
@@ -152,7 +155,6 @@ impl ScopeAndVariableWalker {
                 let node = self.base.make_node("Parameter", name_text.clone());
                 let variable = Scope::add_parameter_in(scope, &name_text, Some(node.clone()));
                 self.record_identifier(node.clone(), &token_ref);
-                self.variables.insert(node, variable.clone());
                 variable
             }
             ast::Parameter::Ellipsis(_) => {
@@ -160,9 +162,7 @@ impl ScopeAndVariableWalker {
                 // is a real parameter named "..." — never a panic; there is
                 // no name token to record for the rename rewriter.
                 let node = self.base.make_node("Parameter", "...".to_string());
-                let variable = Scope::add_parameter_in(scope, "...", Some(node.clone()));
-                self.variables.insert(node, variable.clone());
-                variable
+                Scope::add_parameter_in(scope, "...", Some(node.clone()))
             }
             #[allow(unreachable_patterns)]
             _ => unreachable!("unsupported parameter kind"),
@@ -453,10 +453,15 @@ impl ScopeAndVariableWalker {
                 let scope = self.create_function_scope(node);
                 for parameter in lf.body().parameters().iter() {
                     let parameter_variable = self.create_parameter(&scope, parameter);
-                    self.variables.insert(
-                        self.base.make_node("Parameter", parameter.to_string()),
-                        parameter_variable,
-                    );
+                    // C# _variables.Add(parameter, CreateParameter(...)) —
+                    // one entry per parameter, keyed by the parameter node
+                    // (the port's declaration node; Finding 15).
+                    let declaration_node = parameter_variable
+                        .borrow()
+                        .declaration()
+                        .expect("a parameter carries its declaration node")
+                        .clone();
+                    self.variables.insert(declaration_node, parameter_variable);
                 }
                 self.visit_block(lf.body().block());
                 self.pop_scope(&scope);
@@ -473,10 +478,15 @@ impl ScopeAndVariableWalker {
                 }
                 for parameter in fd.body().parameters().iter() {
                     let parameter_variable = self.create_parameter(&scope, parameter);
-                    self.variables.insert(
-                        self.base.make_node("Parameter", parameter.to_string()),
-                        parameter_variable,
-                    );
+                    // C# _variables.Add(parameter, CreateParameter(...)) —
+                    // one entry per parameter, keyed by the parameter node
+                    // (the port's declaration node; Finding 15).
+                    let declaration_node = parameter_variable
+                        .borrow()
+                        .declaration()
+                        .expect("a parameter carries its declaration node")
+                        .clone();
+                    self.variables.insert(declaration_node, parameter_variable);
                 }
                 self.visit_block(fd.body().block());
                 self.pop_scope(&scope);
@@ -544,10 +554,15 @@ impl ScopeAndVariableWalker {
         let scope = self.create_function_scope(node);
         for parameter in body.parameters().iter() {
             let parameter_variable = self.create_parameter(&scope, parameter);
-            self.variables.insert(
-                self.base.make_node("Parameter", parameter.to_string()),
-                parameter_variable,
-            );
+            // C# _variables.Add(parameter, CreateParameter(...)) — one
+            // entry per parameter, keyed by the parameter node (the
+            // port's declaration node; Finding 15).
+            let declaration_node = parameter_variable
+                .borrow()
+                .declaration()
+                .expect("a parameter carries its declaration node")
+                .clone();
+            self.variables.insert(declaration_node, parameter_variable);
         }
         self.visit_block(body.block());
         self.pop_scope(&scope);
@@ -609,10 +624,15 @@ impl ScopeAndVariableWalker {
                 let scope = self.create_function_scope(node);
                 for parameter in func.body().parameters().iter() {
                     let parameter_variable = self.create_parameter(&scope, parameter);
-                    self.variables.insert(
-                        self.base.make_node("Parameter", parameter.to_string()),
-                        parameter_variable,
-                    );
+                    // C# _variables.Add(parameter, CreateParameter(...)) —
+                    // one entry per parameter, keyed by the parameter node
+                    // (the port's declaration node; Finding 15).
+                    let declaration_node = parameter_variable
+                        .borrow()
+                        .declaration()
+                        .expect("a parameter carries its declaration node")
+                        .clone();
+                    self.variables.insert(declaration_node, parameter_variable);
                 }
                 self.visit_block(func.body().block());
                 self.pop_scope(&scope);
@@ -1066,6 +1086,34 @@ mod tests {
             1,
             "print referenced twice must be one entry: {referenced:?}"
         );
+    }
+
+    #[test]
+    fn parameters_have_one_variable_map_entry() {
+        // Finding 15: the C# adds the parameter node once
+        // (_variables.Add(parameter, CreateParameter(...))) — the port used
+        // to insert two distinct Parameter nodes per named parameter.
+        let mut manager =
+            ScopeAndVariableManager::new(vec!["local function f(x, y) end\n".to_string()]);
+        let state = manager.get_lazy_state();
+        let parameter_entries: Vec<_> = state
+            .variables
+            .iter()
+            .filter(|(node, _)| node.kind_name() == "Parameter")
+            .collect();
+        assert_eq!(parameter_entries.len(), 2, "one entry per parameter");
+        // The entry's node is the parameter's declaration (the C# map key
+        // == the declaration node).
+        for (node, variable) in parameter_entries {
+            let variable_ref = variable.borrow();
+            let declaration = variable_ref
+                .declaration()
+                .expect("a parameter carries its declaration node");
+            assert_eq!(
+                declaration.id, node.id,
+                "the map key must be the parameter's declaration node"
+            );
+        }
     }
 
     #[test]
