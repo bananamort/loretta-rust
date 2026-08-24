@@ -140,7 +140,7 @@ impl ScopeAndVariableWalker {
         scope: &Rc<RefCell<Scope>>,
         parameter: &ast::Parameter,
     ) -> SharedVariable {
-        let name = match parameter {
+        match parameter {
             ast::Parameter::Name(token) => {
                 let token_ref = token.clone();
                 let name_text = token.token().to_string();
@@ -148,14 +148,20 @@ impl ScopeAndVariableWalker {
                 let variable = Scope::add_parameter_in(scope, &name_text, Some(node.clone()));
                 self.record_identifier(node.clone(), &token_ref);
                 self.variables.insert(node, variable.clone());
-                return variable;
+                variable
             }
-            ast::Parameter::Ellipsis(_) => "...".to_string(),
+            ast::Parameter::Ellipsis(_) => {
+                // C# SyntaxKind.VarArgParameter => "..." (…:78): the vararg
+                // is a real parameter named "..." — never a panic; there is
+                // no name token to record for the rename rewriter.
+                let node = self.base.make_node("Parameter", "...".to_string());
+                let variable = Scope::add_parameter_in(scope, "...", Some(node.clone()));
+                self.variables.insert(node, variable.clone());
+                variable
+            }
             #[allow(unreachable_patterns)]
             _ => unreachable!("unsupported parameter kind"),
-        };
-        let _ = name;
-        unreachable!()
+        }
     }
 
     /// Adds a read location + referencing scope for a referenced variable
