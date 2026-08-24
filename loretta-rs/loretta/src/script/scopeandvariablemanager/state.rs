@@ -21,6 +21,11 @@ pub struct State {
     pub scopes: HashMap<Node, Rc<RefCell<Scope>>>,
     /// C# State.Labels (State.cs:25) — the node -> label map.
     pub labels: HashMap<Node, Rc<RefCell<GotoLabel>>>,
+    /// The shared node-id counter's value before each tree's walk (the
+    /// rename rewriter reproduces a tree's node ids by seeding its walk
+    /// with the tree's base — the port's C# node-identity emulation;
+    /// Finding 5).
+    pub tree_id_bases: Vec<u64>,
 }
 
 impl State {
@@ -30,12 +35,14 @@ impl State {
         variables: HashMap<Node, SharedVariable>,
         scopes: HashMap<Node, Rc<RefCell<Scope>>>,
         labels: HashMap<Node, Rc<RefCell<GotoLabel>>>,
+        tree_id_bases: Vec<u64>,
     ) -> Self {
         State {
             root_scope,
             variables,
             scopes,
             labels,
+            tree_id_bases,
         }
     }
 }

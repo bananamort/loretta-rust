@@ -25,10 +25,11 @@ impl GotoLabelWalker {
     pub fn new(
         scopes: HashMap<Node, Rc<RefCell<Scope>>>,
         labels: HashMap<Node, Rc<RefCell<GotoLabel>>>,
+        next_id: std::rc::Rc<std::cell::Cell<u64>>,
     ) -> Self {
         GotoLabelWalker {
             labels,
-            base: BaseWalker::new(scopes),
+            base: BaseWalker::with_next_id(scopes, next_id),
         }
     }
 
