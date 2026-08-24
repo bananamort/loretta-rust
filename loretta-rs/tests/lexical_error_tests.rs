@@ -196,6 +196,24 @@ local num4 = 0x1p999999";
 }
 
 #[test]
+fn lexer_complex_hex_suffix_reports_only_double_overflow() {
+    // Finding 21: the complex 'i' suffix is a double value — the C#
+    // HexFloat path (Lexer.Numbers.cs:380-394) reports only
+    // DoubleOverflow on a real overflow, never the integer TooLarge
+    // (0x10000000000000000i fits the double — the old code reported
+    // TooLarge for the 17-digit builder). Every case pinned against the
+    // C# oracle on AllWithIntegers.
+    parse_and_validate_lex(
+        "local num1 = 0xffi\n\
+         local num2 = 0x10000000000000000i\n\
+         local num3 = 0x1p10i\n\
+         local num4 = 0x1p1024i",
+        &LuaSyntaxOptions::ALL_WITH_INTEGERS,
+        &[exp(ErrorCode::ErrDoubleOverflow, 4, 14, "0x1p1024i")],
+    );
+}
+
+#[test]
 fn lexer_reports_toolarge_for_hex_values_wider_than_64_bits() {
     // Finding 20: the C# TryParse paths fail only on values wider than 64
     // bits — the 64-bit patterns parse as two's-complement longs (no

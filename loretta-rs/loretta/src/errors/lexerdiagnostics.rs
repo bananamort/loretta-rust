@@ -718,17 +718,36 @@ impl<'a> Scanner<'a> {
         {
             self.error_current(ErrorCode::ErrNumberSuffixNotSupportedInVersion);
         }
-        // No digit-less ErrInvalidNumber for hex — only the C# binary and
-        // octal parsers have that rule (Lexer.Numbers.cs:81-85, 156-160);
-        // the hex parser (306-435) has none (Finding 18). The
-        // Int64-format presets report TooLarge for the digit-less builder
-        // instead (the C# long.TryParse("") failure, Lexer.Numbers.cs:
-        // 417-418); the double-only presets route the integer hex through
-        // HexFloat.DoubleFromHexString with no error for valid text (the
-        // C# throws FormatException on the digit-less builder — the
-        // port's anti-crash silence, like the StringUtils trim
-        // adaptation).
-        if is_hex_float {
+        // The C# branch order (Lexer.Numbers.cs:364-433): ull/ll
+        // TryParses, then the complex HexFloat, then the float/double
+        // HexFloat, then the plain long.TryParse. No digit-less
+        // ErrInvalidNumber for hex — only the C# binary and octal parsers
+        // have that rule (Lexer.Numbers.cs:81-85, 156-160); the hex
+        // parser has none (Finding 18).
+        if is_unsigned_long || is_signed_long {
+            // C# ulong.TryParse / long.TryParse (Lexer.Numbers.cs:
+            // 364-378): the digit-less builder fails, and values wider
+            // than 64 bits fail. The 64-bit bit patterns parse as
+            // two's-complement signed longs (0xffffffffffffffff = -1,
+            // 0x8000000000000000 = i64::MIN — no error), and the ull
+            // suffix parses the full u64 range — so only the overflow
+            // past u64::MAX matters (Finding 20).
+            if digits == 0 || overflowed {
+                self.error_current(ErrorCode::ErrNumericLiteralTooLarge);
+            }
+        } else if is_complex {
+            // C# HexFloat.DoubleFromHexString (Lexer.Numbers.cs:380-394):
+            // the complex value is a double — only a real overflow
+            // reports DoubleOverflow, never the integer TooLarge
+            // (Finding 21). The C# throws FormatException on a digit-less
+            // builder — the port's anti-crash silence.
+            if digits > 0 {
+                let text = &self.source[self.byte_of_char(self.lexeme_start)..number_end];
+                if hex_float_overflows(text) {
+                    self.error_current(ErrorCode::ErrDoubleOverflow);
+                }
+            }
+        } else if is_hex_float {
             if !self.options.accept_hex_float_literals {
                 self.error_current(ErrorCode::ErrHexFloatLiteralNotSupportedInVersion);
             }
@@ -737,13 +756,13 @@ impl<'a> Scanner<'a> {
                 self.error_current(ErrorCode::ErrDoubleOverflow);
             }
         } else if self.options.hex_integer_format != IntegerFormats::NotSupported {
-            // The C# TryParse failure semantics (Lexer.Numbers.cs:364-378,
-            // 415-428): the digit-less builder fails, and values wider
-            // than 64 bits fail. The 64-bit bit patterns parse as
-            // two's-complement signed longs (0xffffffffffffffff = -1,
-            // 0x8000000000000000 = i64::MIN — no error), and the ull
-            // suffix parses the full u64 range — so only the overflow
-            // past u64::MAX matters (Finding 20).
+            // C# long.TryParse (Lexer.Numbers.cs:415-433): the digit-less
+            // builder and values wider than 64 bits fail. The double-only
+            // presets route the integer hex through
+            // HexFloat.DoubleFromHexString with no error for valid text
+            // (the C# throws FormatException on the digit-less builder —
+            // the port's anti-crash silence, like the StringUtils trim
+            // adaptation).
             if digits == 0 || overflowed {
                 self.error_current(ErrorCode::ErrNumericLiteralTooLarge);
             }
