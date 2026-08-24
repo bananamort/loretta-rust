@@ -30,7 +30,11 @@ Four findings were re-checked against both sides by direct reads and corrected:
 - **Finding 40** — arithmetic corrected: the C# start value is
   `(getMaxDigits + MaxPrefixCount − digitCount) − minPrefixCount` and is always ≥ 4 with the
   real constants, so the draft's "throws immediately at ≤0 / `getMaxDigits ≤1` ⇒ zero
-  attempts" case cannot occur.
+  attempts" case cannot occur. Sharpened further: the index descends while the name's prefix
+  count ascends 0..ceiling, where the per-slot ceiling is `getMaxDigits − digitCount + 4` —
+  4 at exact base powers, 5 elsewhere, never above 5 (simulated across 0..100000) — so the
+  divergence vs the Rust's fixed 5 is one-directional (C# throws after 0..4 at power slots
+  where Rust can return the 5-prefix name).
 - **Finding 57** — mechanism corrected: the `default_visit_*` helpers re-dispatch through
   `full_moon::visitors::Visitor::visit_stmt(self, …)` back into the overrides — trait-qualified
   calls dispatch to the concrete type's override in Rust (verified by a minimal probe:
@@ -223,13 +227,17 @@ One bullet per issue. Grouped by area; numbering is authoritative for fix tracki
     (`RenamingRewriter.RenameTable.cs:78-80`, `AncestorsAndSelf().Any(...)`); the in-code
     comment claiming equivalence is false. Changes minified output with the default allocator.
 40. Alphabetic strategy tries ascending `min_prefix_count..=5` (`namingstrategies.rs:79-86`);
-    C# tries DESCENDING from `firstNameChar − minPrefixCount` (where
-    `firstNameChar = (getMaxDigits(slot) + MaxPrefixCount) − digitCount`,
-    `NamingStrategies.cs:20-34`) to 1, naming the suffix slices `fullName[prefixes..]` — i.e.
-    prefix counts 0..(firstNameChar−1) tried in descending order before throwing. With the
-    real constants the starting value is always ≥ 4, so the C# always makes attempts before
-    throwing (the v3 draft's "throws immediately at ≤0 / `getMaxDigits ≤1` ⇒ zero attempts"
-    case cannot occur).
+    C# tries the suffix slices `fullName[prefixes..]` for `prefixes` from
+    `firstNameChar − minPrefixCount` down to 1, where
+    `firstNameChar = (getMaxDigits(slot) + MaxPrefixCount) − digitCount`
+    (`NamingStrategies.cs:20-45`). The index descends, so the name's prefix count ascends
+    0..(firstNameChar−1); the per-slot ceiling (max prefix count tried) is
+    `getMaxDigits − digitCount + 4` — 4 at exact base powers (digitCount == getMaxDigits)
+    and 5 elsewhere, never above 5 (simulated across 0..100000). The divergence vs the
+    Rust's fixed 0..=5 is one-directional: at power slots the C# throws after trying 0..4
+    where the Rust can return a 5-prefix name; at all other slots both try 0..5 identically.
+    The C# always makes attempts before throwing (the v3 draft's "throws immediately at ≤0 /
+    `getMaxDigits ≤1` ⇒ zero attempts" case cannot occur).
 41. Numeric/generic-for loop-variable records created AFTER header expressions
     (`scopeandvariablewalker.rs:287-341`) vs C#'s generated visitor visiting identifiers first
     (`Syntax.xml.Internal.g.cs:9991-9995`) — different (valid) allocation orders.
