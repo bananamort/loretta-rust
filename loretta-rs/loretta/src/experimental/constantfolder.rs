@@ -903,13 +903,20 @@ fn num_pow(l: NumValue, r: NumValue) -> f64 {
 }
 
 /// C# number classification: the token's Value is double iff the text has a
-/// '.', exponent ('e'/'E') or hex-float ('p'/'P').
+/// '.', exponent ('e'/'E') or hex-float ('p'/'P'). In a hex literal the
+/// 'e'/'E' characters are DIGITS, not exponents — only '.' and 'p'/'P'
+/// (the hex-float markers) make it a double (e.g. 0xE5, 0x1e5 are
+/// integers — Finding 19).
 fn number_is_double(text: &str) -> bool {
-    text.contains('.')
-        || text.contains('e')
-        || text.contains('E')
-        || text.contains('p')
-        || text.contains('P')
+    if text.starts_with("0x") || text.starts_with("0X") {
+        text.contains('.') || text.contains('p') || text.contains('P')
+    } else {
+        text.contains('.')
+            || text.contains('e')
+            || text.contains('E')
+            || text.contains('p')
+            || text.contains('P')
+    }
 }
 
 /// Parses an integer literal (decimal, hex or binary) like the C# lexer's
