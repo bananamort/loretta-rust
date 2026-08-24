@@ -162,15 +162,25 @@ fn language_parser_when_parsing_bitwise_or_expressions_generates_bitwise_operato
 
 #[test]
 fn language_parser_does_not_generate_out_of_range_diagnostics() {
-    // Issue 126 — the C# expects the ERR_InvalidStatement at (2,1) for the
-    // bare string statement; the port asserts the parse errors are non-empty.
+    // Issue 126 — the C# expects the ERR_InvalidStatement at (2,1); the
+    // full_moon reports "unexpected token `\"hello\"`" at the same (2,1) —
+    // the exact diagnostic is asserted (Finding 55).
     let result = full_moon::parse_fallible(
         "\n\"hello\"\n",
         options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUA51)),
     );
-    assert!(
-        !result.errors().is_empty(),
-        "the bare string statement must error"
+    let errors: Vec<_> = result.errors().to_vec();
+    assert_eq!(errors.len(), 1, "one error: {errors:?}");
+    match &errors[0] {
+        full_moon::Error::AstError(e) => {
+            let pos = e.token().start_position();
+            assert_eq!((pos.line(), pos.character()), (2, 1));
+        }
+        other => panic!("not an ast error: {other:?}"),
+    }
+    assert_eq!(
+        errors[0].to_string(),
+        "error occurred while creating ast: unexpected token `\"hello\"`. (starting from line 2, character 1 and ending on line 2, character 8)\nadditional information: unexpected token, this needs to be a statement"
     );
 }
 
@@ -184,15 +194,25 @@ fn language_parser_properly_treats_continue_as_normal_identifier_when_continue_t
 #[test]
 fn language_parser_does_not_find_gotos_nor_goto_labels_when_accept_goto_is_not_true() {
     // Issue 127 — the Lua51 parses the `::` as colons and the goto as an
-    // identifier; the C# expects 8 parser diagnostics — the port asserts the
-    // parse errors are non-empty.
+    // identifier; the C# expects 8 parser diagnostics, the full_moon
+    // reports 6 — the exact count and the first diagnostic (the first `:`
+    // at (1,1)) are asserted (Finding 55).
     let result = full_moon::parse_fallible(
         "::label:: goto label",
         options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUA51)),
     );
-    assert!(
-        !result.errors().is_empty(),
-        "the label + goto must error under the lua51 version"
+    let errors: Vec<_> = result.errors().to_vec();
+    assert_eq!(errors.len(), 6, "six errors: {errors:?}");
+    match &errors[0] {
+        full_moon::Error::AstError(e) => {
+            let pos = e.token().start_position();
+            assert_eq!((pos.line(), pos.character()), (1, 1));
+        }
+        other => panic!("not an ast error: {other:?}"),
+    }
+    assert_eq!(
+        errors[0].to_string(),
+        "error occurred while creating ast: unexpected token `:`. (starting from line 1, character 1 and ending on line 1, character 2)\nadditional information: unexpected token, this needs to be a statement"
     );
 }
 
