@@ -5,6 +5,8 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
+use full_moon::ast::lua52;
+
 use crate::scoping::igotolabel::GotoLabel;
 use crate::scoping::iscope::Scope;
 use crate::scoping::node::Node;
@@ -35,13 +37,9 @@ impl GotoLabelWalker {
 
     /// C# VisitGotoLabelStatement (GotoLabelWalker.cs:20-24): creates the
     /// label in the nearest scope (the unified walk's current scope).
-    pub fn visit_goto_label_stmt(
-        &mut self,
-        scope: &Rc<RefCell<Scope>>,
-        name: &str,
-        stmt_text: String,
-    ) {
-        let node = self.base.make_node("GotoLabelStatement", stmt_text);
+    pub fn visit_goto_label_stmt(&mut self, scope: &Rc<RefCell<Scope>>, label: &lua52::Label) {
+        let name = label.name().token().to_string();
+        let node = self.base.make_node("GotoLabelStatement", label.to_string());
         // Finding 6: the C# runs GotoLabelWalker before GotoWalker, so a
         // goto always binds to the already-created label. The port's
         // single pass can meet a forward goto first — it created a
@@ -50,12 +48,21 @@ impl GotoLabelWalker {
         // that orphans the jump — without ascending, so a label in a
         // nested block still shadows an outer one (the C# CreateLabel
         // targets only the current scope, IScope.cs:226-231).
-        let existing = scope.borrow().try_get_label_in_scope(name);
-        let label = match existing {
-            Some(label) => label,
-            None => Scope::create_label_in(scope, name),
+        //
+        // Finding 7: the label carries its statement's syntax node (the
+        // C# GotoLabelWalker passes it to CreateLabel,
+        // GotoLabelWalker.cs:24) — including when binding to a
+        // forward-goto placeholder (the port attaches it in place, the
+        // shared placeholder must not be replaced).
+        let existing = scope.borrow().try_get_label_in_scope(&name);
+        let label_ref = match existing {
+            Some(label_ref) => {
+                label_ref.borrow_mut().set_label_syntax(label.clone());
+                label_ref
+            }
+            None => Scope::create_label_in(scope, &name, Some(label.clone())),
         };
-        self.labels.insert(node, label);
+        self.labels.insert(node, label_ref);
     }
 
     /// The node -> label map.

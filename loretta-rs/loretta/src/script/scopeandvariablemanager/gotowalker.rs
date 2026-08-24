@@ -43,7 +43,7 @@ impl GotoWalker {
             return;
         }
         let node = self.base.make_node("GotoStatement", stmt.to_string());
-        let label = Scope::get_or_create_label_in(scope, name);
+        let label = Scope::get_or_create_label_in(scope, name, None);
         label.borrow_mut().add_jump(stmt.clone());
         self.labels.insert(node, label);
     }

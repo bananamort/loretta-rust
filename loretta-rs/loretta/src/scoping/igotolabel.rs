@@ -38,6 +38,14 @@ impl GotoLabel {
             jumps: Vec::new(),
         }
     }
+
+    /// Attaches the label statement's syntax node (the C# label walker
+    /// creates the label with its node, GotoLabelWalker.cs:24; the port's
+    /// single pass can bind a forward-goto placeholder first and attaches
+    /// the node when the label statement is reached — Finding 7).
+    pub fn set_label_syntax(&mut self, label: lua52::Label) {
+        self.label_syntax = Some(label);
+    }
 }
 
 impl IGotoLabel for GotoLabel {
