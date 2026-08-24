@@ -33,8 +33,8 @@ These were flagged in earlier passes and are **wrong**: all are fixed by the gov
 - `Portable/LuaExtensions.cs` (tree-typed helpers) — **DROP**, documented (`AGENTS.md:65`,
   `PLAN.md:141`). Nothing missing.
 - `SyntaxNormalizer` + its 1902-line test file — inside `Portable/Syntax/` = **DROP** (Port
-  Boundary). Never reimplement. Residual issue is only the misleading leftover Rust stub test
-  (Finding 45's neighbor; see Finding 51 / appendix).
+  Boundary). Never reimplement. Residual issue is only the misleading leftover Rust stub test;
+  its removal is tracked in Finding 57.
 - `loretta/src/options.rs` being a placeholder while the ADAPT cluster landed as one-file-per-node
   (`luasyntaxoptions.rs`, …) — `options.rs` is the Port Boundary's *designated* destination and
   The Method §2 sanctions per-node files. Process choice, not a defect.
@@ -221,6 +221,17 @@ One bullet per issue. Grouped by area; numbering is authoritative for fix tracki
     all-false (`ErrorFacts.g.cs:34-41`); benign today, align anyway.
 46. `parserdiagnostics.rs:4` cites nonexistent `Syntax/LuaParser.cs` (actual emitters:
     `Parser/LanguageParser.cs`).
+64. **RESTORED** (lost in v3 renumbering; numbered out of sequence to keep all references
+    stable): `LuaParseOptions::validate_options` has an empty
+    body (`luaparseoptions.rs:68`) where C# delegates to base
+    `ParseOptions.ValidateOptions`, which emits `ERR_BadDocumentationMode` for an invalid
+    documentation mode (`Core/Portable/Compilation/ParseOptions.cs:47-55`). Restore the
+    validation path.
+65. **RESTORED** (lost in v3 renumbering): `features` stored as `Vec<(String, String)>`
+    (`luaparseoptions.rs:13`) loses C#'s case-insensitive dictionary semantics
+    (`ImmutableDictionary<string,string>` with OrdinalIgnoreCase keys,
+    `LuaParseOptions.cs:57`), and C# equality/hash include Features
+    (`LuaParseOptions.cs:107-115`). Restore lookup/equality semantics.
 
 ### G. Display / utilities
 
@@ -258,9 +269,11 @@ One bullet per issue. Grouped by area; numbering is authoritative for fix tracki
     expects gating errors (`type_parsing_error_tests.rs:106-121`;
     `parsing_regression_tests.rs:243-258`). Errors are PORT scope (PLAN §3); implement the
     gates (LUA0018 precedent), then restore C# expectations.
-57. `tests/src/parsingtestsbase.rs` is imported by nothing and its visitor infinitely recurses
-    (UFCS self-call, `:196-204`); `tests/src/syntaxextensions.rs` likewise unused. Delete or
-    repair-and-wire.
+57. Dead/misleading test infrastructure: `tests/src/parsingtestsbase.rs` is imported by nothing
+    and its visitor infinitely recurses (UFCS self-call, `:196-204`);
+    `tests/src/syntaxextensions.rs` likewise unused — delete or repair-and-wire. Also delete
+    the misleading `tests/syntax_normalizer_tests.rs` stub: the normalizer is DROP surface
+    (Port Boundary), so removal plus a `PROGRESS.md` note is the only honest disposition.
 58. Assertion dimensions dropped: `ContextualKind` tuples unchecked in two lexical regression
     tests; goto-identifier data rows over-skipped even where the lua51 mapping would lex them
     exactly as C#.
@@ -285,6 +298,9 @@ One bullet per issue. Grouped by area; numbering is authoritative for fix tracki
     (`lexicaltestdata.rs:125-129`); ShortToken Display labels every symbol generically
     `"SymbolToken"` (failure-message cosmetics only); find_variable deterministic tie-break vs
     C# arbitrary HashSet order (note only).
+66. Minor numeric note: folder exponentiation uses `f64::powf` where C# uses `Math.Pow` —
+    last-ulp differences are possible on some inputs (corpus-visible cases agree; numbered out
+    of sequence to preserve references). Align or document during the folder fixes.
 
 ---
 
@@ -296,25 +312,53 @@ One bullet per issue. Grouped by area; numbering is authoritative for fix tracki
 | 2 | kept | Finding 2 |
 | 3 | corrected/downgraded | Finding 4 (dead-arm cleanup, repro invalid) |
 | 4 | kept | Finding 3 |
-| 5–16 | kept | Findings 5–16 (13 reworded; 16 = new lead) |
-| 17–22 | kept | Findings 17–22 |
+| 5 | kept | Finding 5 |
+| 6 | kept | Finding 5 (second half: the parse-failure skip) |
+| 7 | kept | Finding 8 |
+| 8 | kept | Finding 6 |
+| 9 | kept | Finding 7 |
+| 10 | kept | Finding 9 |
+| 11 | kept | Finding 10 |
+| 12 | kept | Finding 11 |
+| 13 | kept | Finding 12 |
+| 14 | kept | Finding 13 |
+| 15 | kept | Finding 14 (reworded: climb happens once recorded) |
+| 16 | kept | Finding 15 |
+| 17 | kept (citation refined) | Finding 44 (throws from `FindVariable` during location handling) |
+| 18 | kept | Finding 17 |
+| 19 | kept | Finding 18 |
+| 20 | kept | Finding 19 |
+| 21 | kept | Finding 20 |
+| 22 | kept | Finding 21 |
 | 23 | kept | Finding 22 |
 | 24 | **WITHDRAWN — INVALID** | C# squiggles the char BEFORE the newline in both stop modes; Rust already correct; pinned by C# test expecting `e` @(1,18) |
 | 25 | kept | Finding 23 |
 | 26 | **CORRECTED — direction reversed** | Finding 43 (Rust over-emits where C# is silent) |
-| 27–33 | kept | Findings 24–30 (30 extended with the hex-string 0.0 case) |
+| 27 | kept | Finding 24 |
+| 28 | kept | Finding 25 |
+| 29 | kept | Finding 26 |
+| 30 | kept | Finding 27 |
+| 31 | kept (extended) | Finding 28, with the hex-string `"0x1.8p10"` → 0.0 case split out as Finding 31 |
+| 32 | kept | Finding 29 |
+| 33 | kept | Finding 30 |
 | 34 | kept | Finding 32 |
-| 35–38 | kept | Findings 33–36 |
+| 35 | kept | Finding 33 |
+| 36 | kept | Finding 34 |
+| 37 | kept | Finding 35 |
+| 38 | kept | Finding 36 |
+| 39 | kept | Finding 37 |
+| 40 | kept | Finding 38 (refined: descending, unbounded, throws at ≤0) |
+| 41 | kept (minor) | Finding 66 |
 | 39 | kept | Finding 37 |
 | 40 | kept | Finding 38 (refined: descending, unbounded, throws at ≤0) |
 | 41 | kept | Finding 41 |
-| 42 | kept (citation refined) | Finding 44 |
-| 43 | kept | Finding 14 |
-| 44 | kept | Finding 42 |
-| 45 | kept | Finding 40 |
-| 46 | kept | Finding 42's neighbor — folded into Finding 44's area; see 46 |
-| 47 | kept | Finding 45's area — see 45 |
-| 48 | **WITHDRAWN** | `is_hidden` divergence is real but benign; retained as Finding 45 (kept, align anyway) |
+| 42 | kept | Finding 39 |
+| 43 | kept | Finding 40 |
+| 44 | kept | Finding 41 |
+| 45 | kept | Finding 42 |
+| 46 | **RESTORED** | Finding 64 (lost in the v3 renumbering) |
+| 47 | **RESTORED** | Finding 65 (lost in the v3 renumbering) |
+| 48 | kept (label fixed — never withdrawn) | Finding 45 |
 | 49 | kept | Finding 46 |
 | 50 | **WITHDRAWN** | `options.rs` is the designated ADAPT destination; process choice |
 | 51 | **WITHDRAWN** | `Portable/LuaExtensions.cs` is documented DROP |
@@ -357,7 +401,7 @@ One bullet per issue. Grouped by area; numbering is authoritative for fix tracki
 Core engine fidelity is genuinely high (options/enums/errors/resources, HexFloat/ObjectDisplay
 BMP, minifying utilities, scoping interface layer, folder core, precedence table, lexical-error
 matrix; differential byte-identical on all 1870 pairs). The port is **not yet an exact copy**:
-63 open findings above, including two reachable panics on ordinary Lua (varargs, overflow
+66 open findings above, including two reachable panics on ordinary Lua (varargs, overflow
 literals), state-corrupting multi-tree scoping/renaming behavior, systematic numeric-literal
 diagnostic gaps, minified-output drift, and test-surface gaps wide enough to hide all of it.
 Priority: Findings 1–16 (crashes + scoping/script), 17–26 (scanner), then the rest in listed
