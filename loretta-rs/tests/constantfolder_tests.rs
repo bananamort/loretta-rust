@@ -585,6 +585,27 @@ fn hex_float_strings_extract_zero_like_the_csharp_decfloat_first() {
 }
 
 #[test]
+fn unicode_escapes_keep_lone_surrogates() {
+    // Finding 34: the C# keeps a lone-surrogate \u{D800} as the raw
+    // code unit (ShortString.cs:285-292) — the port dropped it, so
+    // #'\u{D800}' folded to 0 instead of 1; the astral \u{1F600} stays
+    // a single char (the utf16_len count keeps #'\u{1F600}' at 2, the
+    // C# surrogate pair). Pinned against the C# oracle on
+    // AllWithIntegers.
+    let cases: &[(&str, LuaValue)] = &[
+        ("#'\\u{D800}'", LuaValue::Float(1.0)),
+        ("#'\\u{DFFF}'", LuaValue::Float(1.0)),
+        ("#'\\u{1F600}'", LuaValue::Float(2.0)),
+    ];
+    for (source, expected) in cases {
+        let folded = fold_expression(source, false);
+        let actual = folded_value(&folded)
+            .unwrap_or_else(|| panic!("the fold of {source:?} must produce a literal: {folded:?}"));
+        assert_value(&actual, expected);
+    }
+}
+
+#[test]
 fn decimal_escapes_above_255_are_skipped_in_the_string_value() {
     // Finding 33: the C# \ddd keeps values up to 255; larger values
     // report ERR_InvalidStringEscape and the escape is SKIPPED entirely

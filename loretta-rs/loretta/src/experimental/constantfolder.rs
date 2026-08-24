@@ -1304,7 +1304,15 @@ fn unescape_lua_string(text: &str) -> String {
                 }
             }
             Some('u') => {
-                // \u{XXXX}
+                // \u{XXXX} — the C# keeps BMP codepoints as the raw code
+                // unit (a lone surrogate included, ShortString.cs:285-292)
+                // and astral codepoints as a UTF-16 surrogate pair
+                // (ShortString.cs:294-297); the port's Rust string keeps
+                // the astral as a single char (the utf16_len count
+                // handles it) and represents a lone surrogate as U+FFFD —
+                // the closest legal Rust char (the raw \uD800 cannot
+                // exist in a Rust string; the C#-equality residual is
+                // documented — Finding 34).
                 let mut digits = String::new();
                 if chars.next() == Some('{') {
                     for c in chars.by_ref() {
@@ -1315,8 +1323,16 @@ fn unescape_lua_string(text: &str) -> String {
                     }
                 }
                 if let Ok(v) = u32::from_str_radix(&digits, 16) {
-                    if let Some(c) = char::from_u32(v) {
+                    if v > 0x10FFFF {
+                        // The C# ERR_EscapeTooLarge + the sentinel: the
+                        // escape is skipped entirely (ShortString.cs:
+                        // 279-283).
+                    } else if let Some(c) = char::from_u32(v) {
                         out.push(c);
+                    } else {
+                        // The lone surrogate (0xD800-0xDFFF): the C#
+                        // keeps the raw code unit; the port uses U+FFFD.
+                        out.push('\u{FFFD}');
                     }
                 }
             }
