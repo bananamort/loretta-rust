@@ -279,17 +279,33 @@ fn language_parser_luau_type_cast_parses_correctly() {
 #[test]
 fn language_parser_luau_goto_generates_correct_error() {
     // The C# expects the ERR_GotoNotSupportedInLuaVersion for the Luau
-    // preset (acceptGoto false) — the full_moon's version model parses the
-    // labels on the full version, so the C# gating error has no port
-    // equivalent (documented); the parse succeeds.
-    parse_clean("::label::", &LuaSyntaxOptions::LUAU);
+    // preset (acceptGoto false) on the whole `::label::` at (1,1) — the
+    // gate is ported in the parser diagnostics (Finding 56 restored the
+    // C# expectation).
+    let text = "::label::";
+    let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
+    assert_eq!(
+        diagnostics[0].code,
+        loretta::errors::errorcode::ErrorCode::ErrGotoNotSupportedInLuaVersion
+    );
+    assert_eq!(diagnostics[0].line_col(text), (1, 1));
+    assert_eq!(diagnostics[0].squiggle(text), "::label::");
 }
 
 #[test]
 fn language_parser_lua52_type_cast_generates_error() {
     // The C# expects the ERR_TypedLuaNotSupportedInLuaVersion for the Lua52
-    // preset (acceptTypedLua false) — the full_moon's version mapping parses
-    // the type casts on the full version, so the C# gating error has no port
-    // equivalent (documented); the parse succeeds.
-    parse_clean("local a = x :: table", &LuaSyntaxOptions::LUA52);
+    // preset (acceptTypedLua false) on the whole `x :: table` at (1,11) —
+    // the gate is ported in the parser diagnostics (Finding 56 restored
+    // the C# expectation).
+    let text = "local a = x :: table";
+    let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUA52);
+    assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
+    assert_eq!(
+        diagnostics[0].code,
+        loretta::errors::errorcode::ErrorCode::ErrTypedLuaNotSupportedInLuaVersion
+    );
+    assert_eq!(diagnostics[0].line_col(text), (1, 11));
+    assert_eq!(diagnostics[0].squiggle(text), "x :: table");
 }

@@ -11,10 +11,12 @@
 // tests assert the EXACT full_moon diagnostics — the error count, the error
 // token's (line, character) and the full message (Finding 55 restored the
 // exact assertions; the substring checks were downgraded). The
-// typed-lua-disabled test (the C# expects 15 ERR_TypedLuaNotSupportedInLuaVersion
-// gating errors) has no port equivalent — the full_moon parses the typed
-// structures on the full version (documented, Finding 56 tracks the gate);
-// the test asserts the parse succeeds.
+// typed-lua-disabled test asserts the ported ERR_TypedLuaNotSupportedInLuaVersion
+// gate (Finding 56) — the 16 exact diagnostics over the combined tree
+// diagnostics.
+
+use loretta::errors::errorcode::ErrorCode;
+use loretta::luasyntaxoptions::LuaSyntaxOptions;
 
 /// Parses the type wrapped in a type declaration and returns the errors.
 fn parse_type_errors(type_text: &str) -> Vec<full_moon::Error> {
@@ -22,6 +24,22 @@ fn parse_type_errors(type_text: &str) -> Vec<full_moon::Error> {
     full_moon::parse_fallible(&text, full_moon::LuaVersion::new())
         .errors()
         .to_vec()
+}
+
+/// The C# tree.GetDiagnostics(): the lexer + parser diagnostics merged in
+/// source order (the differential's compute_diagnostics tree pass).
+fn tree_diagnostics(
+    text: &str,
+    options: &LuaSyntaxOptions,
+) -> Vec<loretta::errors::lexerdiagnostics::LexerDiagnostic> {
+    let mut diagnostics = loretta::errors::lexerdiagnostics::lexer_diagnostics(text, options);
+    if let Ok(ast) = full_moon::parse(text) {
+        diagnostics.extend(loretta::errors::parserdiagnostics::parser_diagnostics(
+            &ast, options, text,
+        ));
+        diagnostics.sort_by_key(|d| d.start);
+    }
+    diagnostics
 }
 
 /// Asserts the exact full_moon diagnostic at the index: the error token's
@@ -164,17 +182,48 @@ fn parser_errors_on_multiple_indexers() {
 
 #[test]
 fn parser_errors_when_accept_typed_lua_is_false_and_typed_lua_structures_are_found() {
-    // The C# expects 15 ERR_TypedLuaNotSupportedInLuaVersion gating errors
-    // (the C# lexer's typed-lua checks) — the full_moon parses the typed
-    // structures on the full version (the port's version mapping), so the
-    // gating errors have no port equivalent (documented); the parse succeeds
-    // and the text round-trips.
+    // The C# expects 16 ERR_TypedLuaNotSupportedInLuaVersion gating errors
+    // with the exact squiggles and locations — the gate is ported in the
+    // parser diagnostics (Finding 56), so the exact diagnostics are
+    // asserted over the combined tree diagnostics (the C# All preset with
+    // acceptTypedLua false).
+    let options = LuaSyntaxOptions {
+        accept_typed_lua: false,
+        ..LuaSyntaxOptions::ALL
+    };
     let text = "type T = T\nexport type T = T\nlocal x: T = 1 :: T\nlocal x = function<T>(p: T, ...: T): T end\nlocal function x<T>(p: T, ...: T): T end\nfunction x<T>(p: T, ...: T): T end";
-    let result = full_moon::parse_fallible(text, full_moon::LuaVersion::new());
-    assert!(
-        result.errors().is_empty(),
-        "the full version parses the typed structures: {:?}",
-        result.errors()
+    let diagnostics = tree_diagnostics(text, &options);
+    let expected: &[(usize, usize, &str)] = &[
+        (1, 1, "type T = T"),
+        (2, 1, "export type T = T"),
+        (3, 8, ": T"),
+        (3, 14, "1 :: T"),
+        (4, 19, "<T>"),
+        (4, 24, ": T"),
+        (4, 32, ": T"),
+        (4, 36, ": T"),
+        (5, 17, "<T>"),
+        (5, 22, ": T"),
+        (5, 30, ": T"),
+        (5, 34, ": T"),
+        (6, 11, "<T>"),
+        (6, 16, ": T"),
+        (6, 24, ": T"),
+        (6, 28, ": T"),
+    ];
+    assert_eq!(
+        diagnostics.len(),
+        expected.len(),
+        "diagnostics: {diagnostics:?}"
     );
-    assert_eq!(result.ast().to_string(), text, "the text must round-trip");
+    for (i, (diagnostic, expected)) in diagnostics.iter().zip(expected).enumerate() {
+        let (line, col, squiggle) = *expected;
+        assert_eq!(
+            diagnostic.code,
+            ErrorCode::ErrTypedLuaNotSupportedInLuaVersion,
+            "code {i}"
+        );
+        assert_eq!(diagnostic.line_col(text), (line, col), "position {i}");
+        assert_eq!(diagnostic.squiggle(text), squiggle, "squiggle {i}");
+    }
 }
