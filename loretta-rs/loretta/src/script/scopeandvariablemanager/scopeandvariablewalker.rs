@@ -672,6 +672,14 @@ impl ScopeAndVariableWalker {
                 }
                 self.visit_expr(if_expr.else_expression());
             }
+            ast::Expression::InterpolatedString(interpolated) => {
+                // C# default descent into an interpolated string's embedded
+                // expressions (Finding 10): identifiers inside `{}` get
+                // their read registrations and rename coverage.
+                for expression in interpolated.expressions() {
+                    self.visit_expr(expression);
+                }
+            }
             _ => {}
         }
     }
@@ -1023,6 +1031,35 @@ mod tests {
         assert_eq!(
             scope_node.id, node.id,
             "the function scope's node must be the statement node itself"
+        );
+    }
+
+    #[test]
+    fn interpolated_string_identifiers_are_registered() {
+        // Finding 10: identifiers inside `{}` get read registrations (the
+        // C# default descent visits the interpolated string's embedded
+        // expressions; the port's manual descent must too).
+        use crate::scoping::ivariable::IVariable;
+        let mut manager = ScopeAndVariableManager::new(vec![
+            "local name = \"x\"\nprint(`hello {name}`)\n".to_string(),
+        ]);
+        let state = manager.get_lazy_state();
+        let root = state.root_scope.borrow();
+        let root_contained = root.contained_scopes();
+        let files: Vec<_> = root_contained.iter().collect();
+        let file = files[0].borrow();
+        let declared = file.declared_variables();
+        let name_variable = declared
+            .iter()
+            .find(|v| v.borrow().name() == "name")
+            .expect("the name variable");
+        let reads = name_variable.borrow().read_locations();
+        let has_interpolated_read = reads
+            .iter()
+            .any(|n| n.kind_name() == "IdentifierName" && n.text == "name");
+        assert!(
+            has_interpolated_read,
+            "the name identifier inside the backticks must be registered as a read"
         );
     }
 }
