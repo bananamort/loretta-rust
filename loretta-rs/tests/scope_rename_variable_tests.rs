@@ -56,7 +56,17 @@ fn script_rename_variable_returns_error_for_unsupported_identifier() {
         RenameResult::Err(errors) => {
             assert_eq!(errors.len(), 1, "one error: {errors:?}");
             match &errors[0] {
-                RenameError::IdentifierNameNotSupported { .. } => {}
+                RenameError::IdentifierNameNotSupported {
+                    tree_without_support,
+                } => {
+                    // The C# asserts the TreeWithoutSupport payload is the
+                    // affected tree (RenameVariableTests.cs:16-18) —
+                    // Finding 61 restored the payload assertion.
+                    assert_eq!(
+                        tree_without_support, "local a = 2",
+                        "the tree without support"
+                    );
+                }
                 other => panic!("not an identifier error: {other:?}"),
             }
         }

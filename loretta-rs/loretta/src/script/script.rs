@@ -77,8 +77,9 @@ impl Script {
         &self.trees
     }
 
-    /// The memoized state (for the rename rewriter).
-    pub(crate) fn scope_and_variable_manager_state(
+    /// The memoized state (for the rename rewriter and the FindScope
+    /// tests' recorded-node lookups — Finding 61).
+    pub fn scope_and_variable_manager_state(
         &mut self,
     ) -> crate::script::scopeandvariablemanager::state::State {
         self.scope_and_variable_manager.get_lazy_state()
