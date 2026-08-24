@@ -140,7 +140,7 @@ impl ScopeAndVariableWalker {
         scope: &Rc<RefCell<Scope>>,
         parameter: &ast::Parameter,
     ) -> SharedVariable {
-        let name = match parameter {
+        match parameter {
             ast::Parameter::Name(token) => {
                 let token_ref = token.clone();
                 let name_text = token.token().to_string();
@@ -148,14 +148,20 @@ impl ScopeAndVariableWalker {
                 let variable = Scope::add_parameter_in(scope, &name_text, Some(node.clone()));
                 self.record_identifier(node.clone(), &token_ref);
                 self.variables.insert(node, variable.clone());
-                return variable;
+                variable
             }
-            ast::Parameter::Ellipsis(_) => "...".to_string(),
+            ast::Parameter::Ellipsis(_) => {
+                // C# SyntaxKind.VarArgParameter => "..." (…:78): the vararg
+                // is a real parameter named "..." — never a panic; there is
+                // no name token to record for the rename rewriter.
+                let node = self.base.make_node("Parameter", "...".to_string());
+                let variable = Scope::add_parameter_in(scope, "...", Some(node.clone()));
+                self.variables.insert(node, variable.clone());
+                variable
+            }
             #[allow(unreachable_patterns)]
             _ => unreachable!("unsupported parameter kind"),
-        };
-        let _ = name;
-        unreachable!()
+        }
     }
 
     /// Adds a read location + referencing scope for a referenced variable
@@ -767,6 +773,7 @@ impl ScopeAndVariableWalker {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::scoping::ifunctionscope::IFunctionScope;
     use crate::scoping::iscope::IScope;
     use crate::scoping::ivariable::IVariable;
     use crate::script::scopeandvariablemanager::manager::ScopeAndVariableManager;
@@ -802,5 +809,33 @@ mod tests {
         let blocks: Vec<_> = file_contained.iter().collect();
         assert_eq!(blocks.len(), 1);
         assert_eq!(blocks[0].borrow().kind(), ScopeKind::Block);
+    }
+
+    #[test]
+    fn vararg_parameters_are_real_parameters() {
+        // C# CreateParameter maps VarArgParameter => "..." and adds it via
+        // FunctionScope.AddParameter (ScopeAndVariableWalker.cs:71-82) — the
+        // port must create the parameter instead of panicking (Finding 1).
+        let mut manager = ScopeAndVariableManager::new(vec![
+            "function f(...) end\nlocal g = function(...) end\n".to_string(),
+        ]);
+        let state = manager.get_lazy_state();
+        let root = state.root_scope.borrow();
+        let root_contained = root.contained_scopes();
+        let files: Vec<_> = root_contained.iter().collect();
+        let file = files[0].borrow();
+        let mut vararg_parameters = Vec::new();
+        for scope in &file.contained_scopes() {
+            let scope = scope.borrow();
+            if scope.kind() == ScopeKind::Function {
+                for parameter in scope.parameters() {
+                    vararg_parameters.push(parameter.borrow().name().to_string());
+                }
+            }
+        }
+        assert_eq!(
+            vararg_parameters,
+            vec!["...".to_string(), "...".to_string()]
+        );
     }
 }
