@@ -232,15 +232,18 @@ impl ConstantFolder {
     }
 
     /// C# VisitUnaryExpression (ConstantFolder.cs:25-46).
-    fn visit_unary(
-        &mut self,
-        leading: Vec<Token>,
-        trailing: Vec<Token>,
-        unop: ast::UnOp,
-        operand: Box<ast::Expression>,
-    ) -> ast::Expression {
+    fn visit_unary(&mut self, unop: ast::UnOp, operand: Box<ast::Expression>) -> ast::Expression {
         let operand = operand.visit_mut(self);
         let operand_flags = self.get_flags(&operand);
+        // C# LiteralExpressionWithTriviaFrom(value, operand)
+        // (ConstantFolder.cs:31-43): the folded literal takes the
+        // OPERAND's leading and trailing trivia — not the whole unary
+        // node's (the operator's; Finding 27). In full_moon the
+        // whitespace/comments between the operator and the operand ride
+        // the operator's trailing trivia, so the operand's leading is
+        // normally empty — the shape still mirrors the C# exactly.
+        let leading = first_leading(&operand);
+        let trailing = last_trailing(&operand);
         match &unop {
             ast::UnOp::Minus(_) => {
                 if let Some(val) = self.try_get_num_value(&operand) {
@@ -574,7 +577,7 @@ impl VisitorMut for ConstantFolder {
                 expression,
             } => self.visit_parenthesized(leading, contained, expression),
             ast::Expression::UnaryOperator { unop, expression } => {
-                self.visit_unary(leading, trailing, unop, expression)
+                self.visit_unary(unop, expression)
             }
             ast::Expression::BinaryOperator { lhs, binop, rhs } => {
                 self.visit_binary(leading, trailing, lhs, binop, rhs)
