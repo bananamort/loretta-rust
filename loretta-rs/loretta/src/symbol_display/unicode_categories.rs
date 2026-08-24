@@ -39,8 +39,10 @@ pub fn category_of(cp: u32) -> u8 {
         0x5B => 20,
         0x5C => 24,
         0x5D => 21,
-        0x5E => 25,
-        0x5F => 18,
+        // Unicode/.NET: U+005E is Modifier Symbol (Sk = 27) — the table
+        // had Math Symbol (Sm = 25), which diverged the escaping under
+        // EscapeNonPrintableCharacters (Finding 47).
+        0x5E => 27,
         0x60 => 27,
         0x61..=0x7A => 1,
         0x7B => 20,
@@ -4121,5 +4123,27 @@ pub fn category_of(cp: u32) -> u8 {
         1114110..=1114111 => 29,
         // Beyond the Unicode scalar range (never queried: char is <= 0x10FFFF)
         _ => 29,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::symbol_display::objectdisplay::ObjectDisplay;
+    use crate::symbol_display::objectdisplayoptions::ObjectDisplayOptions;
+
+    #[test]
+    fn caret_is_a_modifier_symbol_and_escapes() {
+        // Finding 47: Unicode/.NET classify U+005E as Modifier Symbol
+        // (Sk = 27) — the table had Math Symbol (Sm = 25), which is in
+        // the never-escape flagset, so the caret was left raw; under the
+        // .NET category it escapes.
+        assert_eq!(category_of('^' as u32), 27);
+        let escaped = ObjectDisplay::format_literal_str(
+            "^",
+            ObjectDisplayOptions::USE_QUOTES
+                | ObjectDisplayOptions::ESCAPE_NON_PRINTABLE_CHARACTERS,
+        );
+        assert_eq!(escaped, "\"\\u{005E}\"");
     }
 }
