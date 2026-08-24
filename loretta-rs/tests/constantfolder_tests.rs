@@ -585,6 +585,27 @@ fn hex_float_strings_extract_zero_like_the_csharp_decfloat_first() {
 }
 
 #[test]
+fn decimal_escapes_above_255_are_skipped_in_the_string_value() {
+    // Finding 33: the C# \ddd keeps values up to 255; larger values
+    // report ERR_InvalidStringEscape and the escape is SKIPPED entirely
+    // in the string value (the escape char is the sentinel,
+    // ShortString.cs:223-226) — the port pushed the decoded char.
+    // Pinned against the C# oracle on AllWithIntegers.
+    let cases: &[(&str, LuaValue)] = &[
+        ("#'\\256b'", LuaValue::Float(1.0)),
+        ("#'a\\999'", LuaValue::Float(1.0)),
+        ("#'\\255'", LuaValue::Float(1.0)),
+        ("#'\\256'", LuaValue::Float(0.0)),
+    ];
+    for (source, expected) in cases {
+        let folded = fold_expression(source, false);
+        let actual = folded_value(&folded)
+            .unwrap_or_else(|| panic!("the fold of {source:?} must produce a literal: {folded:?}"));
+        assert_value(&actual, expected);
+    }
+}
+
+#[test]
 fn length_counts_utf16_units_like_the_csharp_string_length() {
     // Finding 32: the C# folds #"é" to 1 and #"😀" to 2 (the .NET
     // string Length is the UTF-16 code-unit count, ConstantFolder.cs:
