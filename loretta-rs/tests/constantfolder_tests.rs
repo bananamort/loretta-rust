@@ -585,6 +585,25 @@ fn hex_float_strings_extract_zero_like_the_csharp_decfloat_first() {
 }
 
 #[test]
+fn folder_z_escape_skips_the_csharp_whitespace_set() {
+    // Finding 35: the folder's \z skip used is_ascii_whitespace, which
+    // excludes '\v' — the C# CharUtils.IsWhitespace includes it
+    // (ShortString.cs:141), so the \v/\f are skipped from the value.
+    // Pinned against the C# oracle on AllWithIntegers.
+    let cases: &[(&str, LuaValue)] = &[
+        ("'a\\z\u{0B}b' .. 'x'", LuaValue::String("abx".to_string())),
+        ("'a\\z\u{0C}b' .. 'x'", LuaValue::String("abx".to_string())),
+        ("'a\\z\u{0B} b' .. 'x'", LuaValue::String("abx".to_string())),
+    ];
+    for (source, expected) in cases {
+        let folded = fold_expression(source, false);
+        let actual = folded_value(&folded)
+            .unwrap_or_else(|| panic!("the fold of {source:?} must produce a literal: {folded:?}"));
+        assert_value(&actual, expected);
+    }
+}
+
+#[test]
 fn unicode_escapes_keep_lone_surrogates() {
     // Finding 34: the C# keeps a lone-surrogate \u{D800} as the raw
     // code unit (ShortString.cs:285-292) — the port dropped it, so

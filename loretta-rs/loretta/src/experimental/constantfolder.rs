@@ -1276,10 +1276,13 @@ fn unescape_lua_string(text: &str) -> String {
             Some('"') => out.push('"'),
             Some('\'') => out.push('\''),
             Some('z') => {
-                // \z skips the following whitespace.
+                // \z skips the following whitespace — the C#
+                // CharUtils.IsWhitespace set [ \t\n\v\f\r]
+                // (ShortString.cs:141; the Rust is_ascii_whitespace
+                // excludes '\v' — Finding 35).
                 loop {
                     match chars.clone().next() {
-                        Some(n) if n.is_ascii_whitespace() => {
+                        Some(n) if n == ' ' || ('\t'..='\r').contains(&n) => {
                             chars.next();
                         }
                         _ => break,
