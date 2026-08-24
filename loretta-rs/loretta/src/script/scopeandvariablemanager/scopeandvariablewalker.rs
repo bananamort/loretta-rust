@@ -890,4 +890,48 @@ mod tests {
         ids.extend(single.labels.keys().map(|n| n.id));
         assert_eq!(state.tree_id_bases, vec![0, ids.len() as u64]);
     }
+
+    #[test]
+    fn forward_gotos_bind_to_the_label() {
+        // Finding 6: `goto top` before `::top::` — the C# label walker
+        // runs first so the goto binds to the label; the port's single
+        // pass must bind the label statement to the forward goto's
+        // same-scope placeholder instead of orphaning the jump.
+        use crate::scoping::igotolabel::IGotoLabel;
+        let mut manager =
+            ScopeAndVariableManager::new(vec!["goto top\n::top::\ngoto top\n".to_string()]);
+        let state = manager.get_lazy_state();
+        let entries: Vec<_> = state.labels.values().collect();
+        assert_eq!(entries.len(), 3); // two goto nodes + one label node
+        for entry in &entries[1..] {
+            assert!(
+                std::rc::Rc::ptr_eq(entries[0], entry),
+                "all three nodes must map to one label"
+            );
+        }
+        let label = entries[0].borrow();
+        assert_eq!(label.name(), "top");
+        assert_eq!(
+            label.jump_syntaxes().len(),
+            2,
+            "both gotos jump to the label"
+        );
+    }
+
+    #[test]
+    fn nested_block_labels_are_distinct() {
+        // The C# label walker's CreateLabel targets only the current
+        // scope (IScope.cs:226-231) — a label in a nested block is its
+        // own label, never the outer one. The port's same-scope bind must
+        // not ascend (Finding 6).
+        let mut manager =
+            ScopeAndVariableManager::new(vec!["do ::top:: do ::top:: end end\n".to_string()]);
+        let state = manager.get_lazy_state();
+        let entries: Vec<_> = state.labels.values().collect();
+        assert_eq!(entries.len(), 2);
+        assert!(
+            !std::rc::Rc::ptr_eq(entries[0], entries[1]),
+            "the nested label must be its own label"
+        );
+    }
 }
