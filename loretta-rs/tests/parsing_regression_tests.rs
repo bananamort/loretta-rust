@@ -123,7 +123,7 @@ fn tree_diagnostics(
     let mut diagnostics = lexer_diagnostics(text, options);
     if let Ok(ast) = full_moon::parse(text) {
         diagnostics.extend(loretta::errors::parserdiagnostics::parser_diagnostics(
-            &ast, options,
+            &ast, options, text,
         ));
         diagnostics.sort_by_key(|d| d.start);
     }

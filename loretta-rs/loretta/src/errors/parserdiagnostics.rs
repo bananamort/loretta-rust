@@ -21,10 +21,12 @@ use full_moon::visitors::Visitor;
 pub fn parser_diagnostics(
     ast: &full_moon::ast::Ast,
     options: &LuaSyntaxOptions,
+    source: &str,
 ) -> Vec<LexerDiagnostic> {
     let mut collector = ContinueCollector {
         continue_is_identifier: options.continue_type == ContinueType::None,
         accept_bitwise_operators: options.accept_bitwise_operators,
+        source,
         diagnostics: Vec::new(),
     };
     collector.visit_ast(ast);
@@ -32,7 +34,7 @@ pub fn parser_diagnostics(
     collector.diagnostics
 }
 
-struct ContinueCollector {
+struct ContinueCollector<'a> {
     /// Under ContinueType::None the C# parser treats `continue` as an
     /// identifier expression statement (the only non-call expression
     /// statement the grammar can reach), which reports
@@ -43,10 +45,14 @@ struct ContinueCollector {
     /// rule for them; '>>' gets no error at all — the parser combines two
     /// '>' tokens silently, LanguageParser.cs:840-845; Finding 22).
     accept_bitwise_operators: bool,
+    /// The source text — the continue error spans the whole expression
+    /// statement including the semicolon (the full_moon LastStmt covers
+    /// only the keyword token — Finding 54).
+    source: &'a str,
     diagnostics: Vec<LexerDiagnostic>,
 }
 
-impl Visitor for ContinueCollector {
+impl Visitor for ContinueCollector<'_> {
     fn visit_expression(&mut self, expression: &Expression) {
         if let Expression::BinaryOperator { binop, .. } = expression {
             if !self.accept_bitwise_operators {
@@ -74,8 +80,17 @@ impl Visitor for ContinueCollector {
     fn visit_last_stmt(&mut self, last_stmt: &LastStmt) {
         if let LastStmt::Continue(token) = last_stmt {
             if self.continue_is_identifier {
+                // The C# error is attached to the whole expression
+                // statement — the keyword AND the semicolon
+                // (LanguageParser.cs:215-220); the full_moon LastStmt
+                // covers only the keyword token, so the trailing
+                // semicolon is included from the source (Finding 54).
                 let start = token.start_position().bytes();
-                let width = token.end_position().bytes() - start;
+                let mut end = token.end_position().bytes();
+                if self.source.as_bytes().get(end) == Some(&b';') {
+                    end += 1;
+                }
+                let width = end - start;
                 self.diagnostics.push(LexerDiagnostic {
                     code: ErrorCode::ErrNonFunctionCallBeingUsedAsStatement,
                     start,

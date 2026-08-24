@@ -208,21 +208,31 @@ fn lexer_properly_parses_decimal_escapes_in_strings() {
 #[test]
 fn lexer_token_cache_correctly_handles_syntax_options() {
     // Issue 152 — the C# expects the exact
-    // ERR_NonFunctionCallBeingUsedAsStatement for the LUA51 `continue;`; the
-    // port asserts the LUA51 parse errors are non-empty and the Luau parse
-    // is clean (the full_moon error codes differ — documented above).
+    // ERR_NonFunctionCallBeingUsedAsStatement for the LUA51 `continue;`
+    // at (9,14) and a clean Luau parse. The continue rule IS ported
+    // (parserdiagnostics, LUA0018) — the exact diagnostic is asserted
+    // again over the combined tree diagnostics (Finding 54 restored the
+    // weakened "non-empty" assertion).
     let text = "\nrepeat\n    m, E = G:zR(E, H);\n    if m == 0x7423 then\n        break;\n    else\n        if m ~= 0X76D4 then\n        else\n            continue;\n        end;\n    end;\nuntil false;\n";
-    let lua51 = full_moon::parse_fallible(
+    let mut diagnostics = lexer_diagnostics(text, &LuaSyntaxOptions::LUA51);
+    let ast = full_moon::parse(text).expect("the full parse");
+    diagnostics.extend(loretta::errors::parserdiagnostics::parser_diagnostics(
+        &ast,
+        &LuaSyntaxOptions::LUA51,
         text,
-        options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUA51)),
+    ));
+    diagnostics.sort_by_key(|d| d.start);
+    assert_eq!(diagnostics.len(), 1, "diagnostics: {diagnostics:?}");
+    assert_eq!(
+        diagnostics[0].code,
+        loretta::errors::errorcode::ErrorCode::ErrNonFunctionCallBeingUsedAsStatement
     );
+    assert_eq!(diagnostics[0].line_col(text), (9, 13));
+    assert_eq!(diagnostics[0].squiggle(text), "continue;");
+    // The Luau parse is clean (the continue is a keyword there).
     let luau = full_moon::parse_fallible(
         text,
         options_to_version(&LuaParseOptions::new(LuaSyntaxOptions::LUAU)),
-    );
-    assert!(
-        !lua51.errors().is_empty(),
-        "the LUA51 parse must report the continue; statement"
     );
     assert!(
         luau.errors().is_empty(),
