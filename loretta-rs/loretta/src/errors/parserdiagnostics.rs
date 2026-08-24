@@ -2,8 +2,9 @@
 // parser-level diagnostics pass — the C# tree.GetDiagnostics() statements the
 // lexer pass does not cover. Starts with the version-gated statement rules
 // the differential corpus exercises.
-// C# source: src/Compilers/Lua/Portable/Syntax/LuaParser.cs
-// (ERR_NonFunctionCallBeingUsedAsStatement)
+// C# source: src/Compilers/Lua/Portable/Parser/LanguageParser.cs
+// (ERR_NonFunctionCallBeingUsedAsStatement — Finding 46 corrected the
+// citation from the nonexistent Syntax/LuaParser.cs)
 
 use crate::continuetype::ContinueType;
 use crate::errors::errorcode::ErrorCode;
