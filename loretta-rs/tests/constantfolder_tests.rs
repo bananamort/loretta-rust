@@ -372,6 +372,14 @@ fn constant_folder_does_not_fold_other_operations() {
         "true % 2",
         "2 % f()",
         "'1' % '1'",
+        // `%` by zero (Finding 3): the C# double path yields NaN and does
+        // not fold (ConstantFolder.cs:100-102) — the port matches instead
+        // of panicking on the Long path.
+        "5 % 0",
+        "5.0 % 0",
+        "5 % 0.0",
+        "5.0 % 0.0",
+        "-5 % 0",
         "1.7976931348623157E+308 ^ 2",
         "1 .. 2",
         "{} == {}",

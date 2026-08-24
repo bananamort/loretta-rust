@@ -873,7 +873,17 @@ fn num_div(l: NumValue, r: NumValue) -> f64 {
 
 fn num_mod(l: NumValue, r: NumValue) -> NumValue {
     match (l, r) {
-        (NumValue::Long(a), NumValue::Long(b)) => NumValue::Long(a.wrapping_rem(b)),
+        (NumValue::Long(a), NumValue::Long(b)) => {
+            if b == 0 {
+                // C# on the double path: `%` by zero is NaN and the case
+                // breaks (no fold) (ConstantFolder.cs:100-102); the C# Int64
+                // path throws DivideByZeroException — the port no-folds
+                // instead of panicking (Finding 3).
+                NumValue::Double(f64::NAN)
+            } else {
+                NumValue::Long(a.wrapping_rem(b))
+            }
+        }
         (NumValue::Long(a), NumValue::Double(b)) => NumValue::Double(a as f64 % b),
         (NumValue::Double(a), NumValue::Long(b)) => NumValue::Double(a % b as f64),
         (NumValue::Double(a), NumValue::Double(b)) => NumValue::Double(a % b),
