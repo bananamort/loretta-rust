@@ -167,6 +167,28 @@ fn constant_folder_folds_operations_correctly() {
         ("1.5 + 1.5", LuaValue::Float(3.0)),
         ("1.5 + 1", LuaValue::Float(2.5)),
         ("9223372036854775807 + 1", LuaValue::Integer(i64::MIN)),
+        // Overflowing and unusual integer literals (Finding 2): the C#
+        // TryParse family folds overflow to 0 (Lexer.Numbers.cs), hex is a
+        // two's-complement bit pattern, and binary values >= 2^63 fold to 0.
+        // Every case pinned against the C# oracle (AllWithIntegers).
+        ("9223372036854775808 + 1", LuaValue::Integer(1)),
+        ("18446744073709551615 + 1", LuaValue::Integer(1)),
+        ("0xffffffffffffffff + 1", LuaValue::Integer(0)),
+        ("0x8000000000000000 + 1", LuaValue::Integer(i64::MIN + 1)),
+        ("0x10000000000000000 + 1", LuaValue::Integer(1)),
+        ("0b101 + 1", LuaValue::Integer(6)),
+        (
+            "0b1000000000000000000000000000000000000000000000000000000000000000 + 1",
+            LuaValue::Integer(1),
+        ),
+        (
+            "0b111111111111111111111111111111111111111111111111111111111111111 + 1",
+            LuaValue::Integer(i64::MIN),
+        ),
+        ("1_000 + 1", LuaValue::Integer(1001)),
+        ("0x1_0 + 1", LuaValue::Integer(17)),
+        ("0b1_0 + 1", LuaValue::Integer(3)),
+        ("-9223372036854775808 + 1", LuaValue::Integer(1)),
         // Subtraction.
         ("1 - 1", LuaValue::Integer(0)),
         ("1.5 - 1.5", LuaValue::Float(0.0)),
