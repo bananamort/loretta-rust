@@ -669,6 +669,36 @@ fn lexer_emits_warning_for_exotic_line_break() {
 }
 
 #[test]
+fn lexer_z_escape_skips_newlines_and_carriage_returns() {
+    // Finding 23: the `\z` skip uses the C# CharUtils.IsWhitespace set
+    // ([ \t\n\v\f\r] — Lexer.ShortString.cs:141) — the port's helper
+    // omitted '\n' and '\r', so the skip stopped before them and the
+    // diagnostic span was too short.
+    let source = "local a = \"aaa\\z\nbbbb\"\nlocal b = 'aaa\\z\rbbbb'";
+    parse_and_validate_lex(
+        source,
+        &LuaSyntaxOptions {
+            accept_whitespace_escape: false,
+            ..LuaSyntaxOptions::ALL
+        },
+        &[
+            exp(
+                ErrorCode::ErrWhitespaceEscapeNotSupportedInVersion,
+                1,
+                15,
+                "\\z\n",
+            ),
+            exp(
+                ErrorCode::ErrWhitespaceEscapeNotSupportedInVersion,
+                3,
+                15,
+                "\\z\r",
+            ),
+        ],
+    );
+}
+
+#[test]
 fn lexer_emits_diagnostics_when_whitespace_escapes_are_found_and_lua_syntax_options_accept_whitespace_escape_is_false(
 ) {
     let source = "local a = \"aaa\\z    aaaa\"\nlocal b = 'aaa\\z    aaaa'";
