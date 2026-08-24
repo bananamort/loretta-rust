@@ -545,50 +545,57 @@ impl ConstantFolder {
             })
             .collect();
 
-        // C#: the fold applies when the immediate base (node.Expression) is a
-        // constant table. In the C# AST a directly-indexed table is wrapped
-        // in a PrefixExpressionSyntax (which GetFlags can't see through), so
-        // only a parenthesized base folds — the port replicates that by
-        // requiring the base to be a Parentheses (full_moon has no
-        // prefix-wrapper).
-        if suffixes.len() == 1 {
-            if let ast::Suffix::Index(index) = &suffixes[0] {
-                let base_expr = expr_from_prefix(&prefix);
-                if matches!(&base_expr, ast::Expression::Parentheses { .. })
-                    && self.has_e_flag(&base_expr, FLAG_IS_CONSTANT_TABLE)
-                {
-                    let table = get_inner_expression(&base_expr);
-                    let table = if let ast::Expression::TableConstructor(tc) = table {
-                        tc.clone()
-                    } else {
-                        unreachable!("IsConstantTable requires a table constructor");
-                    };
-                    match index {
-                        ast::Index::Dot { name, .. } => {
-                            if let Some(value) =
-                                lookup_table_field(&table, Some(&name.token().to_string()), None)
-                            {
-                                return set_first_leading(value, leading);
-                            }
-                        }
-                        ast::Index::Brackets { expression, .. }
-                            if self.has_e_flag(expression, FLAG_IS_SCALAR) =>
-                        {
-                            if let Some(value) =
-                                lookup_table_field(&table, None, Some((expression, self)))
-                            {
-                                return set_first_leading(value, leading);
-                            }
-                        }
-                        #[allow(unreachable_patterns)]
-                        _ => {}
+        // C#: the fold applies per access on the immediate base
+        // (ConstantFolder.cs:336-407), bottom-up — the chained accesses
+        // fold inner-first (Finding 37; the port used to gate the lookup
+        // on suffixes.len() == 1). The FIRST access keeps the C#
+        // PrefixExpression parity (only a parenthesized base folds — the
+        // port's old check); each subsequent access checks the folded
+        // value instead.
+        let mut folded = expr_from_prefix(&prefix);
+        let mut remaining: Vec<ast::Suffix> = Vec::new();
+        for (i, suffix) in suffixes.into_iter().enumerate() {
+            let ast::Suffix::Index(index) = &suffix else {
+                remaining.push(suffix);
+                continue;
+            };
+            if self.has_e_flag(&folded, FLAG_IS_CONSTANT_TABLE)
+                && (i > 0 || matches!(&folded, ast::Expression::Parentheses { .. }))
+            {
+                let table = get_inner_expression(&folded);
+                let table = if let ast::Expression::TableConstructor(tc) = table {
+                    tc.clone()
+                } else {
+                    unreachable!("IsConstantTable requires a table constructor");
+                };
+                let found = match index {
+                    ast::Index::Dot { name, .. } => {
+                        lookup_table_field(&table, Some(&name.token().to_string()), None)
                     }
+                    ast::Index::Brackets { expression, .. }
+                        if self.has_e_flag(expression, FLAG_IS_SCALAR) =>
+                    {
+                        lookup_table_field(&table, None, Some((expression, self)))
+                    }
+                    #[allow(unreachable_patterns)]
+                    _ => None,
+                };
+                if let Some(value) = found {
+                    folded = value;
+                    continue;
                 }
             }
+            remaining.push(suffix);
+        }
+
+        if remaining.is_empty() {
+            // The C# WithTriviaFrom(value, node): the folded value takes
+            // the var's leading trivia.
+            return set_first_leading(folded, leading);
         }
 
         ast::Expression::Var(ast::Var::Expression(Box::new(
-            ast::VarExpression::new(prefix).with_suffixes(suffixes),
+            ast::VarExpression::new(prefix).with_suffixes(remaining),
         )))
     }
 }

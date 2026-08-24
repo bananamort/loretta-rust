@@ -666,6 +666,27 @@ fn length_counts_utf16_units_like_the_csharp_string_length() {
 }
 
 #[test]
+fn chained_const_table_access_folds_bottom_up() {
+    // Finding 37: the lookup was gated on suffixes.len() == 1 — the C#
+    // folds per access bottom-up (ConstantFolder.cs:336-407), so
+    // ({b = {c = 1}}).b.c folds to 1. The direct table base keeps the
+    // PrefixExpression parity (no fold). Pinned against the C# oracle
+    // on AllWithIntegers.
+    let cases: &[(&str, LuaValue)] = &[
+        ("({b = {c = 1}}).b.c", LuaValue::Integer(1)),
+        ("({b = {c = 1}}).b['c']", LuaValue::Integer(1)),
+        ("({b = 1}).b", LuaValue::Integer(1)),
+        ("({a = 1, b = {c = 2}}).b.c", LuaValue::Integer(2)),
+    ];
+    for (source, expected) in cases {
+        let folded = fold_expression(source, false);
+        let actual = folded_value(&folded)
+            .unwrap_or_else(|| panic!("the fold of {source:?} must produce a literal: {folded:?}"));
+        assert_value(&actual, expected);
+    }
+}
+
+#[test]
 fn invalid_escapes_follow_accept_invalid_escapes() {
     // Finding 36: the escape echo/skip is preset-dependent — the C#
     // lexer computes the token values with the LuaParseOptions
