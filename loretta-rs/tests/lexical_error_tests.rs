@@ -196,6 +196,28 @@ local num4 = 0x1p999999";
 }
 
 #[test]
+fn lexer_gates_only_shift_operators_not_single_bitwise_chars() {
+    // Finding 22: the C# lexer errors ONLY on '<<' (Lexer.cs:501-507);
+    // the single '&'/'|' binary operators are the parser's rule
+    // (LanguageParser.cs:908-912 — ported in parserdiagnostics.rs) and
+    // '>>' gets no error at all (the parser combines two '>' tokens
+    // silently, LanguageParser.cs:840-845).
+    parse_and_validate_lex(
+        "local a = 1 << 2\n\
+         local b = 3 >> 1\n\
+         local c = x & y\n\
+         local d = p | q\n",
+        &LuaSyntaxOptions::LUA51,
+        &[exp(
+            ErrorCode::ErrBitwiseOperatorsNotSupportedInVersion,
+            1,
+            13,
+            "<<",
+        )],
+    );
+}
+
+#[test]
 fn lexer_complex_hex_suffix_reports_only_double_overflow() {
     // Finding 21: the complex 'i' suffix is a double value — the C#
     // HexFloat path (Lexer.Numbers.cs:380-394) reports only
