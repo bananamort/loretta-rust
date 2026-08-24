@@ -177,14 +177,23 @@ impl Scope {
         );
         debug_assert!(!name.is_empty(), "variable name must not be empty");
 
-        let variable = match scope.borrow().try_get_variable(name) {
-            Some(variable) => variable,
-            None => Self::create_variable_in(scope, kind, name, declaration),
+        let variable = {
+            let existing = scope.borrow().try_get_variable(name);
+            match existing {
+                Some(variable) => variable,
+                None => Self::create_variable_in(scope, kind, name, declaration),
+            }
         };
-        scope
-            .borrow_mut()
+        // C# _referencedVariables is an ISet (IScope.cs:124): adding the
+        // same variable again is a no-op (Finding 13).
+        let mut scope_ref = scope.borrow_mut();
+        if !scope_ref
             .referenced_variables
-            .push(variable.clone());
+            .iter()
+            .any(|v| Rc::ptr_eq(v, &variable))
+        {
+            scope_ref.referenced_variables.push(variable.clone());
+        }
         debug_assert!(variable.borrow().kind() == kind);
         variable
     }
@@ -228,12 +237,26 @@ impl Scope {
         {
             return;
         }
-        // C# FunctionScope.AddReferencedVariable (IFunctionScope.cs:55-62).
+        // C# FunctionScope.AddReferencedVariable (IFunctionScope.cs:55-62):
+        // the captured and referenced sets are HashSets — a variable
+        // referenced twice is captured/referenced once (Finding 13).
         if let Some(data) = scope_ref.function_data.as_mut() {
-            data.captured_variables.push(variable.clone());
+            if !data
+                .captured_variables
+                .iter()
+                .any(|v| Rc::ptr_eq(v, variable))
+            {
+                data.captured_variables.push(variable.clone());
+            }
             variable.borrow_mut().add_capturing_scope(scope.clone());
         }
-        scope_ref.referenced_variables.push(variable.clone());
+        if !scope_ref
+            .referenced_variables
+            .iter()
+            .any(|v| Rc::ptr_eq(v, variable))
+        {
+            scope_ref.referenced_variables.push(variable.clone());
+        }
         if let Some(parent) = &scope_ref.parent {
             Scope::add_referenced_variable_in(parent, variable);
         }
@@ -367,5 +390,16 @@ mod tests {
         // the found variable is accessible in the function scope.
         let arg = file.borrow().arg_variable();
         assert!(arg.borrow().can_be_accessed_in(&function));
+    }
+
+    #[test]
+    fn get_or_create_variable_references_are_deduplicated() {
+        // Finding 13: the C# _referencedVariables is an ISet (IScope.cs:124)
+        // — GetOrCreateVariable adds the same variable only once.
+        let global = Scope::new(ScopeKind::Global, None, None);
+        let v1 = Scope::get_or_create_variable_in(&global, VariableKind::Global, "x", None);
+        let v2 = Scope::get_or_create_variable_in(&global, VariableKind::Global, "x", None);
+        assert!(Rc::ptr_eq(&v1, &v2));
+        assert_eq!(global.borrow().referenced_variables().len(), 1);
     }
 }

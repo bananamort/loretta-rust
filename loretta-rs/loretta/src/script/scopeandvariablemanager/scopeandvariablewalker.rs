@@ -1035,6 +1035,38 @@ mod tests {
     }
 
     #[test]
+    fn referenced_variables_deduplicate() {
+        // Finding 13: the C# _referencedVariables is an ISet (IScope.cs:124)
+        // — a variable referenced twice is one entry.
+        let mut manager =
+            ScopeAndVariableManager::new(vec!["local a = 1\nprint(a)\nprint(a)\n".to_string()]);
+        let state = manager.get_lazy_state();
+        let root = state.root_scope.borrow();
+        let root_contained = root.contained_scopes();
+        let files: Vec<_> = root_contained.iter().collect();
+        let file = files[0].borrow();
+        let referenced: Vec<String> = file
+            .referenced_variables()
+            .iter()
+            .map(|v| v.borrow().name().to_string())
+            .collect();
+        // `a` is declared in this scope — the C# AddReferencedVariable
+        // early-returns (IScope.cs:205) and never references it here.
+        assert_eq!(
+            referenced.iter().filter(|n| *n == "a").count(),
+            0,
+            "a is declared here, not referenced: {referenced:?}"
+        );
+        // `print` is referenced twice — the C# ISet keeps one entry
+        // (Finding 13).
+        assert_eq!(
+            referenced.iter().filter(|n| *n == "print").count(),
+            1,
+            "print referenced twice must be one entry: {referenced:?}"
+        );
+    }
+
+    #[test]
     fn interpolated_string_identifiers_are_registered() {
         // Finding 10: identifiers inside `{}` get read registrations (the
         // C# default descent visits the interpolated string's embedded
