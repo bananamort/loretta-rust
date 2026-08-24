@@ -1,199 +1,364 @@
-# Audit — Loretta-RS Port 2026-08-15 (Full)
+# Audit — Loretta-RS Port (v3, 2026-08-23 · C# reference @ `b767b4e`)
 
-Thorough read of `loretta-rs/loretta/src/**/*.rs` (62 files) + `loretta-cli/src/**/*.rs` (2) + `loretta-rs/tests/**/*.rs` (3) — 67 files, 13,295 lines, every file read in entirety. Checked against `docs/AGENTS.md`, `docs/PLAN.md`, `docs/TRANSLATION.md`, `docs/COMMIT.md`. **Decision rationale throughout is verbatim correctness on `full_moon`, not docs satisfaction — docs are amended when correctness requires it (e.g., `GMod` `DROP` only because `full_moon` has no `Symbol`); every `A`/`B`/`C`/`D` below states the decision made for that reason.**
+This audit **supersedes** both the 2026-08-15 audit and the same-day v2 pass circulated earlier
+on 2026-08-23. After v2 was challenged, **every remaining finding was re-verified by direct
+reads of both sides** (C# `references/Loretta` @ `b767b4e`, Rust working tree, vendored
+`references/full-moon` where relevant), cross-checked by an independent implementing agent, and
+— critically — checked against the governing specs (`docs/AGENTS.md`, `docs/PLAN.md`,
+`docs/TRANSLATION.md`, `docs/COMMIT.md`). Several v2 items were **withdrawn** as wrong or as
+spec-sanctioned behavior; several others carry corrected citations/directions. The v2 numbering
+is retired; the mapping is in the appendix. Do not reuse v2 numbers.
 
-## Compliant (verified)
+## Checks as run (2026-08-23)
 
-- **PROGRESS.md:** 744/744 done, 0 pending/claimed — all 744 `ISymbol` nodes from `nodes.json` landed. Headers `// Ported from <C#> (b767b4e): <names>` present on every ported file, including session clusters.
-- **Zero stubs:** No `todo!()` / `unimplemented!()` / `// Logic elided` / dummy returns in `loretta/` (only 1 intentional stub `experimental/syntaxextensions.rs` noted below).
-- **docs/ untouched:** `docs/` read-only respected (no edits to `AGENTS.md`/`PLAN.md`/`COMMIT.md`/`TRANSLATION.md` in port commits).
-- **COMMIT.md workflow:** Single-branch history `main` only, `git log --oneline` clean, `loretta/Cargo.toml` workspace green (`cargo check --all-features` 0).
-- **Oracle 2:** `1798` `differential` cases `0` FAILED (`corpus/expected` vs Rust `diagnostics`/`lex`/`parse`/`scope`/`constantfold`/`minify` per `AllPresets`).
-- **Tool caches gitignored:** `loretta-rs/.scratch/`, `.packages/`, `.tools/`, `target/` per `COMMIT.md` — `git check-ignore` passes. `package.json` was *not* ignored (see D).
+| Check | Result |
+|---|---|
+| `cargo fmt --check --all` | clean |
+| `cargo clippy --all-targets -- -D warnings` | clean |
+| `cargo check --all-targets` | clean |
+| `cargo test` | 181 passed, 0 failed (= the 172 Oracle-1 `#[test]`s + ~9 internal unit tests across binaries) |
+| `differential check corpus/expected` | identical: 1870 · pending: 0 · FAILED: 0 |
 
-## Findings
+## Artifact counts (derived by direct inspection)
 
-### A (major) — Oracle 1 not at documented scale
+`nodes.json` 744 · `topo.json` 744 · `edges.json` 1335 · `test-nodes.json` 319 ·
+`test-nodes-topo.json` 319 · `test-nodes-edges.json` 532 · `test-missing.json` 0 ·
+`PROGRESS.md` rows 1–1063 all `done` · `corpus/expected` 1870 `.json` files in 176 folders + root
+(= the differential's identical count exactly).
 
-- **Spec:** `docs/AGENTS.md:56` `Test/Portable 31 (637 [Test]s)` → `loretta-rs/tests/` `Oracle 1` `637` `[Test]` → `#[test]` case tables. `docs/PLAN.md:87` `Oracle 1: 637 TUnit tests`.
-- **Actual:** `loretta-rs/tests:21` tests (`objectdisplay_tests.rs:10` + `stringutils_tests.rs:2` + `tests/src/lib.rs:0` unit + `9` `lib.rs` unit). `loretta-rs/tests/README.md` literally `// Ported from Compilers/Lua/Test/Portable — 637 [Test]s -> #[test] case tables (pending)`. `Test/Portable` dirs `Lexical`/`Parsing`/`Scoping`/`Experimental` (47 `*.cs`, 637 `[Test]`) were never atomized into `nodes.json`/`PROGRESS.md` — `nodes.json:744` is `Portable`+`Experimental`+`CommandLine` only. Code graph is `done`, project `DoD` `docs/AGENTS.md:85` `full test suite green` is not met.
-- **Impact:** Genuine outstanding work item, sizable. Porting `~625` remaining tests is a separate track.
+## Spec conformance notes (things that are NOT defects)
 
-### B — 50 version-gating diagnostics pending
+These were flagged in earlier passes and are **wrong**: all are fixed by the governing specs.
 
-- **Spec:** `docs/AGENTS.md:24` `GMod` `&&/||/!=/!` `// /* */` is documented `DROP`. `hexfloat` `acceptHexFloatLiterals` / `binary` `BinaryIntegerFormat` / `charutils` per-preset gating (`ErrorFacts` `ERR_HexFloatNotSupported` etc.) originates in dropped `Parser/Lexer.Numbers.cs` but is `PORT` `Errors/` per `PLAN.md:122` `1+2 (diagnostics)`.
-- **Actual:** `loretta-rs/corpus/expected` harness tracks them as `version-gating diagnostics not ported` — `diagnostics` `50` cases would fail `byte-identical` if corpus hit a gated preset, but harness currently skips them to keep `1798` `0` `FAILED` honest. Not explicitly documented as `DROP` anywhere.
-- **Decision needed:** Port gating into `loretta/src/errors/diagnostics.rs` (`if !options.acceptHexFloatLiterals { diag }` using `full_moon` `has_luau`/`has_lua52` `LuaVersion` bitfield) or formally descope via `spec:` PR adding `hexfloat/binary` to `Dropped`.
+- `Portable/LuaExtensions.cs` (tree-typed helpers) — **DROP**, documented (`AGENTS.md:65`,
+  `PLAN.md:141`). Nothing missing.
+- `SyntaxNormalizer` + its 1902-line test file — inside `Portable/Syntax/` = **DROP** (Port
+  Boundary). Never reimplement. Residual issue is only the misleading leftover Rust stub test
+  (Finding 45's neighbor; see Finding 51 / appendix).
+- `loretta/src/options.rs` being a placeholder while the ADAPT cluster landed as one-file-per-node
+  (`luasyntaxoptions.rs`, …) — `options.rs` is the Port Boundary's *designated* destination and
+  The Method §2 sanctions per-node files. Process choice, not a defect.
+- `experimental/syntaxextensions.rs` placeholder — documented intentional drop of the obsolete
+  `[Obsolete] FoldConstants` wrapper (Prohibition #2 satisfied).
+- Missing GLua `&&`/`||`/`!=`/`!` and `//`,`/* */` support — documented DROP
+  (`Locked Decision 2`, PLAN Dialect Support). Only cosmetic residue: local comment headers may
+  enumerate the dropped set incompletely (see Finding 60).
+- Type-parameter-default parse "inversions" in type tests — documented intentional drop of a
+  Loretta extension beyond the Luau RFC (commit 1f15ebb).
+- `StringUtils::trim` returning `""` on degenerate input instead of throwing — documented
+  anti-panic adaptation; noted, not a defect.
 
-### C — Hard Prohibition 4 vs in-tree allows
+## What is exact (verified)
 
-- **Spec:** `docs/TRANSLATION.md:40` `Hard Prohibition 4: No warning suppression: no #[allow(...)]`, `docs/COMMIT.md:82` `cargo clippy --allow forbidden`.
-- **Actual:** `20` `#[allow]` in `loretta/src` (`grep -rn "#\[allow" loretta/src --count 20`): `2` `#[allow(clippy::too_many_arguments)]` `luasyntaxoptions.rs:288,357`, `1` `#[allow(clippy::module_inception)]` `script/mod.rs:5`, `9` `constantfolder.rs` `132,499,551,1252,1328,1341,1421,1424,1434` + `8` `scopeandvariablewalker.rs` `144,189,606,644,669,685,695,698` = `17` `#[allow(unreachable_patterns)]` on `match token.kind()` `full_moon` `#[non_exhaustive]` `TokenType`/`Symbol` (wildcard ` _ => unreachable!()` mandatory). `loretta-rs` workspace total is also `20` (no extra in `loretta-cli`/`tests`). Audit previously said `23` was overcount by `3`.
-- **Why:** `full_moon` `TokenType`/`Symbol` are `#[non_exhaustive]` — wildcard is required by Rust exhaustiveness, `clippy` flag is a direct consequence, not logic suppression.
+ErrorCode variant-for-variant (57 codes, gaps at 2/29 preserved); all 66 resource strings
+byte-identical (mechanical diff; resx's other 4 entries are designer blobs); severity/category/
+prefix/warning-level behavior; all 12 `LuaSyntaxOptions` presets value-for-value (incl. GMod =
+LuaJIT20.With(cCommentSyntax, cBooleanOperators, ContinueType::Keyword) — re-verified), `With()`
+semantics, ctor validation, ToString preset names; ContinueType/IntegerFormats/BacktickStringType/
+ScopeKind/VariableKind/BinaryOperatorKind(21)/UnaryOperatorKind(5); HexFloat bit math;
+ObjectDisplay for BMP chars (double formatting empirically identical to .NET `ToString("R")`);
+CharUtils tables incl. quirks; MinifyingUtils, both slot allocators, NamingStrategies character
+sets; TriviaRewriter separator table arm-for-arm; scoping interface layer; ConstantFolder core
+(flags, wrapping arithmetic, comparison/concat order, shift masking, upstream `TryGetInt32`
+endpoint quirk); the 20×20 precedence table; all 25 lexical-error tests with exact
+IDs/severities/positions/squiggles/args; `\u{}` scanner arm (HexDigitExpected / brace errors /
+EscapeTooLarge arg / gating) matches C#. `loretta` depends only on `full_moon`.
 
-### D — dirty tree (now fixed, but incorrectly)
+## Why the green checks hide the findings below
 
-- **Actual:** `2026-08-15` `git status` showed untracked `package.json`/`package-lock.json`/`node_modules/` from `opencode` goal-plugin install (`Aug 15`). Agent removed them and reported `git status 0/0 clean`. Per your last instruction those are required for your agentic harness — removal violated harness operation, and `.gitignore` does not `ignore` them (`/target/`, `bin/`, `obj/`, `references/`, `.DS_Store` only).
-
-## Verdict on Rust port implementation (read in entirety)
-
-- **66/67 files complete verbatim (98.5%)** — `13,295` lines. Every `C#` `class`/`interface`/`enum`/`record`/`delegate`/`Method`/`Property`/`Field`/`where T :`/ `partial`/`async Task` flattened was `read` and mapped per `TRANSLATION.md` (`Text is bytes` `Position.bytes`, `wrapping_*` `&31`, `Option`/`Result`, `dynamic → Numeric {Long,Double}`, `ImmutableArray→Vec`, `Reflection→LuaResources` static tables). `full_moon` integration correct: `DROPPED` `GreenNode`/`SyntaxNode`/`SourceText` → `Node{id}` + `Rc<RefCell<Scope>>` + `Position.bytes` + `&str`, `Parser`→`full_moon::parse_fallible`, `Visitor`→`VisitorMut`. No `todo!`/`unsafe`.
-- **1 stub:** `loretta/src/experimental/syntaxextensions.rs:14` only `pub struct SyntaxExtensions;` + comment — C# `public static SyntaxNode FoldConstants(this SyntaxNode)` skipped surface, counts as `Hard Prohibition 2` violation if not documented as intentionally dropped. No `allow`/`todo` there, just empty.
-- **2 debug residues:** `loretta/src/experimental/minifying/renamingrewriter.rs:57,64` `eprintln!("DBG replacements...")` `eprintln!("DBG records...")` — `C#` has no stdout, violates verbatim `No redesign`.
-- **20 allows** as above — violate `Hard Prohibition 4` as written, but are mechanical necessities of `full_moon` `#[non_exhaustive]` (see C).
-
-## Decisions (not recommendations — what we will do)
-
-- **A — Decision: New test graph (A1).** `744` `done` is code `nodes.json` only; `DoD` `docs/AGENTS.md:85` `full test suite green` needs `637` `Test`. Run `loretta-rs/tools/graph` on `src/Compilers/Lua/Test/Portable` `31` files `637` `[Test]` (+ `Test.Utilities` `47` files) → `test-nodes.json` `~650` nodes + `test-edges.json`/`test-topo.json` and `test-PROGRESS.md` `~650` `pending` (or extend `PROGRESS.md` to `~1394` rows). Then `port: <TestClass> -> loretta/tests/*.rs` as `#[test]` `#[case]` tables reusing `LuaTestBase.ParseAsync`. This keeps `graph→topo→gate→oracle` loop and gives `PROGRESS` rows for `637`. File-level (`47` files) would be faster but loses per-test traceability — `A1` is correct per `two oracles should test EVERY feature per version`.
-
-- **B — Decision: Port the `50` version-gating diagnostics.** `docs/AGENTS.md:13` `Logic Parity` + `PLAN.md:122` `Errors → PORT 1+2 (diagnostics)` vs `Parser/` `DROP`. The `50` are `ErrorFacts` `ERR_HexFloatNotSupported`/`BinaryNotSupported` where gating lives in dropped `Lexer.Numbers.cs` but diagnostic is `PORT`. `full_moon` already gates via `LuaVersion` bitfield (`has_luau`/`has_lua52` `versions.rs:3`), so add `if !options.acceptHexFloatLiterals { diag }` in `loretta/src/errors`. This keeps `Oracle 2` `byte-identical` honest. Descoping would need a `spec:` PR to add `hexfloat/binary` to `Dropped` and breaks honesty (`CONFORMANCE.md` style).
-
-- **C — Decision: Amend the prohibition.** `TRANSLATION.md:40` `Hard Prohibition 4` as written is unsatisfiable for `full_moon` `#[non_exhaustive]`. Amend to `no #[allow] except #[allow(unreachable_patterns)] on #[non_exhaustive] full_moon matches + single #[allow(clippy::module_inception)] for script/mod.rs + #[allow(clippy::too_many_arguments)] for LuaSyntaxOptions::new/with` (27 args). This keeps `cargo clippy -D warnings` honest.
-
-- **D — Decision: Keep and ignore.** `package.json`/`package-lock.json`/`node_modules/` are your `opencode` harness — do not `rm`. Add `package.json` `package-lock.json` `node_modules/` to `.gitignore` via `spec:` PR instead.
+The corpus (anim.lua, 13 feature files, rustic.lua ≈ 6 MB) contains **zero `...` varargs and
+zero gotos**, and the harness has **no rename operation**; the differential `pending` bucket only
+fires when expected output contains `"hasErrors": true`. None of Findings 1–24 is reachable by
+the harness today.
 
 ---
 
-## Detailed per-file audit (67 files, 13,295 lines, every file read in entirety)
+## Findings
 
-| Metric | Value |
-|---|---|
-| Files | `loretta-rs/loretta/src/**/*.rs` (62) + `loretta-cli/src/**/*.rs` (2) + `loretta-rs/tests/**/*.rs` (3) = 67 |
-| Lines | `wc -l 13,295` |
-| `TRANSLATION.md` Hard Prohibitions | #1 No `todo!()`/`unimplemented!()`/dummy, #4 No `#[allow(...)]`/`unsafe`, #2 No skipped surface, #3 No test tampering, #5 No redesign, #6 No DROP porting |
-| `grep` | `0×` `todo!`/`unimplemented!`/`unsafe`, `23×` `#[allow(...)]` (violation #4), `2×` `eprintln!` in `renamingrewriter.rs` (verbatim violation), `1×` stub `syntaxextensions.rs` |
-| `full_moon` `2.2.0` vs `DROPPED` | `Lexer`/`Parser`/`GreenNode`/`SyntaxNode`/`SyntaxToken`/`SyntaxTrivia`/`Syntax.xml`/`Generated`/`SourceText`/`TextSpan`/pooling → `DROP`, replaced by `full_moon::ast`/`Tokenizer`/`Position.bytes`/`&str`/`Vec+clones` |
+One bullet per issue. Grouped by area; numbering is authoritative for fix tracking.
 
-### 1. Roots & Shims (Pending — not a `// Ported from` node)
+### A. Crashes
 
-| File | Lines | Header | Status |
-|---|---|---|---|
-| `loretta/src/lib.rs` | 17 | `// Workspace root — one file per graph node will land` | SHIM/PARTIAL — only `pub mod` declarations, no logic |
-| `loretta/src/options.rs` | 4 | `// Pending port — LuaParseOptions / LuaSyntaxOptions` `ADAPT to full_moon::ast::LuaVersion` | STUB — documents `DROPPED` `GMod` `&&`/`||` |
-| `loretta/src/errors/mod.rs` | 9 | `// Pending port — errors` | SHIM — `pub mod errorcode...` |
-| `loretta/src/utilities/mod.rs` | 5 | `// Pending port — utilities` | SHIM |
-| `loretta/src/symbol_display/mod.rs` | 5 | `// Pending port — symbol_display` | SHIM |
-| `loretta/src/scoping/mod.rs` | 18 | `// Pending port — scoping` | SHIM + `pub use` re-exports |
-| `loretta/src/script/mod.rs` | 7 | `// Pending port — Script` | SHIM — `VIOLATION #4` `#[allow(clippy::module_inception)]` `line 5` |
-| `loretta/src/operations/mod.rs` | 4 | `// Pending port — Operations` | SHIM |
-| `loretta/src/experimental/mod.rs` | 7 | `// Pending port — experimental` | SHIM |
-| `loretta/src/experimental/minifying/mod.rs` | 11 | `// Pending port — Minifying` | SHIM |
-| `loretta/src/script/scopeandvariablemanager/mod.rs` | 8 | `// Pending port — ScopeAndVariableManager` | SHIM — lists 6 walkers |
-| `loretta/tests/src/lib.rs` | 2 | `// Ported from Compilers/Lua/Test/Portable` | SHIM — case tables live in `tests/*.rs` |
+1. Vararg parameters panic the whole scope/minify/rename pipeline: the `Ellipsis` match arm
+   produces `"..."` then falls through to unconditional `unreachable!()` —
+   `loretta/src/script/scopeandvariablemanager/scopeandvariablewalker.rs:143-158`; C#
+   `CreateParameter` maps `VarArgParameter => "..."` (`ScopeAndVariableWalker.cs:71-82`).
+2. Integer literals overflowing `i64/u64` panic the constant folder
+   (`constantfolder.rs:704-711`) instead of C#'s fold-as-0 + `ERR_NumericLiteralTooLarge`
+   (`Lexer.Numbers.cs:250-259,280-283,364-367`).
+3. `%` by zero on Long×Long panics (`constantfolder.rs:874-881`, `wrapping_rem`) even on
+   double-only presets where C# evaluates doubles (NaN → no-fold). Int64 presets crash-parity
+   holds; Lua51/Lua52-class presets diverge.
+4. Dead defensive arm, misfiled as reachable in v2: `set_first_leading`'s
+   `InterpolatedString => unreachable!()` (`constantfolder.rs:1386-1391`) — the v2 repro
+   `({k=\`x{1}\`}).k` does not reach it (verified by probe; C# does not fold it either).
+   Action: prove reachability or remove/justify the arm; the in-code comment is currently false.
 
-`full_moon` vs dropped for shims: none — pure re-exports.
+### B. Scoping / Script
 
-### 2. `loretta/src/*.rs` — Options / Enums
+5. Multi-tree state destroyed: `manager.rs:79-96` walks each tree into fresh maps then
+   **overwrites** `variables`/`labels`/`scopes` (last tree wins) vs C#'s shared accumulating
+   builders (`ScopeAndVariableManager.cs:35-47`). Parse failure additionally skips the whole
+   tree silently (`:73-77`).
+6. Forward gotos lose their jump: single-pass ordering means `goto top` binds to a placeholder
+   label (`gotowalker.rs:44-47`), and the later `::top::` creates a **new** label
+   (`gotolabelwalker.rs:43-45`) leaving the jump orphaned; C# runs GotoLabelWalker before
+   GotoWalker (`ScopeAndVariableManager.cs:64-72`).
+7. `label_syntax` always `None` (`gotolabelwalker.rs:43-45` → `GotoLabel::new(name, None)`)
+   vs C# `CreateLabel(name, node)` (`GotoLabelWalker.cs:24`).
+8. Captured variables permanently empty: C# `IFunctionScope.AddReferencedVariable` override
+   missing; `Variable::add_capturing_scope` (`ivariable.rs:152`) has zero call sites.
+9. A local-function statement's scope-map entry is overwritten with the enclosing scope: walker
+   records `record_statement_scope(..., &self.scope())` before creating the function scope
+   (`scopeandvariablewalker.rs:420-450`), then `manager.rs:92-95` merges `location_scopes`
+   after walked scopes; C# stores the FunctionScope itself (`ScopeAndVariableWalker.cs:326`).
+10. Luau interpolated strings skipped entirely by the scope walker — no `InterpolatedString`
+    arm in `visit_expr_children` (grep-verified); identifiers inside `` `{}` `` get no
+    registration/read-locations/rename coverage.
+11. Renaming to non-ASCII names rejected unconditionally for every tree (`script.rs:188-197`)
+    vs C# per-tree `UseLuaJitIdentifierRules` gate (`Script.cs:158-165`).
+12. Tree attribution by substring search defaulting to tree 0 (`script.rs:139-143`) vs C#
+    `location.SyntaxTree`.
+13. `referenced_variables` is a `Vec` with unconditional pushes (`iscope.rs:184-186,224`) vs
+    C# `ISet` dedupe (`IScope.cs:124`).
+14. `State.Scopes` pollution: identifier/statement entries merged into the map
+    (`manager.rs:92-95`) flip C#'s `GetScope(identifierNode) == null` into a scope result.
+    (`find_scope` itself climbs correctly via containing scopes once a node is recorded,
+    `script.rs:87-105` — v2's stronger claim withdrawn.)
+15. Two distinct `Parameter` nodes inserted per named parameter (`create_parameter` inserts at
+    `:147-151`; callers insert again at `:447,:467,:541,:606`); C# has exactly one per node.
+16. UNVERIFIED LEAD — check before touching: `add_referenced_variable` early-returns when the
+    variable is declared in this scope, skipping parent recursion (`iscope.rs:216-228`), and
+    `get_or_create_variable_in` pushes without any parent walk; determine C#
+    `AddReferencedVariable`/`GetOrCreateVariable` recursion semantics first (`IScope.cs`).
 
-| File | Lines | Ported from | Complete? | `allow`/`todo`/`unsafe` | Deviations #4 | `full_moon` vs `DROPPED` |
-|---|---|---|---|---|---|---|
-| `integerformats.rs` | 13 | `IntegerFormats` `IntegerFormats.cs` | COMPLETE verbatim — 3 variants `NotSupported=0,Double=1,Int64=2` + docs | none | none | Pure enum |
-| `backtickstringtype.rs` | 15 | `BacktickStringType` `BacktickStringType.cs` | COMPLETE — 3 variants | none | none | Pure enum |
-| `continuetype.rs` | 15 | `ContinueType` `ContinueType.cs` | COMPLETE | none | none | Pure enum |
-| `luasyntaxoptions.rs` | 489 | `LuaSyntaxOptions` `LuaSyntaxOptions.cs` | COMPLETE verbatim — all 28 fields, 11 presets, `new()` `assert!(floor_div && c_comment)`, `with()` `Option<T>` | `VIOLATION #4` `2× #[allow(clippy::too_many_arguments)]` `288`/`357` | forbidden per `TRANSLATION.md#4` | Pure options |
-| `luaparseoptions.rs` | 92 | `LuaParseOptions` `LuaParseOptions.cs` | COMPLETE — `Vec<(String,String)>` replaces `ImmutableDictionary`, `validate_options()` no-op | none | `ImmutArray→Vec` | No `full_moon` yet |
-| `luaresources.rs` | 119 | `LuaResources` `LuaResources.Designer.cs` | COMPLETE — 70 `pub const &str` verbatim `ERR_BAD_CHARACTER` | none | `ResX`→static consts | No `full_moon` |
+### C. Lexer-diagnostics scanner (vs the deleted C# lexer's observable diagnostics)
 
-### 3. `loretta/src/errors/*.rs`
+17. Decimal `ERR_NumericLiteralTooLarge` never reported — the decimal path never accumulates
+    the value (`lexerdiagnostics.rs:866-901`) vs C#'s ulong/long/plain-int TryParse failures
+    (`Lexer.Numbers.cs:248-251,256-259,280-283`).
+18. Invented `ErrInvalidNumber` for digit-less hex (`:713-715`); C# hex parser has no such rule
+    (binary/octal do).
+19. Number classification treats any `e`/`E` as double (`number_is_double`, `:895-903`) → hex
+    integers like `0xE5` mis-typed Double; C# types by lexer Value (Long,
+    `Lexer.Numbers.cs:306-435`); visible in i64-exact comparisons beyond 2^53.
+20. Hex `ull` past `u64::MAX` unchecked (`:724` excludes `is_unsigned_long`); C# reports TooLarge
+    (`Lexer.Numbers.cs:364-367`).
+21. Complex `i` suffix gets an integer > i64 test (`:716-726`); C# converts to double and
+    reports only `DoubleOverflow` on real overflow (`Lexer.Numbers.cs:380-390`).
+22. Bitwise gating inverted: per-character `&`/`|` errors whenever `accept_bitwise_operators`
+    is false (`:1042-1053`) and never on `<<`; C# lexer errors only on `<<` (`Lexer.cs:501-507`)
+    and the parser errors only for single `&`/`|` binary operators
+    (`LanguageParser.cs:908-912`) — port that rule into `parserdiagnostics.rs` (precedent:
+    LUA0018, PR #1311).
+23. `\z` whitespace-skip set omits `\n`,`\r`: local helper matches only `' ' | '\t' | '\u{0B}' |
+    '\u{0C}'` (`:983-985`, used `:389-395`); C# `CharUtils.IsWhitespace` = `' ' | '\t'..'\r'`.
+24. Prefix underscores emit once; C# emits twice for prefixed literals — dispatch-time check
+    (`Lexer.cs:562,573,584`) plus in-parser `IndexOf('_')`
+    (`Lexer.Numbers.cs:243-244,359-360`).
+25. Shebang guard semantics differ: C# re-initializes `onlyShebangsAndNewLines=true` per trivia
+    run and clears on `\v`/`\f` (`Lexer.cs:727,741-750`); Rust keeps a scan-global flag
+    re-armed by newlines (`:1026`) and cleared by many constructs but not `\v`/`\f`.
+26. The >200-char bad-token runaway absorption (`Lexer.cs:703-711`) is absent.
 
-| File | Lines | Ported from | Complete? | `allow` | `full_moon` vs `DROPPED` |
-|---|---|---|---|---|---|
-| `errorcode.rs` | 129 | `ErrorCode` `Errors/ErrorCode.cs` | COMPLETE — 44 discriminants `Void=-2..2000` `#[repr(i32)]` | none | No `full_moon` |
-| `errorfacts.rs` | 75 | `ErrorFacts` `ErrorFacts.cs` | COMPLETE — `get_id()` `LUA{:04}`, `is_warning()` | none | `CompilerDiagnosticCategory`→`String` |
-| `luadiagnostic.rs` | 92 | `LuaDiagnostic` `LuaDiagnostic.cs` | COMPLETE — `DiagnosticSeverity` `Hidden/Info/Warning/Error` | none | Dropped `Diagnostic` base |
-| `luadiagnosticformatter.rs` | 32 | `LuaDiagnosticFormatter` | COMPLETE — `INSTANCE` `format()` | none | No `full_moon` |
-| `luadiagnosticinfo.rs` | 43 | `LuaDiagnosticInfo` | COMPLETE — `code, arguments: Vec<String>` | none | `ImmutableArray→Vec` |
-| `messageprovider.rs` | 246 | `MessageProvider` | COMPLETE — 48-arm `match` to `LuaResources` | none | Static-table for reflection |
-| `syntaxdiagnosticinfo.rs` | 54 | `SyntaxDiagnosticInfo` | COMPLETE — `offset,width` byte offsets `Text is bytes` | none | `TextSpan`→`offset: i32` |
+### D. ConstantFolder
 
-All errors: No `#[allow]`, no `todo!`, `utf-8` via `&str`.
+27. Unary folds take trivia from the operator token — `visit_expression` captures
+    `first_leading(&node)` for the whole unary node (`:568-570`) feeding `visit_unary`
+    (`:235-278`); C# passes the **operand** as trivia container (`ConstantFolder.cs:25-46`).
+28. String-number extraction is fully anchored (`is_dec_float` must consume everything,
+    `:991-1041`); C#'s decFloat regex is unanchored (`NumberParsing.cs:16-18`) and RealParser
+    ignores trailing garbage → `"v1.5"`, `"1.5x"` extract in C#, nothing in Rust.
+29. Signed strings: `"-1.5"` parses as −1.5 (`parse_double_literal` → `f64::parse`,
+    `:916-923`); C#'s RealParser rejects signs → NoDigits → returns **true with 0.0**
+    (`RealParser.cs:15-17,384-392`).
+30. Overflow strings: `"1e400"` yields `Ok(inf)` → invalid `-Infinity` output; C# returns false
+    on Overflow and leaves the expression untouched (`RealParser.cs:376-380`).
+31. Hex-float strings like `"0x1.8p10"` yield **0.0** in C# (unanchored decFloat matches the
+    leading `"0"` first, TryParseDouble stops at `x` → NoDigits → 0.0-true; outcome pinned by
+    runtime probe) — Rust routes to HexFloat and returns the real value. Replicate C# ordering.
+32. `#` length counts UTF-8 bytes (`get_string_value(...).len()`, `:269`) vs C# UTF-16 units
+    (`ConstantFolder.cs:43`): `#"é"` → 2 vs 1; `#"😀"` → 4 vs 2.
+33. `\ddd` >255 pushes U+FFFD (`:1201-1203`) vs C# error + skip character entirely
+    (`ShortString.cs:223-226`).
+34. Astral `\u{…}` emits one char and lone surrogates are dropped (`:1169-1185`) vs C#
+    UTF-16 surrogate pair / raw code unit (`ShortString.cs:285-297`).
+35. Folder `\z` skip uses `is_ascii_whitespace()` excluding `\v` (`:1141-1151`); C# includes it.
+36. Escape processing is option-unplumbed: ungated processing plus invalid escapes always echo
+    the character (`:1205`) vs C#'s preset-dependent echo/skip+error (`ShortString.cs:199-205`).
+37. Chained member/element access on const tables never folds — lookup gated on
+    `suffixes.len() == 1` (`:522-556`) vs C# immediate-base bottom-up folding
+    (`ConstantFolder.cs:336-407`).
+38. Concat strips parentheses via `get_inner_expression` (`:365-386`) where C# checks the direct
+    Kind and throws (`ConstantFolder.cs:122-135`) — crash/success asymmetry.
 
-### 5. `loretta/src/symbol_display/*.rs`
+### E. Minifying
 
-| File | Lines | Ported from | Complete? | `full_moon` vs `DROPPED` |
-|---|---|---|---|---|
-| `objectdisplayoptions.rs` | 36 | `ObjectDisplayOptions` `Core/Portable/SymbolDisplay/ObjectDisplayOptions.cs` | COMPLETE — bitflags `NONE=0, USE_HEX=1...` | `System.Flags` → bitflags |
-| `objectdisplay.rs` | 361 | `ObjectDisplay` `SymbolDisplay/ObjectDisplay.cs` | COMPLETE verbatim — `NIL_LITERAL`, `format_primitive`, `try_replace_char` `needs_escaping` | Uses `CharUtils` |
-| `unicode_categories.rs` | 4125 | `CharUtils.NeedsEscaping` **GENERATED** | COMPLETE — `category_of(cp:u32)` `0..=1114111` | Static table per `TRANSLATION.md` |
+39. Slot release checks self-identity only (`renametable.rs:156-161`) vs C# release when the
+    visited node equals **or descends from** the last-use node
+    (`RenamingRewriter.RenameTable.cs:78-80`, `AncestorsAndSelf().Any(...)`); the in-code
+    comment claiming equivalence is false. Changes minified output with the default allocator.
+40. Alphabetic strategy tries ascending `min_prefix_count..=5` (`namingstrategies.rs:79-86`);
+    C# tries DESCENDING from `digitCount − minPrefixCount` to 1 with no upper cap and throws
+    immediately at ≤0 (`NamingStrategies.cs:33-45`, `getMaxDigits` ≤1 ⇒ zero attempts).
+41. Numeric/generic-for loop-variable records created AFTER header expressions
+    (`scopeandvariablewalker.rs:287-341`) vs C#'s generated visitor visiting identifiers first
+    (`Syntax.xml.Internal.g.cs:9991-9995`) — different (valid) allocation orders.
 
-### 6. `loretta/src/scoping/*.rs` — `full_moon` via `SyntaxNode` → `Node` adapter
+### F. Options / infra / display / utilities
 
-| File | Lines | Ported from | Complete? | `full_moon` vs `DROPPED` |
-|---|---|---|---|---|
-| `node.rs` | 43 | `SyntaxNode` **DROPPED** | COMPLETE ADAPTER — `Node {kind,text,id:u64}` | `SyntaxNode` pool → `id` |
-| `scopekind.rs` | 15 | `ScopeKind` | COMPLETE `Global/File/Function/Block` | Pure enum |
-| `variablekind.rs` | 15 | `VariableKind` | COMPLETE `Local/Global/Parameter/Iteration` | Pure enum |
-| `iscope.rs` | 347 | `IScope, Scope` | COMPLETE — `trait IScope` 7 methods `HashMap` `Rc<RefCell>` | `SyntaxNode` → `Node` |
-| `ifilescope.rs` | 40 | `IFileScope` | COMPLETE — `FileScopeData` | `Node`-less |
-| `ifunctionscope.rs` | 67 | `IFunctionScope` | COMPLETE — `FunctionScopeData` | No `full_moon` |
-| `ivariable.rs` | 167 | `IVariable` | COMPLETE — `SharedVariable=Rc<RefCell<Variable>>` | `ISymbol` → `Node` ids |
-| `igotolabel.rs` | 61 | `IGotoLabel` | COMPLETE — `Option<lua52::Label>` | **USES** `full_moon::ast::lua52` |
+42. `LuaSyntaxOptions` derives Eq/Hash over ALL fields (`luasyntaxoptions.rs:12`); C#'s
+    hand-written Equals/GetHashCode deliberately omit `AcceptUnicodeEscape` +
+    `AcceptInvalidEscapes` (`LuaSyntaxOptions.cs:660-721`).
+43. Scanner emits `ErrInvalidStringEscape` for `\x` + non-hex digit unconditionally
+    (`:441-448`); under `AcceptInvalidEscapes && !AcceptHexEscapesInStrings` C# silently echoes
+    (goto-default before digit parsing, `ShortString.cs:166-171` + `:199-205`). Gate the
+    emission on `!(accept_invalid_escapes && !accept_hex_escapes_in_strings)`; keep both-errors
+    behavior when `!accept_invalid_escapes`. (Corrected direction from v2 #26.)
+44. `rename_variable("")` panics (`script.rs:128-130`); C# throws ArgumentNullException/
+    ArgumentException through `Script.cs:143-144` + location-handling `FindVariable`.
+45. `errorfacts::is_hidden` true for Void/Unknown (`errorfacts.rs:33-35`) vs generated
+    all-false (`ErrorFacts.g.cs:34-41`); benign today, align anyway.
+46. `parserdiagnostics.rs:4` cites nonexistent `Syntax/LuaParser.cs` (actual emitters:
+    `Parser/LanguageParser.cs`).
 
-All scoping: `0` `allow`, `0` `todo`, `0` `unsafe`.
+### G. Display / utilities
 
-### 7. `loretta/src/script/*.rs` + `scopeandvariablemanager/*.rs`
+47. `'^'` (U+005E) stored as Math Symbol 25 (`unicode_categories.rs:42`); Unicode/.NET say
+    Modifier Symbol 27 → escaping diverges under `EscapeNonPrintableCharacters`.
+48. `encode_char_to_utf8` handles only 1–3-byte forms; ≥U+10000 falls into the 3-byte branch
+    and `(n >> 12) & 0xF` drops bits 16–20 (`charutils.rs:136-142`) — corrupt bytes for astral
+    chars (input class unreachable in C# `char`, but reachable here).
+49. ObjectDisplay escapes astral chars as one combined `\u{…}` (`objectdisplay.rs:63-69`) vs
+    C# surrogate halves (`\u{D83D}\u{DE00}`).
+50. `StringUtils::is_identifier` lacks the `IsNullOrWhiteSpace` guard variant
+    (`stringutils.rs:11-28` vs `StringUtils.cs:41-45`) — names starting with ≥U+007F
+    whitespace pass in Rust, fail in C#.
 
-| File | Lines | Ported from | Complete? | `allow` | `full_moon` vs `DROPPED` |
-|---|---|---|---|---|---|
-| `script/script.rs` | 243 | `Script` | COMPLETE — `RenameResult` `Script {trees:Vec<String>}` | none | `SyntaxTree` → `Vec<String>` |
-| `script/renameerrors.rs` | 64 | `RenameErrors` | COMPLETE | none | `SyntaxTree` → `String` |
-| `script/scriptrenamerewriter.rs` | 111 | `RenameRewriter` | COMPLETE — `VisitorMut` `bytes()` | none | **USES** `full_moon` `Ast` |
-| `scopeandvariablemanager/basewalker.rs` | 34 | `BaseWalker` | COMPLETE | none | `SyntaxWalkerDepth` → `HashMap` |
-| `scopeandvariablemanager/state.rs` | 41 | `State` | COMPLETE — `HashMap` clone | none | `ImmutableDictionary` → `HashMap` |
-| `scopeandvariablemanager/manager.rs` | 97 | `ScopeAndVariableManager` | COMPLETE — `full_moon::parse_fallible` | none | **USES** `full_moon` |
-| `scopeandvariablemanager/scopeandvariablewalker.rs` | 763 | `ScopeAndVariableWalker` | COMPLETE — `763` lines `Visit*` | `VIOLATION #4` `8× #[allow]` | **USES** `full_moon::ast` |
-| `scopeandvariablemanager/gotolabelwalker.rs` | 52 | `GotoLabelWalker` | COMPLETE | none | No `full_moon` |
-| `scopeandvariablemanager/gotowalker.rs` | 54 | `GotoWalker` | COMPLETE — `&lua52::Goto` | none | **USES** `full_moon` |
+### H. Tests
 
-### 8. `loretta/src/operations/*.rs`
+51. Empty stub test inflating pass counts:
+    `lexer_lexes_number_with_leading_underscores_before_prefix`
+    (`lexical_regression_tests.rs:232-238`) is comment-only with zero assertions (3 C# cases
+    dropped). Either restore equivalents within full_moon's grammar or remove the test and note
+    the drop.
+52. Long-string data rows use REAL control characters instead of C#'s literal `\n`/`\r\n`/
+    `\r`/`\xFF` sequences (`lexicaltestdata.rs:567-573` vs `LexicalTestData.cs:297-306`) —
+    silent data drift from the C# oracle inputs.
+53. Verbatim duplicated assertion block (`A` token asserted twice):
+    `lexical_tests.rs:402-409` ≡ `:424-430` — delete the repetition.
+54. TokenCache regression weakened: exact code/squiggle/location
+    (`ERR_NonFunctionCallBeingUsedAsStatement` @(9,14)) reduced to "lua51 errors non-empty /
+    luau clean" (`lexical_regression_tests.rs:206-229`). The continue rule IS ported
+    (parserdiagnostics, LUA0018) — assert the exact diagnostic again.
+55. Diagnostic assertions downgraded group-wide (substring/"non-empty" instead of exact
+    codes+squiggles+locations): all 7 TypeParsingErrorTests, Parsing RegressionTests #6/#8,
+    LocalVariableAttributeTests #1/#2 — restore exact assertions against the ported scanners.
+56. Typed-Lua LUA1016 and Luau-goto LUA1019 gating inversions — tests expect success where C#
+    expects gating errors (`type_parsing_error_tests.rs:106-121`;
+    `parsing_regression_tests.rs:243-258`). Errors are PORT scope (PLAN §3); implement the
+    gates (LUA0018 precedent), then restore C# expectations.
+57. `tests/src/parsingtestsbase.rs` is imported by nothing and its visitor infinitely recurses
+    (UFCS self-call, `:196-204`); `tests/src/syntaxextensions.rs` likewise unused. Delete or
+    repair-and-wire.
+58. Assertion dimensions dropped: `ContextualKind` tuples unchecked in two lexical regression
+    tests; goto-identifier data rows over-skipped even where the lua51 mapping would lex them
+    exactly as C#.
+59. `lexer_covers_all_tokens` checks a hardcoded enabled-symbol vocabulary
+    (`lexical_tests.rs:198-245`) vs C#'s enum-wide sweep — strictly weaker guarantee.
+60. Interpolated-string tests assert RAW segment literals where C# asserts DECODED values, plus
+    a dead `let _ = TokenValue::String(String::new());` keeping an import alive
+    (`interpolated_string_tests.rs:61-69,84-90`).
+61. Scoping-test weakenings: FindScope test 2 docks at the file node instead of an inner
+    expression node (`scope_find_scope_tests.rs:58-70`); RenameVariable test 1 ignores the
+    `tree_without_support` payload although the enum carries it
+    (`scope_rename_variable_tests.rs:52-64`).
+62. Redundant extra test with no C# counterpart: `parser_parses_typed_lua_structures`
+    re-sweeps all 48 CASES inputs already covered individually
+    (`type_parsing_tests.rs:90-113`). Harmless; trim or document.
 
-| File | Lines | Ported from | Complete? |
-|---|---|---|---|
-| `binaryoperatorkind.rs` | 50 | `BinaryOperatorKind` | COMPLETE — 18 variants |
-| `unaryoperatorkind.rs` | 18 | `UnaryOperatorKind` | COMPLETE — 4 variants |
+### I. Cosmetics
 
-No `allow`, pure enums.
+63. Stale/false comments: nearly every `mod.rs` says "Pending port …"; `constantfolder.rs`
+    interp-comment claim (Finding 4); `renametable.rs` ancestor-equivalence claim (Finding 39);
+    `SYMBOL_ROWS` header omits `!=` from the documented GLua drop list
+    (`lexicaltestdata.rs:125-129`); ShortToken Display labels every symbol generically
+    `"SymbolToken"` (failure-message cosmetics only); find_variable deterministic tie-break vs
+    C# arbitrary HashSet order (note only).
 
-### 9. `loretta/src/experimental/*.rs`
+---
 
-| File | Lines | Ported from | Complete? | `allow` | `full_moon` vs `DROPPED` |
-|---|---|---|---|---|---|
-| `constantfolder.rs` | 1505 | `ConstantFolder` | COMPLETE — `NumValue{Long,Double}` `wrapping_*` | `VIOLATION #4` `9× #[allow]` | **HEAVY** `full_moon` |
-| `constantfoldingoptions.rs` | 20 | `ConstantFoldingOptions` | COMPLETE | none | Pure options |
-| `luaextensions.rs` | 67 | `LuaExtensions` | COMPLETE | none | **USES** `full_moon` |
-| `syntaxextensions.rs` | 14 | `SyntaxExtensions` | **STUB** `VIOLATION #1` | none | No `full_moon` |
-| `minifying/namingstrategy.rs` | 14 | `NamingStrategy` | COMPLETE | none | `Rc<Scope>` |
-| `namingstrategies.rs` | 146 | `NamingStrategies` | COMPLETE | none | `MinifyingUtils` |
-| `islotallocator.rs` | 13 | `ISlotAllocator` | COMPLETE | none | Pure trait |
-| `sequentialslotallocator.rs` | 34 | `SequentialSlotAllocator` | COMPLETE | none | Pure |
-| `sortedslotallocator.rs` | 48 | `SortedSlotAllocator` | COMPLETE | none | Pure |
-| `minifyingutils.rs` | 56 | `MinifyingUtils` | COMPLETE | none | `Rc<Scope>` |
-| `renametable.rs` | 170 | `RenameTable` | COMPLETE | none | `u64` `id` |
-| `renamingrewriter.rs` | 108 | `RenamingRewriter` | PARTIAL — `eprintln!("DBG")` `VIOLATION #5` | none (but `eprintln!`) | **USES** `full_moon` |
-| `triviarewriter.rs` | 385 | `TriviaRewriter` | COMPLETE | none | **USES** `full_moon` |
+## Appendix — v2 → v3 mapping (traceability)
 
-### 10. `loretta-cli/src/*.rs`
+| v2 # | Disposition | Where it went |
+|---|---|---|
+| 1 | kept | Finding 1 |
+| 2 | kept | Finding 2 |
+| 3 | corrected/downgraded | Finding 4 (dead-arm cleanup, repro invalid) |
+| 4 | kept | Finding 3 |
+| 5–16 | kept | Findings 5–16 (13 reworded; 16 = new lead) |
+| 17–22 | kept | Findings 17–22 |
+| 23 | kept | Finding 22 |
+| 24 | **WITHDRAWN — INVALID** | C# squiggles the char BEFORE the newline in both stop modes; Rust already correct; pinned by C# test expecting `e` @(1,18) |
+| 25 | kept | Finding 23 |
+| 26 | **CORRECTED — direction reversed** | Finding 43 (Rust over-emits where C# is silent) |
+| 27–33 | kept | Findings 24–30 (30 extended with the hex-string 0.0 case) |
+| 34 | kept | Finding 32 |
+| 35–38 | kept | Findings 33–36 |
+| 39 | kept | Finding 37 |
+| 40 | kept | Finding 38 (refined: descending, unbounded, throws at ≤0) |
+| 41 | kept | Finding 41 |
+| 42 | kept (citation refined) | Finding 44 |
+| 43 | kept | Finding 14 |
+| 44 | kept | Finding 42 |
+| 45 | kept | Finding 40 |
+| 46 | kept | Finding 42's neighbor — folded into Finding 44's area; see 46 |
+| 47 | kept | Finding 45's area — see 45 |
+| 48 | **WITHDRAWN** | `is_hidden` divergence is real but benign; retained as Finding 45 (kept, align anyway) |
+| 49 | kept | Finding 46 |
+| 50 | **WITHDRAWN** | `options.rs` is the designated ADAPT destination; process choice |
+| 51 | **WITHDRAWN** | `Portable/LuaExtensions.cs` is documented DROP |
+| 52 | **WITHDRAWN** | documented intentional drop (Prohibition #2 satisfied) |
+| 53 | kept | Finding 56 |
+| 54 | kept | Finding 57 |
+| 55 | kept | Finding 58 |
+| 56 | kept | Finding 59 |
+| 57 | **RECLASSIFIED** | documented anti-panic adaptation; note only |
+| 58 | rewritten | normalizer is DROP (Port Boundary); residual stub-test removal folded into Findings 51/57 |
+| 59 | kept | Finding 45 |
+| 60 | downgraded | Finding 63 (comment omission only) |
+| 61 | kept (bytes drift) | Finding 52 |
+| 62 | kept | Finding 53 |
+| 63 | kept | Finding 54 |
+| 64 | kept | Finding 55 |
+| 65 | split | generic-default inversions withdrawn (documented drop, 1f15ebb); LUA1016/LUA1019 halves kept → Finding 56 |
+| 66 | kept | Finding 57 |
+| 67 | kept | Finding 58 |
+| 68 | kept | Finding 59 |
+| 69 | kept | Finding 60 |
+| 70 | kept | Finding 61 |
+| 71 | kept | Finding 62 |
+| 72–73 | kept | Findings 63 |
 
-| File | Lines | Ported from | Complete? | `allow` | `full_moon` vs `DROPPED` |
-|---|---|---|---|---|---|
-| `main.rs` | 1600 | `CommandLine/Program.cs` | COMPLETE — `1600` lines `14` commands | none | **HEAVY** `full_moon` `LuaVersion` |
-| `console_timing_logger_text_writer.rs` | 61 | `ConsoleTimingLoggerTextWriter` | COMPLETE — `io::Write` | none | `TextWriter` → `io::Write` |
+## Fix workflow (from COMMIT.md / PLAN.md / TRANSLATION.md — binding)
 
-### 11. `loretta-rs/tests/**/*.rs`
+- Commits are ONE coherent gate-green step each — never drive-by edits, never a whole subsystem
+  in one shot. Complex items land incrementally (stub/reorder first, bodies bottom-up), exactly
+  as SCC clusters were ported.
+- Never push `main`; `gh pr create` → `gh pr checks --watch` → squash-merge. Gates green on
+  every landing: fmt, clippy (-D warnings), check/test `--workspace --all-features`, drift,
+  differential byte-exact. Never land red; revert and re-queue on failure.
+- Read-before-write (Source Protocol): full C# file, its deps, the full_moon APIs, the ported
+  Rust deps. Oracles decide correctness; never edit `references/**` or `corpus/**`.
+- Only writable markdown: `loretta-rs/PROGRESS.md`.
 
-| File | Lines | Ported from | Complete? | Notes |
-|---|---|---|---|---|
-| `stringutils_tests.rs` | 36 | `StringUtilsTests.cs` | COMPLETE — `2` `#[test]` `6` cases | No `allow` |
-| `objectdisplay_tests.rs` | 125 | `ObjectDisplayTests.cs` | COMPLETE — `10` `#[test]` | No `allow` |
-| `src/lib.rs` | 2 | `Test/Portable` | SHIM | No logic |
+## Verdict
 
-## Hard-Prohibition Verdict
-
-| # | Rule | Verdict | Evidence |
-|---|---|---|---|
-| `1` | No stubs | **FAIL** — `1` stub `syntaxextensions.rs:14` | `pub struct SyntaxExtensions;` |
-| `4` | No `#[allow]`/`unsafe` | **FAIL** — `23` `#[allow]` | `luasyntaxoptions.rs:2` `script/mod.rs:1` `constantfolder.rs:9` `scopeandvariablewalker.rs:8` |
-| `5` | No `eprintln!` debug | **FAIL** — `renamingrewriter.rs:57,64` `eprintln!("DBG")` | violates verbatim |
-| `2,3,6` | No skipped surface / test tampering / DROP porting | **PASS** | `66/67` files `98.5%` complete |
-
-**Completeness:** `66/67` files complete verbatim (`98.5%`), `1` stub + `2` `eprintln!` + `23` `allow` violations. `full_moon` integration correct: `Text is bytes` `Position.bytes`, `wrapping_*` `&31`, `ImmutableArray→Vec`, `Reflection→static`, `dynamic→NumValue`, `SyntaxNode→Node{id}`/`full_moon::ast`.
+Core engine fidelity is genuinely high (options/enums/errors/resources, HexFloat/ObjectDisplay
+BMP, minifying utilities, scoping interface layer, folder core, precedence table, lexical-error
+matrix; differential byte-identical on all 1870 pairs). The port is **not yet an exact copy**:
+63 open findings above, including two reachable panics on ordinary Lua (varargs, overflow
+literals), state-corrupting multi-tree scoping/renaming behavior, systematic numeric-literal
+diagnostic gaps, minified-output drift, and test-surface gaps wide enough to hide all of it.
+Priority: Findings 1–16 (crashes + scoping/script), 17–26 (scanner), then the rest in listed
+order.
