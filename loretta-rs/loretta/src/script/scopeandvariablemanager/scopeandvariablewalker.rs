@@ -175,7 +175,7 @@ impl ScopeAndVariableWalker {
         self.variables.insert(node.clone(), variable.clone());
         variable.borrow_mut().add_read_location(node.clone());
         variable.borrow_mut().add_referencing_scope(self.scope());
-        self.scope().borrow_mut().add_referenced_variable(variable);
+        Scope::add_referenced_variable_in(&self.scope(), variable);
     }
 
     /// Records an identifier token position for the rename rewriter (the
@@ -262,7 +262,7 @@ impl ScopeAndVariableWalker {
                             self.variables.insert(node.clone(), variable.clone());
                             variable.borrow_mut().add_write_location(stmt_node.clone());
                             variable.borrow_mut().add_referencing_scope(self.scope());
-                            self.scope().borrow_mut().add_referenced_variable(&variable);
+                            Scope::add_referenced_variable_in(&self.scope(), &variable);
                         }
                         _ => self.visit_var(var),
                     }
@@ -290,7 +290,7 @@ impl ScopeAndVariableWalker {
                     );
                     variable.borrow_mut().add_write_location(stmt_node);
                     variable.borrow_mut().add_referencing_scope(self.scope());
-                    self.scope().borrow_mut().add_referenced_variable(&variable);
+                    Scope::add_referenced_variable_in(&self.scope(), &variable);
                 } else {
                     self.visit_var(ca.lhs());
                 }
@@ -420,7 +420,7 @@ impl ScopeAndVariableWalker {
                     self.variables.insert(name_node, variable.clone());
                     variable.borrow_mut().add_write_location(stmt_node.clone());
                     variable.borrow_mut().add_referencing_scope(self.scope());
-                    self.scope().borrow_mut().add_referenced_variable(&variable);
+                    Scope::add_referenced_variable_in(&self.scope(), &variable);
                 }
             }
             ast::Stmt::LocalFunction(lf) => {
@@ -449,7 +449,7 @@ impl ScopeAndVariableWalker {
                     self.variables.insert(name_node, variable.clone());
                     variable.borrow_mut().add_write_location(node.clone());
                     variable.borrow_mut().add_referencing_scope(self.scope());
-                    self.scope().borrow_mut().add_referenced_variable(&variable);
+                    Scope::add_referenced_variable_in(&self.scope(), &variable);
                 }
                 let scope = self.create_function_scope(node);
                 for parameter in lf.body().parameters().iter() {
@@ -577,7 +577,7 @@ impl ScopeAndVariableWalker {
                 variable.borrow_mut().add_read_location(node);
             }
             variable.borrow_mut().add_referencing_scope(self.scope());
-            self.scope().borrow_mut().add_referenced_variable(&variable);
+            Scope::add_referenced_variable_in(&self.scope(), &variable);
         }
     }
 
@@ -956,5 +956,51 @@ mod tests {
         use crate::scoping::igotolabel::IGotoLabel;
         assert!(entries[0].borrow().label_syntax().is_some());
         assert!(entries[1].borrow().label_syntax().is_some());
+    }
+
+    #[test]
+    fn function_scopes_capture_outer_variables() {
+        // Finding 8: the C# FunctionScope.AddReferencedVariable override
+        // (IFunctionScope.cs:55-62) captures variables referenced in a
+        // function scope without being declared there, and the variable
+        // records the capturing scope.
+        use crate::scoping::ifunctionscope::IFunctionScope;
+        use crate::scoping::ivariable::IVariable;
+        let mut manager = ScopeAndVariableManager::new(vec![
+            "local a = 1\nlocal f = function() print(a) end\n".to_string(),
+        ]);
+        let state = manager.get_lazy_state();
+        let root = state.root_scope.borrow();
+        let root_contained = root.contained_scopes();
+        let files: Vec<_> = root_contained.iter().collect();
+        let file = files[0].borrow();
+        let file_contained = file.contained_scopes();
+        let function_scopes: Vec<_> = file_contained
+            .iter()
+            .filter(|s| s.borrow().kind() == ScopeKind::Function)
+            .collect();
+        assert_eq!(function_scopes.len(), 1);
+        let captured: Vec<String> = function_scopes[0]
+            .borrow()
+            .captured_variables()
+            .iter()
+            .map(|v| v.borrow().name().to_string())
+            .collect();
+        assert!(
+            captured.contains(&"a".to_string()),
+            "a must be captured by the function scope: {captured:?}"
+        );
+        // The variable records the capturing scope.
+        let a_variable = file
+            .declared_variables()
+            .iter()
+            .find(|v| v.borrow().name() == "a")
+            .expect("the a variable")
+            .clone();
+        let capturing = a_variable.borrow().capturing_scopes();
+        assert!(
+            capturing.iter().any(|s| Rc::ptr_eq(s, function_scopes[0])),
+            "a must record the function scope as a capturing scope"
+        );
     }
 }
