@@ -886,12 +886,14 @@ mod tests {
         assert!(file_a_names.contains(&"a".to_string()));
         assert!(file_b_names.contains(&"b".to_string()));
         // The second tree's id base is the first tree's node count (every
-        // node the walk creates lands in at least one map, so the distinct
-        // ids are contiguous 0..count) — the rename rewriter's seed.
+        // node the walk creates lands in at least one map — the location
+        // store included — so the distinct ids are contiguous 0..count) —
+        // the rename rewriter's seed.
         let mut ids: std::collections::HashSet<u64> = std::collections::HashSet::new();
         ids.extend(single.variables.keys().map(|n| n.id));
         ids.extend(single.scopes.keys().map(|n| n.id));
         ids.extend(single.labels.keys().map(|n| n.id));
+        ids.extend(single.location_scopes.keys().map(|n| n.id));
         assert_eq!(state.tree_id_bases, vec![0, ids.len() as u64]);
     }
 
