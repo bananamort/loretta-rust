@@ -269,7 +269,12 @@ impl ConstantFolder {
                 }
             }
             ast::UnOp::Hash(_) if has_e_flag(operand_flags, FLAG_IS_STR) => {
-                let len = get_string_value(&operand).len() as f64;
+                // C# ConstantFolder.cs:43: (double) GetValue<string>
+                // (operand).Length — the .NET string Length is the
+                // UTF-16 code-unit count, so #"é" is 1 and #"😀" is 2
+                // (Finding 32) — the port's .len() was the UTF-8 byte
+                // count.
+                let len = utf16_len(&get_string_value(&operand)) as f64;
                 return literal_double(len, &leading, &trailing);
             }
             _ => {}
@@ -721,6 +726,14 @@ fn get_string_value(node: &ast::Expression) -> String {
         unreachable!("string value requires a string literal");
     };
     string_value(t)
+}
+
+/// The .NET string Length — the UTF-16 code-unit count (a char beyond
+/// 0xFFFF is a surrogate pair, two units).
+fn utf16_len(s: &str) -> usize {
+    s.chars()
+        .map(|c| if c as u32 > 0xFFFF { 2 } else { 1 })
+        .sum()
 }
 
 /// C# HasEFlag(ExpressionFlags, ExpressionFlags) (ConstantFolder.ExpressionFlags.cs:120).
