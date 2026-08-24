@@ -562,6 +562,19 @@ fn signed_strings_extract_like_the_csharp_realparser() {
 }
 
 #[test]
+fn overflow_strings_stay_untouched() {
+    // Finding 30: the C# RealParser returns FALSE on Overflow
+    // (RealParser.cs:30-36) — the extraction fails and the expression
+    // stays untouched. The port's f64 parse yielded Ok(inf), which
+    // produced invalid folds like -Infinity for -"1e400". Pinned against
+    // the C# oracle on AllWithIntegers.
+    for source in ["'1e400' + 1", "-'1e400'"] {
+        let (folded, _wrapper) = folded_wrapper_text(source, true);
+        assert_eq!(folded, source, "{source:?} must stay untouched: {folded:?}");
+    }
+}
+
+#[test]
 fn string_number_extraction_is_unanchored() {
     // Finding 28: the C# decFloat regex is UNANCHORED (the string only
     // needs to contain a match, NumberParsing.cs:16-18) and the

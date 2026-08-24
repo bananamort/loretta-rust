@@ -1044,9 +1044,13 @@ fn try_parse_number_in_string(value: &str) -> Option<NumValue> {
     // s_decFloatRegex with RealParser.TryParseDouble (invariant round-trip).
     // The value is the DECIMAL run even for "0x..." strings — the C#
     // RealParser takes the leading decimal run ("0x1.8p10" -> 0.0, the
-    // decFloat-first ordering, Finding 31).
+    // decFloat-first ordering, Finding 31). The C# returns FALSE on
+    // Overflow (RealParser.cs:30-36) — the extraction fails and the
+    // expression stays untouched (Finding 30); the literal path keeps
+    // the inf (the C# lexer's out value on overflow is the Infinity
+    // bits, Lexer.Numbers.cs:274-278).
     if is_dec_float(value) {
-        if let Some(f64) = parse_decimal_double(value) {
+        if let Some(f64) = parse_decimal_double(value).filter(|v| !v.is_infinite()) {
             return Some(NumValue::Double(f64));
         }
     }
