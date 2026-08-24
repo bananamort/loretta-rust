@@ -62,7 +62,18 @@ impl ObjectDisplay {
             let replacement = if utf8_encode {
                 CharUtils::encode_char_to_utf8(c)
             } else {
-                format!("\\u{{{:04X}}}", c as u32)
+                let cp = c as u32;
+                if cp > 0xFFFF {
+                    // The C# char-based FormatLiteral escapes an astral
+                    // char as its UTF-16 surrogate halves
+                    // (\u{D83D}\u{DE00}) — there is no combined form
+                    // (Finding 49; the port emitted one \u{1F600}).
+                    let high = 0xD800 + ((cp - 0x10000) >> 10);
+                    let low = 0xDC00 + ((cp - 0x10000) & 0x3FF);
+                    format!("\\u{{{high:04X}}}\\u{{{low:04X}}}")
+                } else {
+                    format!("\\u{{{cp:04X}}}")
+                }
             };
             return Some(replacement);
         }
