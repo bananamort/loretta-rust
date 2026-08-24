@@ -1,4 +1,4 @@
-// Pending port — Loretta.CodeAnalysis.Lua scoping (b767b4e). One file per graph node will land here.
+// Ported from Loretta.CodeAnalysis.Lua scoping (b767b4e).
 
 pub mod ifilescope;
 pub mod ifunctionscope;

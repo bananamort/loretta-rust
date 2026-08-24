@@ -120,7 +120,7 @@ impl Gate {
 }
 
 /// The keyword + symbol token rows (the C# SyntaxKind enumeration over the
-/// enabled kinds). The `&&`/`||`/`!` C# rows have no full_moon symbols
+/// enabled kinds). The `&&`/`||`/`!`/`!=` C# rows have no full_moon symbols
 /// (documented above).
 const SYMBOL_ROWS: &[(Symbol, Gate)] = &[
     (Symbol::And, Gate::Always),

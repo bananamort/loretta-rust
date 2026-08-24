@@ -1,4 +1,4 @@
-// Pending port — Loretta.CodeAnalysis.Lua.ScopeAndVariableManager (b767b4e).
+// Ported from Loretta.CodeAnalysis.Lua.ScopeAndVariableManager (b767b4e).
 
 pub mod basewalker;
 pub mod gotolabelwalker;

@@ -171,6 +171,12 @@ impl std::fmt::Display for ShortToken {
 /// = 110, NumericLiteralToken = 1001, StringLiteralToken = 1002,
 /// IdentifierToken = 1003, InterpolatedStringToken = 1005).
 fn kind_label(kind: &TokenType) -> &'static str {
+    // The symbol rows carry the per-symbol C# SyntaxKind name (Finding 63
+    // — the generic "SymbolToken" label made every symbol failure message
+    // indistinguishable).
+    if let TokenType::Symbol { symbol } = kind {
+        return symbol_label(*symbol);
+    }
     match kind.kind() {
         TokenKind::Eof => "EndOfFileToken",
         TokenKind::Identifier => "IdentifierToken",
@@ -185,6 +191,84 @@ fn kind_label(kind: &TokenType) -> &'static str {
         TokenKind::CStyleComment => "CStyleCommentTrivia",
         // TokenKind is #[non_exhaustive].
         _ => "UnknownToken",
+    }
+}
+
+/// The C# SyntaxKind name per full_moon symbol (verified in
+/// Portable/Syntax/SyntaxKind.cs — e.g. AndKeyword = 517, GotoKeyword =
+/// 515, AmpersandToken = 48, ColonColonToken = 52).
+fn symbol_label(symbol: Symbol) -> &'static str {
+    match symbol {
+        Symbol::And => "AndKeyword",
+        Symbol::Break => "BreakKeyword",
+        Symbol::Do => "DoKeyword",
+        Symbol::Else => "ElseKeyword",
+        Symbol::ElseIf => "ElseIfKeyword",
+        Symbol::End => "EndKeyword",
+        Symbol::False => "FalseKeyword",
+        Symbol::For => "ForKeyword",
+        Symbol::Function => "FunctionKeyword",
+        Symbol::If => "IfKeyword",
+        Symbol::In => "InKeyword",
+        Symbol::Local => "LocalKeyword",
+        Symbol::Nil => "NilKeyword",
+        Symbol::Not => "NotKeyword",
+        Symbol::Or => "OrKeyword",
+        Symbol::Repeat => "RepeatKeyword",
+        Symbol::Return => "ReturnKeyword",
+        Symbol::Then => "ThenKeyword",
+        Symbol::True => "TrueKeyword",
+        Symbol::Until => "UntilKeyword",
+        Symbol::While => "WhileKeyword",
+        Symbol::Goto => "GotoKeyword",
+        Symbol::PlusEqual => "PlusEqualsToken",
+        Symbol::MinusEqual => "MinusEqualsToken",
+        Symbol::StarEqual => "StarEqualsToken",
+        Symbol::SlashEqual => "SlashEqualsToken",
+        Symbol::DoubleSlashEqual => "DoubleSlashEqualsToken",
+        Symbol::PercentEqual => "PercentEqualsToken",
+        Symbol::CaretEqual => "CaretEqualsToken",
+        Symbol::TwoDotsEqual => "DotDotEqualsToken",
+        Symbol::Ampersand => "AmpersandToken",
+        Symbol::ThinArrow => "ThinArrowToken",
+        Symbol::TwoColons => "ColonColonToken",
+        Symbol::AtSign => "AtSignToken",
+        Symbol::DoubleLessThanEqual => "LessThanLessThanEqualsToken",
+        Symbol::DoubleGreaterThanEqual => "GreaterThanGreaterThanEqualsToken",
+        Symbol::AmpersandEqual => "AmpersandEqualsToken",
+        Symbol::PipeEqual => "PipeEqualsToken",
+        Symbol::QuestionMarkDot => "QuestionMarkDotToken",
+        Symbol::Caret => "CaretToken",
+        Symbol::Colon => "ColonToken",
+        Symbol::Comma => "CommaToken",
+        Symbol::Dot => "DotToken",
+        Symbol::TwoDots => "DotDotToken",
+        Symbol::Ellipsis => "EllipsisToken",
+        Symbol::Equal => "EqualsToken",
+        Symbol::TwoEqual => "EqualsEqualsToken",
+        Symbol::GreaterThan => "GreaterThanToken",
+        Symbol::GreaterThanEqual => "GreaterThanEqualsToken",
+        Symbol::DoubleGreaterThan => "GreaterThanGreaterThanToken",
+        Symbol::Hash => "HashToken",
+        Symbol::LeftBrace => "OpenBraceToken",
+        Symbol::LeftBracket => "OpenBracketToken",
+        Symbol::LeftParen => "OpenParenToken",
+        Symbol::LessThan => "LessThanToken",
+        Symbol::LessThanEqual => "LessThanEqualsToken",
+        Symbol::DoubleLessThan => "LessThanLessThanToken",
+        Symbol::Minus => "MinusToken",
+        Symbol::Percent => "PercentToken",
+        Symbol::Pipe => "PipeToken",
+        Symbol::Plus => "PlusToken",
+        Symbol::QuestionMark => "QuestionMarkToken",
+        Symbol::RightBrace => "CloseBraceToken",
+        Symbol::RightBracket => "CloseBracketToken",
+        Symbol::RightParen => "CloseParenToken",
+        Symbol::Semicolon => "SemicolonToken",
+        Symbol::Slash => "SlashToken",
+        Symbol::Star => "StarToken",
+        Symbol::Tilde => "TildeToken",
+        _ => "SymbolToken",
     }
 }
 

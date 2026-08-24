@@ -133,7 +133,10 @@ impl Scope {
         self.function_data.as_mut()
     }
 
-    /// C# FindVariable (IScope.cs:164-174).
+    /// C# FindVariable (IScope.cs:164-174). The port's declared_variables
+    /// Vec keeps the declaration order and the first match wins — a
+    /// deterministic tie-break where the C# DeclaredVariables enumeration
+    /// comes from arbitrary HashSet order (note only — Finding 63).
     pub fn find_variable(&self, name: &str, kind: ScopeKind) -> Option<SharedVariable> {
         // The C# null-check (IScope.cs:166) maps to the port's &str —
         // an empty name is NOT the null case: it falls through to the

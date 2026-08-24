@@ -1,4 +1,4 @@
-// Pending port — Loretta.CodeAnalysis.Lua.Script (b767b4e). One file per graph node will land here.
+// Ported from Loretta.CodeAnalysis.Lua.Script (b767b4e).
 
 pub mod renameerrors;
 pub mod scopeandvariablemanager;
