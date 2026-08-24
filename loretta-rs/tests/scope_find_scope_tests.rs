@@ -52,23 +52,30 @@ fn compilation_unit_has_file_scope() {
 
 #[test]
 fn find_scope_on_root_element_returns_root_scope() {
-    // The C# FindScope(expression) == the compilationUnit scope — the port's
-    // node identity docks on the file-scope node lookup (documented).
+    // The C# FindScope on the INNER print expression (the
+    // FunctionCallExpression's expression — the `print` identifier)
+    // returns the compilation unit scope (FindScopeTests.cs:22-34); the
+    // port's recorded identifier nodes let the same inner node be looked
+    // up (Finding 61 restored the inner-expression docking — the old
+    // test docked on the file node).
     let (_, mut script) = ScriptTestsBase::parse_script_async("print 'Hello'", None);
     let root = script.root_scope();
     let compilation_unit_scope =
         find_scope_by_kind(&root, "CompilationUnit").expect("the file scope");
-    let file_node = compilation_unit_scope
-        .borrow()
-        .node()
-        .expect("the file node")
+    let state = script.scope_and_variable_manager_state();
+    let print_node = state
+        .location_scopes
+        .keys()
+        .find(|node| node.text == "print")
+        .expect("the print identifier node")
         .clone();
+    drop(state);
     let found = script
-        .find_scope(&file_node, ScopeKind::Block)
+        .find_scope(&print_node, ScopeKind::Block)
         .expect("the found scope");
     assert!(
         Rc::ptr_eq(&found, &compilation_unit_scope),
-        "the root element's scope is the file scope"
+        "the print expression's scope is the file scope"
     );
 }
 
