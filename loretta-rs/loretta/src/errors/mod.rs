@@ -1,4 +1,4 @@
-// Pending port — Loretta.CodeAnalysis.Lua errors (b767b4e). One file per graph node will land here.
+// Ported from Loretta.CodeAnalysis.Lua errors (b767b4e).
 
 pub mod errorcode;
 pub mod errorfacts;
