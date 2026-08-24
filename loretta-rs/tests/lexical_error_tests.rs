@@ -196,6 +196,57 @@ local num4 = 0x1p999999";
 }
 
 #[test]
+fn lexer_emits_diagnostic_on_decimal_integer_overflow() {
+    // Finding 17: the decimal path never accumulated the value, so the C#
+    // long/ulong.TryParse failures (Lexer.Numbers.cs:248-251, 256-259,
+    // 280-283) were never reported.
+    parse_and_validate_lex(
+        "local num1 = 9223372036854775808\n\
+         local num2 = 18446744073709551615\n\
+         local num3 = 18446744073709551615ULL\n\
+         local num4 = 18446744073709551616ULL\n\
+         local num5 = 9223372036854775808ll",
+        &LuaSyntaxOptions::ALL_WITH_INTEGERS,
+        &[
+            exp(
+                ErrorCode::ErrNumericLiteralTooLarge,
+                1,
+                14,
+                "9223372036854775808",
+            ),
+            exp(
+                ErrorCode::ErrNumericLiteralTooLarge,
+                2,
+                14,
+                "18446744073709551615",
+            ),
+            exp(
+                ErrorCode::ErrNumericLiteralTooLarge,
+                4,
+                14,
+                "18446744073709551616ULL",
+            ),
+            exp(
+                ErrorCode::ErrNumericLiteralTooLarge,
+                5,
+                14,
+                "9223372036854775808ll",
+            ),
+        ],
+    );
+    // The double-only presets parse the integer as a double
+    // (RealParser) — 2^63 fits, so there is no error (Lexer.Numbers.cs:
+    // 272-279); the suffix paths stay silent when the value fits the
+    // ulong/long.
+    parse_and_validate_lex(
+        "local num1 = 9223372036854775808\n\
+         local num2 = 18446744073709551615ULL",
+        &LuaSyntaxOptions::ALL,
+        &[],
+    );
+}
+
+#[test]
 fn lexer_emits_diagnostic_on_unfinished_long_comment() {
     let cases: &[&str] = &["/* hi", "--[[ hi", "--[=[ hi"];
     for text in cases {
