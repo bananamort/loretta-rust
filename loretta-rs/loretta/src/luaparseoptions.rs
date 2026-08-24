@@ -80,12 +80,37 @@ impl LuaParseOptions {
         }
     }
 
+    /// The C# Features indexer — the IReadOnlyDictionary with the
+    /// OrdinalIgnoreCase keys (LuaParseOptions.cs:56-57) — the
+    /// case-insensitive lookup (Finding 65).
+    pub fn get_feature(&self, key: &str) -> Option<&str> {
+        self.features
+            .iter()
+            .find(|(k, _)| k.eq_ignore_ascii_case(key))
+            .map(|(_, v)| v.as_str())
+    }
+
     /// Creates a new instance with the features replaced by the provided ones.
-    /// C# `WithFeatures` -> `new LuaParseOptions(this) { _features = ... }`.
+    /// C# `WithFeatures` (LuaParseOptions.cs:80-81) builds an
+    /// ImmutableDictionary with StringComparer.OrdinalIgnoreCase — the
+    /// keys are case-insensitive and a duplicate key (ignoring case)
+    /// keeps the LAST value (the ToImmutableDictionary semantics;
+    /// Finding 65 restored them).
     pub fn with_features(&self, features: Vec<(String, String)>) -> Self {
+        let mut deduped: Vec<(String, String)> = Vec::new();
+        for (key, value) in features {
+            if let Some(slot) = deduped
+                .iter_mut()
+                .find(|(existing, _)| existing.eq_ignore_ascii_case(&key))
+            {
+                slot.1 = value;
+            } else {
+                deduped.push((key, value));
+            }
+        }
         Self {
             syntax_options: self.syntax_options.clone(),
-            features,
+            features: deduped,
             documentation_mode: self.documentation_mode.clone(),
         }
     }
@@ -106,6 +131,42 @@ impl LuaParseOptions {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn features_are_case_insensitive_like_the_csharp_dictionary() {
+        // Finding 65: the C# WithFeatures builds an ImmutableDictionary
+        // with StringComparer.OrdinalIgnoreCase (LuaParseOptions.cs:80-81)
+        // — the keys are case-insensitive and a duplicate key (ignoring
+        // case) keeps the LAST value; the equality/hash include the
+        // features (the C# EqualsHelper SequenceEqual — order- and
+        // case-sensitive pairs, LuaParseOptions.cs:107-115).
+        let options = LuaParseOptions::default_options();
+        // The lookup is case-insensitive.
+        let with = options.with_features(vec![("Foo".to_string(), "1".to_string())]);
+        assert_eq!(with.get_feature("foo"), Some("1"));
+        assert_eq!(with.get_feature("FOO"), Some("1"));
+        assert_eq!(options.get_feature("anything"), None);
+        // A duplicate key (ignoring case) keeps the last value.
+        let with = options.with_features(vec![
+            ("Foo".to_string(), "1".to_string()),
+            ("foo".to_string(), "2".to_string()),
+        ]);
+        assert_eq!(with.get_feature("FOO"), Some("2"));
+        // The equality includes the features (the SequenceEqual
+        // semantics — order- and case-sensitive pairs).
+        assert_ne!(
+            options,
+            options.with_features(vec![("foo".to_string(), "bar".to_string())])
+        );
+        assert_ne!(
+            options.with_features(vec![("foo".to_string(), "1".to_string())]),
+            options.with_features(vec![("FOO".to_string(), "1".to_string())])
+        );
+        assert_eq!(
+            options.with_features(vec![("foo".to_string(), "1".to_string())]),
+            options.with_features(vec![("foo".to_string(), "1".to_string())])
+        );
+    }
+
     use super::*;
 
     #[test]
