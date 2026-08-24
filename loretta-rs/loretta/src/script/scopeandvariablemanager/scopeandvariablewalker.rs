@@ -521,11 +521,8 @@ impl ScopeAndVariableWalker {
                 // C# GotoLabelWalker.VisitGotoLabelStatement (the label
                 // walker runs after the scope walk; the unified walk handles
                 // it inline with the current scope).
-                self.label_walker.visit_goto_label_stmt(
-                    &self.scope(),
-                    &label.name().token().to_string(),
-                    label.to_string(),
-                );
+                self.label_walker
+                    .visit_goto_label_stmt(&self.scope(), label);
             }
             ast::Stmt::Goto(goto) => {
                 // C# GotoWalker.VisitGotoStatement.
@@ -916,6 +913,28 @@ mod tests {
             2,
             "both gotos jump to the label"
         );
+        // Finding 7: the label carries its statement's syntax — including
+        // when the label statement bound to a forward-goto placeholder.
+        assert!(
+            label.label_syntax().is_some(),
+            "the label must carry its statement's syntax"
+        );
+    }
+
+    #[test]
+    fn gotos_to_missing_labels_create_placeholder_labels() {
+        // A goto with no matching label statement creates a placeholder
+        // (the C# GetOrCreateLabel with a null syntax) — the label_syntax
+        // stays None.
+        use crate::scoping::igotolabel::IGotoLabel;
+        let mut manager = ScopeAndVariableManager::new(vec!["goto nowhere\n".to_string()]);
+        let state = manager.get_lazy_state();
+        let entries: Vec<_> = state.labels.values().collect();
+        assert_eq!(entries.len(), 1);
+        let label = entries[0].borrow();
+        assert_eq!(label.name(), "nowhere");
+        assert_eq!(label.jump_syntaxes().len(), 1);
+        assert!(label.label_syntax().is_none());
     }
 
     #[test]
@@ -933,5 +952,9 @@ mod tests {
             !std::rc::Rc::ptr_eq(entries[0], entries[1]),
             "the nested label must be its own label"
         );
+        // Finding 7: both labels carry their own statements' syntax.
+        use crate::scoping::igotolabel::IGotoLabel;
+        assert!(entries[0].borrow().label_syntax().is_some());
+        assert!(entries[1].borrow().label_syntax().is_some());
     }
 }

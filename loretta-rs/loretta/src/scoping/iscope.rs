@@ -5,6 +5,8 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
+use full_moon::ast::lua52;
+
 use crate::scoping::igotolabel::GotoLabel;
 use crate::scoping::ivariable::{IVariable, SharedVariable, Variable};
 use crate::scoping::node::Node;
@@ -250,18 +252,23 @@ impl Scope {
     pub fn get_or_create_label_in(
         scope: &Rc<RefCell<Scope>>,
         name: &str,
+        label_syntax: Option<lua52::Label>,
     ) -> Rc<RefCell<GotoLabel>> {
         debug_assert!(!name.is_empty(), "label name must not be empty");
         let existing = scope.borrow().try_get_label(name);
         match existing {
             Some(label) => label,
-            None => Self::create_label_in(scope, name),
+            None => Self::create_label_in(scope, name, label_syntax),
         }
     }
 
     /// C# CreateLabel (IScope.cs:226-231).
-    pub fn create_label_in(scope: &Rc<RefCell<Scope>>, name: &str) -> Rc<RefCell<GotoLabel>> {
-        let label = Rc::new(RefCell::new(GotoLabel::new(name.to_string(), None)));
+    pub fn create_label_in(
+        scope: &Rc<RefCell<Scope>>,
+        name: &str,
+        label_syntax: Option<lua52::Label>,
+    ) -> Rc<RefCell<GotoLabel>> {
+        let label = Rc::new(RefCell::new(GotoLabel::new(name.to_string(), label_syntax)));
         scope
             .borrow_mut()
             .labels
