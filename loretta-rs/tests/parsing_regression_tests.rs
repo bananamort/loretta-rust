@@ -114,14 +114,30 @@ fn language_parser_when_parsing_union_types_do_not_generate_bitwise_operator_not
     parse_clean("type T = A | B", &LuaSyntaxOptions::LUAU);
 }
 
+/// The C# tree.GetDiagnostics(): the lexer + parser diagnostics merged in
+/// source order (the differential's compute_diagnostics tree pass).
+fn tree_diagnostics(
+    text: &str,
+    options: &LuaSyntaxOptions,
+) -> Vec<loretta::errors::lexerdiagnostics::LexerDiagnostic> {
+    let mut diagnostics = lexer_diagnostics(text, options);
+    if let Ok(ast) = full_moon::parse(text) {
+        diagnostics.extend(loretta::errors::parserdiagnostics::parser_diagnostics(
+            &ast, options,
+        ));
+        diagnostics.sort_by_key(|d| d.start);
+    }
+    diagnostics
+}
+
 #[test]
 fn language_parser_when_parsing_bitwise_and_expressions_generates_bitwise_operator_not_supported_errors(
 ) {
     // Issue 100 — the C# expects ERR_BitwiseOperatorsNotSupportedInVersion at
-    // (1,13); the port's lexerdiagnostics scanner carries the C#-mirror
-    // gating.
+    // (1,13); the port's parser diagnostics carry the C#-mirror gating for
+    // the single '&'/'|' binary operators (LanguageParser.cs:908-912).
     let text = "local x = y & z";
-    let diagnostics = lexer_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUAU);
     assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
     assert_eq!(
         diagnostics[0].code,
@@ -135,7 +151,7 @@ fn language_parser_when_parsing_bitwise_or_expressions_generates_bitwise_operato
 ) {
     // Issue 100.
     let text = "local x = y | z";
-    let diagnostics = lexer_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUAU);
     assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
     assert_eq!(
         diagnostics[0].code,
