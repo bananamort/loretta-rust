@@ -14,6 +14,9 @@
 //     string); the Jenkins hash value has no port equivalent.
 
 use full_moon::tokenizer::{StringLiteralQuoteType, Symbol, TokenType};
+use full_moon::LuaVersion;
+
+use loretta::luaparseoptions::LuaParseOptions;
 
 use loretta::backtickstringtype::BacktickStringType;
 use loretta::luasyntaxoptions::LuaSyntaxOptions;
@@ -23,6 +26,7 @@ use loretta_tests::lexicaltestdata::{
     enabled_symbols, get_token_pairs, get_token_pairs_with_separators, get_tokens, get_trivia,
 };
 use loretta_tests::lexicaltestsbase::LexicalTestsBase;
+use loretta_tests::luatestbase::options_to_version;
 use loretta_tests::shorttoken::{TextSpan, TokenValue};
 
 /// The C# LexToken + the first token's leading trivia (the C# SyntaxToken
@@ -244,10 +248,15 @@ fn lexer_covers_all_tokens() {
     }
 }
 
-/// Whether the row is a `goto`-identifier row of a goto-less preset (the
-/// full_moon version model always lexes the Goto symbol — documented above).
+/// Whether the row is a `goto`-identifier row of a goto-less preset whose
+/// full_moon version lexes the Goto symbol (the Luau mapping). The lua51
+/// mapping lexes `goto` as the identifier exactly like the C# — the Lua51
+/// rows are NOT skipped (Finding 58 stopped the over-skip).
 fn is_skipped_goto_row(preset: &LuaSyntaxOptions, kind: &TokenType, text: &str) -> bool {
-    !preset.accept_goto && matches!(kind, TokenType::Identifier { .. }) && text == "goto"
+    !preset.accept_goto
+        && matches!(kind, TokenType::Identifier { .. })
+        && text == "goto"
+        && options_to_version(&LuaParseOptions::new(preset.clone())) != LuaVersion::lua51()
 }
 
 /// Whether the row is an octal literal (the full_moon tokenizer has no octal

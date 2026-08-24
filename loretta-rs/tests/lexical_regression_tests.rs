@@ -85,86 +85,194 @@ fn lexer_warns_about_hex_floats_properly_when_preset_doesnt_support_integers() {
     assert_eq!(diagnostics[0].line_col(raw_text), (1, 1));
 }
 
+/// The port's ContextualKind equivalent (the C# token.ContextualKind —
+/// LuaExtensions.cs:44-46): the keyword/symbol tokens carry their own
+/// kind, the plain identifiers carry none (Finding 58 restored the tuple
+/// dimension the C# regression tests assert).
+fn contextual_kind(kind: &TokenType) -> Option<TokenType> {
+    match kind {
+        TokenType::Identifier { .. } => None,
+        other => Some(other.clone()),
+    }
+}
+
 #[test]
 fn lexer_does_not_lex_continue_as_keyword_when_it_has_been_disabled() {
-    // Issue 127.
+    // Issue 127 — the C# asserts the (Kind, ContextualKind) tuples: the
+    // continue is an identifier with NO contextual keyword kind under the
+    // Lua51, while the keyword tokens carry their own kind (Finding 58
+    // restored the tuple dimension).
     let raw_text = "local continue = true\n\nif continue then\n    continue = false\nend";
     let tokens = LexicalTestsBase::lex(raw_text, Some(&LuaSyntaxOptions::LUA51));
-    let expected = [
-        TokenType::Symbol {
-            symbol: full_moon::tokenizer::Symbol::Local,
-        },
-        TokenType::Identifier {
-            identifier: "continue".into(),
-        },
-        TokenType::Symbol {
-            symbol: full_moon::tokenizer::Symbol::Equal,
-        },
-        TokenType::Symbol {
-            symbol: full_moon::tokenizer::Symbol::True,
-        },
-        TokenType::Symbol {
-            symbol: full_moon::tokenizer::Symbol::If,
-        },
-        TokenType::Identifier {
-            identifier: "continue".into(),
-        },
-        TokenType::Symbol {
-            symbol: full_moon::tokenizer::Symbol::Then,
-        },
-        TokenType::Identifier {
-            identifier: "continue".into(),
-        },
-        TokenType::Symbol {
-            symbol: full_moon::tokenizer::Symbol::Equal,
-        },
-        TokenType::Symbol {
-            symbol: full_moon::tokenizer::Symbol::False,
-        },
-        TokenType::Symbol {
-            symbol: full_moon::tokenizer::Symbol::End,
-        },
-        TokenType::Eof,
+    let expected: &[(TokenType, Option<TokenType>)] = &[
+        (
+            TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Local,
+            },
+            Some(TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Local,
+            }),
+        ),
+        (
+            TokenType::Identifier {
+                identifier: "continue".into(),
+            },
+            None,
+        ),
+        (
+            TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Equal,
+            },
+            Some(TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Equal,
+            }),
+        ),
+        (
+            TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::True,
+            },
+            Some(TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::True,
+            }),
+        ),
+        (
+            TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::If,
+            },
+            Some(TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::If,
+            }),
+        ),
+        (
+            TokenType::Identifier {
+                identifier: "continue".into(),
+            },
+            None,
+        ),
+        (
+            TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Then,
+            },
+            Some(TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Then,
+            }),
+        ),
+        (
+            TokenType::Identifier {
+                identifier: "continue".into(),
+            },
+            None,
+        ),
+        (
+            TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Equal,
+            },
+            Some(TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Equal,
+            }),
+        ),
+        (
+            TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::False,
+            },
+            Some(TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::False,
+            }),
+        ),
+        (
+            TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::End,
+            },
+            Some(TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::End,
+            }),
+        ),
+        (TokenType::Eof, Some(TokenType::Eof)),
     ];
     assert_eq!(tokens.len(), expected.len());
-    for (i, (actual, expected)) in tokens.iter().zip(expected.iter()).enumerate() {
-        assert_eq!(&actual.kind, expected, "token {i}");
+    for (i, (actual, (expected_kind, expected_contextual))) in
+        tokens.iter().zip(expected.iter()).enumerate()
+    {
+        assert_eq!(&actual.kind, expected_kind, "token {i}");
+        assert_eq!(
+            &contextual_kind(&actual.kind),
+            expected_contextual,
+            "token {i} contextual kind"
+        );
     }
 }
 
 #[test]
 fn lexer_does_not_lex_goto_as_keyword_when_it_has_been_disabled() {
-    // Issue 127 — the lua51 version mapping lexes the `::` as two colons and
-    // the `goto` as the identifier (the C# Lua51 behavior).
+    // Issue 127 — the C# asserts the (Kind, ContextualKind) tuples: under
+    // the lua51 mapping the `::` is two colons and the `goto` is an
+    // identifier with no contextual keyword kind (Finding 58 restored the
+    // tuple dimension).
     let raw_text = "::label::\n\ngoto label";
     let tokens = LexicalTestsBase::lex(raw_text, Some(&LuaSyntaxOptions::LUA51));
-    let expected = [
-        TokenType::Symbol {
-            symbol: full_moon::tokenizer::Symbol::Colon,
-        },
-        TokenType::Symbol {
-            symbol: full_moon::tokenizer::Symbol::Colon,
-        },
-        TokenType::Identifier {
-            identifier: "label".into(),
-        },
-        TokenType::Symbol {
-            symbol: full_moon::tokenizer::Symbol::Colon,
-        },
-        TokenType::Symbol {
-            symbol: full_moon::tokenizer::Symbol::Colon,
-        },
-        TokenType::Identifier {
-            identifier: "goto".into(),
-        },
-        TokenType::Identifier {
-            identifier: "label".into(),
-        },
-        TokenType::Eof,
+    let expected: &[(TokenType, Option<TokenType>)] = &[
+        (
+            TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Colon,
+            },
+            Some(TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Colon,
+            }),
+        ),
+        (
+            TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Colon,
+            },
+            Some(TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Colon,
+            }),
+        ),
+        (
+            TokenType::Identifier {
+                identifier: "label".into(),
+            },
+            None,
+        ),
+        (
+            TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Colon,
+            },
+            Some(TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Colon,
+            }),
+        ),
+        (
+            TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Colon,
+            },
+            Some(TokenType::Symbol {
+                symbol: full_moon::tokenizer::Symbol::Colon,
+            }),
+        ),
+        (
+            TokenType::Identifier {
+                identifier: "goto".into(),
+            },
+            None,
+        ),
+        (
+            TokenType::Identifier {
+                identifier: "label".into(),
+            },
+            None,
+        ),
+        (TokenType::Eof, Some(TokenType::Eof)),
     ];
     assert_eq!(tokens.len(), expected.len());
-    for (i, (actual, expected)) in tokens.iter().zip(expected.iter()).enumerate() {
-        assert_eq!(&actual.kind, expected, "token {i}");
+    for (i, (actual, (expected_kind, expected_contextual))) in
+        tokens.iter().zip(expected.iter()).enumerate()
+    {
+        assert_eq!(&actual.kind, expected_kind, "token {i}");
+        assert_eq!(
+            &contextual_kind(&actual.kind),
+            expected_contextual,
+            "token {i} contextual kind"
+        );
     }
 }
 
