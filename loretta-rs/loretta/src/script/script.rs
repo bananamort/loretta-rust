@@ -151,12 +151,18 @@ impl Script {
         let handle_location =
             |this: &mut Script,
              location: &Node,
+             tree_id_bases: &[u64],
              errors: &mut Vec<RenameError>,
              trees_with_locations: &mut Vec<usize>| {
-                let tree_idx = this
-                    .trees
+                // C# trees.Add(location.SyntaxTree) (Script.cs:180-187):
+                // the node's own tree. The port recovers it exactly from
+                // the node id against the state's per-tree id bases
+                // (Finding 12) — no substring search, which misattributed
+                // shared text to the first matching tree (defaulting to
+                // tree 0).
+                let tree_idx = tree_id_bases
                     .iter()
-                    .position(|t| t.contains(&location.text))
+                    .rposition(|&base| base <= location.id)
                     .unwrap_or(0);
                 if !trees_with_locations.contains(&tree_idx) {
                     trees_with_locations.push(tree_idx);
@@ -186,19 +192,38 @@ impl Script {
             };
 
         let state = self.scope_and_variable_manager.get_lazy_state();
+        let tree_id_bases = state.tree_id_bases.clone();
         let read_locations = variable.borrow().read_locations();
         let write_locations = variable.borrow().write_locations();
         let declaration = variable.borrow().declaration().cloned();
         drop(state);
 
         for location in &read_locations {
-            handle_location(self, location, &mut errors, &mut trees_with_locations);
+            handle_location(
+                self,
+                location,
+                &tree_id_bases,
+                &mut errors,
+                &mut trees_with_locations,
+            );
         }
         for location in &write_locations {
-            handle_location(self, location, &mut errors, &mut trees_with_locations);
+            handle_location(
+                self,
+                location,
+                &tree_id_bases,
+                &mut errors,
+                &mut trees_with_locations,
+            );
         }
         if let Some(declaration) = &declaration {
-            handle_location(self, declaration, &mut errors, &mut trees_with_locations);
+            handle_location(
+                self,
+                declaration,
+                &tree_id_bases,
+                &mut errors,
+                &mut trees_with_locations,
+            );
         }
 
         if new_name.chars().any(|c| c as u32 >= 0x7F) {
@@ -358,6 +383,41 @@ mod tests {
                 assert_eq!(errors.len(), 1, "only the affected tree: {errors:?}");
             }
             other => panic!("expected the error: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn rename_attributes_locations_to_the_nodes_own_tree() {
+        // Finding 12: the tree attribution is exact (the C#
+        // location.SyntaxTree, Script.cs:180-187) — the substring search
+        // misattributed text shared with another tree to the first
+        // matching tree.
+        let mut script = Script::new_with_options(
+            vec![
+                "local a = 1\n".to_string(),
+                "local a = 1\nprint(a)\n".to_string(),
+            ],
+            LuaSyntaxOptions::LUA51,
+        );
+        let root = script.root_scope();
+        let root_contained = root.borrow().contained_scopes();
+        let files: Vec<_> = root_contained.iter().collect();
+        assert_eq!(files.len(), 2);
+        let variable = files[1]
+            .borrow()
+            .declared_variables()
+            .iter()
+            .find(|v| v.borrow().name() == "a")
+            .expect("the second tree's a variable")
+            .clone();
+        let result = script.rename_variable(&variable, "b");
+        match result {
+            RenameResult::Ok(new_script) => {
+                assert_eq!(new_script.syntax_trees()[0], "local a = 1\n");
+                assert!(new_script.syntax_trees()[1].contains("local b = 1"));
+                assert!(new_script.syntax_trees()[1].contains("print(b)"));
+            }
+            RenameResult::Err(errors) => panic!("rename failed: {errors:?}"),
         }
     }
 }
