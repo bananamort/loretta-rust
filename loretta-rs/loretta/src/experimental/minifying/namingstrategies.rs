@@ -54,6 +54,16 @@ pub fn is_keyword(name: &str) -> bool {
     )
 }
 
+/// C# getMaxDigits (NamingStrategies.cs:45): slot <= 1 ? 1 :
+/// ceil(log(slot, base) + 1).
+fn get_max_digits(slot: i32, base: usize) -> usize {
+    if slot <= 1 {
+        1
+    } else {
+        (slot as f64).log(base as f64).ceil() as usize + 1
+    }
+}
+
 /// C# StringSequentialCore (NamingStrategies.cs:18-49).
 fn string_sequential_core(
     mut slot: i32,
@@ -62,6 +72,7 @@ fn string_sequential_core(
     alphabet: &str,
     min_prefix_count: usize,
 ) -> String {
+    let original_slot = slot;
     // The base-conversion digits (the C# fills the buffer from the least
     // significant digit; the digit count is the conversion length).
     let mut digits: Vec<char> = Vec::new();
@@ -73,11 +84,25 @@ fn string_sequential_core(
             break;
         }
     }
+    let digit_count = digits.len();
     digits.reverse();
     let base_name: String = digits.into_iter().collect();
     let unavailable_names = MinifyingUtils::get_unavailable_names(scopes);
+    // The C# StringSequentialCore (NamingStrategies.cs:20-43): the names
+    // tried are fullName[prefixes..] for prefixes from
+    // firstNameChar - minPrefixCount down to 1 — the name's prefix count
+    // ASCENDS 0..(firstNameChar - 1), so the per-slot ceiling (the max
+    // prefix count tried) is getMaxDigits - digitCount + 4 — 4 at exact
+    // base powers (digitCount == getMaxDigits) and 5 elsewhere, never
+    // above 5 (Finding 40; the port's fixed 0..=5 could return a
+    // 5-prefix name at power slots where the C# throws after 0..4).
+    let max_prefixes = get_max_digits(original_slot, alphabet.len())
+        + NamingStrategies::MAX_PREFIX_COUNT
+        - digit_count
+        - 1;
+    let max_prefixes = max_prefixes.clamp(0, NamingStrategies::MAX_PREFIX_COUNT);
     let mut prefixes = min_prefix_count;
-    while prefixes <= NamingStrategies::MAX_PREFIX_COUNT {
+    while prefixes <= max_prefixes {
         let name = format!("{}{}", prefix.to_string().repeat(prefixes), base_name);
         if !is_keyword(&name) && !unavailable_names.contains(&name) {
             return name;

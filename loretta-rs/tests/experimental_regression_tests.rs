@@ -3,6 +3,9 @@
 
 use loretta::experimental::luaextensions::minify_with_strategy;
 use loretta::experimental::minifying::namingstrategies::NamingStrategies;
+use loretta::scoping::iscope::Scope;
+use loretta::scoping::scopekind::ScopeKind;
+use loretta::scoping::variablekind::VariableKind;
 
 #[test]
 fn naming_strategies_alphabetic_does_not_fall_into_an_infinite_loop() {
@@ -25,6 +28,40 @@ fn minifier_does_not_double_free_on_read_and_write_ending_in_the_same_place() {
         let minified = minify_with_strategy(code, Box::new(NamingStrategies::alphabetical));
         assert_eq!(minified, *expected, "minify({code:?})");
     }
+}
+
+#[test]
+fn alphabetic_strategy_throws_at_power_slots_like_the_csharp() {
+    // Finding 40: the C# per-slot ceiling is getMaxDigits - digitCount +
+    // 4 — at the exact base powers (slot 26, 676, ...) it throws after
+    // trying the 0..4-prefix names; the port's fixed 0..=5 could return
+    // a 5-prefix name there.
+    let scope = Scope::new(ScopeKind::Global, None, None);
+    for name in ["ba", "_ba", "__ba", "___ba", "____ba"] {
+        Scope::create_variable_in(&scope, VariableKind::Global, name, None);
+    }
+    let scopes = vec![scope];
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        NamingStrategies::alphabetical(26, &scopes)
+    }));
+    assert!(
+        result.is_err(),
+        "the power slot must throw after 0..4 prefixes like the C#"
+    );
+    // The non-power slots keep the full 0..=5 range: the 5-prefix name
+    // is tried.
+    let scope = Scope::new(ScopeKind::Global, None, None);
+    for name in ["z", "_z", "__z", "___z", "____z", "_____z"] {
+        Scope::create_variable_in(&scope, VariableKind::Global, name, None);
+    }
+    let scopes = vec![scope];
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        NamingStrategies::alphabetical(25, &scopes)
+    }));
+    assert!(
+        result.is_err(),
+        "the non-power slot must throw after 0..5 prefixes like the C#"
+    );
 }
 
 #[test]
