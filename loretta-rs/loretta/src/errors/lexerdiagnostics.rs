@@ -242,7 +242,9 @@ impl<'a> Scanner<'a> {
         if self.try_scan_long_string() && !self.long_string_terminated {
             self.error_current(ErrorCode::ErrUnfinishedString);
         }
-        self.only_shebangs_and_newlines = false;
+        // A token ends the trivia run — the next run re-arms the shebang
+        // guard (the C# per-run init, Lexer.cs:729; Finding 25).
+        self.only_shebangs_and_newlines = true;
     }
 
     /// The C# TryScanLongString (Lexer.cs:911-985). Returns whether a long
@@ -334,7 +336,9 @@ impl<'a> Scanner<'a> {
                 Vec::new(),
             );
         }
-        self.only_shebangs_and_newlines = false;
+        // The C# keeps the guard through the shebang (Lexer.cs:782-793
+        // never touches it) — it only stays true when it was already true
+        // (the dispatch gate), so no write is needed (Finding 25).
     }
 
     /// The C# ScanStringLiteral (Lexer.ShortString.cs:8-52) — the diagnostics
@@ -348,15 +352,15 @@ impl<'a> Scanner<'a> {
             match self.peek() {
                 None => {
                     self.error_current(ErrorCode::ErrUnfinishedString);
-                    return;
+                    break;
                 }
                 Some(c) if is_newline(c) => {
                     self.error_current(ErrorCode::ErrUnfinishedString);
-                    return;
+                    break;
                 }
                 Some(c) if c == quote => {
                     self.pos += 1;
-                    return;
+                    break;
                 }
                 Some('\\') => self.scan_escape_sequence(),
                 Some(_) => {
@@ -364,6 +368,9 @@ impl<'a> Scanner<'a> {
                 }
             }
         }
+        // A token ends the trivia run — the next run re-arms the shebang
+        // guard (the C# per-run init, Lexer.cs:729; Finding 25).
+        self.only_shebangs_and_newlines = true;
     }
 
     /// The C# ScanEscapeSequence (Lexer.ShortString.cs:104-299) — the
@@ -599,7 +606,9 @@ impl<'a> Scanner<'a> {
                 Vec::new(),
             );
         }
-        self.only_shebangs_and_newlines = false;
+        // A token ends the trivia run — the next run re-arms the shebang
+        // guard (the C# per-run init, Lexer.cs:729; Finding 25).
+        self.only_shebangs_and_newlines = true;
     }
 
     /// The C# number scanning (Lexer.Numbers.cs) — the diagnostics only.
@@ -653,7 +662,9 @@ impl<'a> Scanner<'a> {
         } else {
             self.scan_decimal_number();
         }
-        self.only_shebangs_and_newlines = false;
+        // A token ends the trivia run — the next run re-arms the shebang
+        // guard (the C# per-run init, Lexer.cs:729; Finding 25).
+        self.only_shebangs_and_newlines = true;
         let _ = start;
     }
 
@@ -1050,7 +1061,9 @@ impl<'a> Scanner<'a> {
         if has_unicode && !self.options.use_lua_jit_identifier_rules {
             self.error_current(ErrorCode::ErrLuajitIdentifierRulesNotSupportedInVersion);
         }
-        self.only_shebangs_and_newlines = false;
+        // A token ends the trivia run — the next run re-arms the shebang
+        // guard (the C# per-run init, Lexer.cs:729; Finding 25).
+        self.only_shebangs_and_newlines = true;
     }
 
     /// The bad-character token (the C# ScanToken default) — the lexer emits
@@ -1072,7 +1085,9 @@ impl<'a> Scanner<'a> {
             ErrorCode::ErrInvalidStatement,
             Vec::new(),
         );
-        self.only_shebangs_and_newlines = false;
+        // A token ends the trivia run — the next run re-arms the shebang
+        // guard (the C# per-run init, Lexer.cs:729; Finding 25).
+        self.only_shebangs_and_newlines = true;
     }
 }
 
@@ -1098,18 +1113,12 @@ fn is_newline(c: char) -> bool {
 }
 
 /// C# CharUtils.IsWhitespace (CharUtils.cs:155-159) — [ \t\n\v\f\r] —
-/// the `\z` escape's skip set (Lexer.ShortString.cs:141). The
-/// dispatch-level whitespace skip uses the C# trivia set instead
-/// (Lexer.cs:735-748 — no newlines, the newline arm re-arms the shebang
-/// guard) — Finding 23.
+/// the `\z` escape's skip set (Lexer.ShortString.cs:141). The dispatch
+/// inlines the C# trivia handling instead (Lexer.cs:735-749: the
+/// space/tab fast path keeps the shebang guard, '\v'/'\f' clear it) —
+/// Findings 23 + 25.
 fn is_whitespace(c: char) -> bool {
     c == ' ' || ('\t'..='\r').contains(&c)
-}
-
-/// C# LexSyntaxTrivia's whitespace characters (Lexer.cs:735-748) —
-/// ' ', '\t', '\v', '\f'; the newlines are separate trivia.
-fn is_trivia_whitespace(c: char) -> bool {
-    matches!(c, ' ' | '\t' | '\u{0B}' | '\u{0C}')
 }
 
 /// The C# CharUtils.DecimalValue — the ASCII digit value.
@@ -1145,13 +1154,25 @@ pub fn lexer_diagnostics(source: &str, options: &LuaSyntaxOptions) -> Vec<LexerD
     let mut s = Scanner::new(source, options);
     while !s.at_end() {
         let c = s.peek().expect("not at end");
-        if is_trivia_whitespace(c) {
+        if c == ' ' || c == '\t' {
+            // C# Lexer.cs:735-739: the space/tab fast path keeps the
+            // shebang guard.
             s.pos += 1;
             continue;
         }
+        if matches!(c, '\u{0B}' | '\u{0C}') {
+            // C# Lexer.cs:743-749: '\v' and '\f' clear the shebang guard
+            // (Finding 25).
+            s.pos += 1;
+            s.only_shebangs_and_newlines = false;
+            continue;
+        }
         if is_newline(c) {
+            // C# Lexer.cs:776-780: the newline trivia KEEPS the guard —
+            // it starts true at each trivia run (after every token,
+            // Finding 25); the port's old re-arm resurrected it after
+            // comments.
             s.scan_end_of_line();
-            s.only_shebangs_and_newlines = true;
             continue;
         }
         match c {
@@ -1170,11 +1191,13 @@ pub fn lexer_diagnostics(source: &str, options: &LuaSyntaxOptions) -> Vec<LexerD
             // have NO lexer rule — the C# parser reports the binary-operator
             // gating (LanguageParser.cs:908-912, ported in
             // parserdiagnostics.rs); the lexer reports only '<<'
-            // (Lexer.cs:501-507 — Finding 22).
+            // (Lexer.cs:501-507 — Finding 22). Every TOKEN re-arms the
+            // shebang guard for the next trivia run (the C# per-run init,
+            // Lexer.cs:729 — Finding 25).
             '&' | '|' | '#' | '+' | '-' | '*' | '/' | '^' | '=' | '~' | '%' | ',' | '.' | ':'
             | ';' | '?' | '!' | '(' | ')' | '[' | ']' | '{' | '}' => {
                 s.pos += 1;
-                s.only_shebangs_and_newlines = false;
+                s.only_shebangs_and_newlines = true;
             }
             '<' => {
                 s.pos += 1;
@@ -1192,11 +1215,11 @@ pub fn lexer_diagnostics(source: &str, options: &LuaSyntaxOptions) -> Vec<LexerD
                         );
                     }
                 }
-                s.only_shebangs_and_newlines = false;
+                s.only_shebangs_and_newlines = true;
             }
             '>' => {
                 s.pos += 1;
-                s.only_shebangs_and_newlines = false;
+                s.only_shebangs_and_newlines = true;
             }
             _ => s.scan_other(),
         }

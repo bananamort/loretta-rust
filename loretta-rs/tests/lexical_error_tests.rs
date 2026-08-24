@@ -355,6 +355,38 @@ fn lexer_emits_diagnostic_on_unfinished_long_comment() {
 }
 
 #[test]
+fn lexer_shebang_guard_follows_the_csharp_trivia_semantics() {
+    // Finding 25: the C# guard starts true at each trivia run (after
+    // every token) and clears on '\v'/'\f'/comments; the newline and the
+    // space/tab fast path keep it (Lexer.cs:725-798). The port's
+    // scan-global flag re-armed by newlines and never cleared by
+    // '\v'/'\f' diverged. Every case pinned against the C# oracle on
+    // Lua51 (the oracle's LUA1012 for the first two inputs is the C#
+    // parser's statement rule, not ported here — only the recognition
+    // flip is asserted).
+    let options = LuaSyntaxOptions {
+        accept_shebang: false,
+        ..LuaSyntaxOptions::ALL
+    };
+    // '\v' clears the guard: not a shebang — no shebang diagnostic.
+    parse_and_validate_lex("\u{0B}#! foo\n", &options, &[]);
+    // A comment clears the guard and the newline does NOT re-arm it:
+    // not a shebang.
+    parse_and_validate_lex("-- c\n#! foo\n", &options, &[]);
+    // The token re-arms the guard and the tab keeps it: a shebang.
+    parse_and_validate_lex(
+        "1\t#! foo\n",
+        &options,
+        &[exp(
+            ErrorCode::ErrShebangNotSupportedInLuaVersion,
+            1,
+            3,
+            "#! foo",
+        )],
+    );
+}
+
+#[test]
 fn lexer_emits_diagnostic_when_shebang_is_found_and_lua_syntax_options_accept_shebang_is_false() {
     let source = "#!/bin/bash";
     let options = LuaSyntaxOptions {
