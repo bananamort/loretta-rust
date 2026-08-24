@@ -585,6 +585,26 @@ fn hex_float_strings_extract_zero_like_the_csharp_decfloat_first() {
 }
 
 #[test]
+fn length_counts_utf16_units_like_the_csharp_string_length() {
+    // Finding 32: the C# folds #"é" to 1 and #"😀" to 2 (the .NET
+    // string Length is the UTF-16 code-unit count, ConstantFolder.cs:
+    // 43) — the port's .len() counted UTF-8 bytes (2 and 4). Pinned
+    // against the C# oracle on AllWithIntegers.
+    let cases: &[(&str, LuaValue)] = &[
+        ("#'é'", LuaValue::Float(1.0)),
+        ("#'😀'", LuaValue::Float(2.0)),
+        ("#'abc'", LuaValue::Float(3.0)),
+        ("#'aé😀'", LuaValue::Float(4.0)),
+    ];
+    for (source, expected) in cases {
+        let folded = fold_expression(source, false);
+        let actual = folded_value(&folded)
+            .unwrap_or_else(|| panic!("the fold of {source:?} must produce a literal: {folded:?}"));
+        assert_value(&actual, expected);
+    }
+}
+
+#[test]
 fn overflow_strings_stay_untouched() {
     // Finding 30: the C# RealParser returns FALSE on Overflow
     // (RealParser.cs:30-36) — the extraction fails and the expression
