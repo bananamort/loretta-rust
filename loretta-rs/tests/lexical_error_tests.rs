@@ -196,6 +196,36 @@ local num4 = 0x1p999999";
 }
 
 #[test]
+fn lexer_reports_toolarge_for_hex_values_wider_than_64_bits() {
+    // Finding 20: the C# TryParse paths fail only on values wider than 64
+    // bits — the 64-bit patterns parse as two's-complement longs (no
+    // error) and the ull suffix covers the full u64 range.
+    // Every case pinned against the C# oracle on AllWithIntegers.
+    parse_and_validate_lex(
+        "local num1 = 0xffffffffffffffff\n\
+         local num2 = 0x8000000000000000\n\
+         local num3 = 0xffffffffffffffffull\n\
+         local num4 = 0x10000000000000000\n\
+         local num5 = 0x10000000000000000ull",
+        &LuaSyntaxOptions::ALL_WITH_INTEGERS,
+        &[
+            exp(
+                ErrorCode::ErrNumericLiteralTooLarge,
+                4,
+                14,
+                "0x10000000000000000",
+            ),
+            exp(
+                ErrorCode::ErrNumericLiteralTooLarge,
+                5,
+                14,
+                "0x10000000000000000ull",
+            ),
+        ],
+    );
+}
+
+#[test]
 fn lexer_does_not_report_invalid_number_for_digitless_hex() {
     // Finding 18: the C# hex parser has no digit-less ErrInvalidNumber
     // rule — only the binary and octal parsers do
