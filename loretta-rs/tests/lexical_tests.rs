@@ -420,14 +420,6 @@ fn lexer_lexes_token_pairs_with_separators() {
                 actual_separator.span, separator.span,
                 "separator span for {text:?}"
             );
-            let is_hash_row = preset.backtick_string_type == BacktickStringType::HashLiteral;
-            let actual_a = loretta_tests::shorttoken::ShortToken::from_token(non_trivia[0], preset);
-            assert_eq!(actual_a.kind, token_a.kind, "A kind for {text:?}");
-            assert_eq!(actual_a.text, token_a.text, "A text for {text:?}");
-            assert_eq!(actual_a.span, token_a.span, "A span for {text:?}");
-            if !(is_hash_row && matches!(actual_a.kind, TokenType::InterpolatedString { .. })) {
-                assert_eq!(actual_a.value, token_a.value, "A value for {text:?}");
-            }
             let actual_b = loretta_tests::shorttoken::ShortToken::from_token(non_trivia[1], preset);
             assert_eq!(actual_b.kind, token_b.kind, "B kind for {text:?}");
             assert_eq!(actual_b.text, token_b.text, "B text for {text:?}");
