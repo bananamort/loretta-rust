@@ -9,7 +9,11 @@ pub struct StringUtils;
 impl StringUtils {
     /// Returns whether the provided string is a valid identifier.
     pub fn is_identifier(value: &str) -> bool {
-        if value.is_empty() {
+        // C# string.IsNullOrWhiteSpace (StringUtils.cs:38-39): a
+        // whitespace-only name — including the >= U+007F whitespace such
+        // as U+00A0 — must fail; the >= 0x7F first-char rule alone
+        // passed it in Rust (Finding 50).
+        if value.trim().is_empty() {
             return false;
         }
 
@@ -40,5 +44,26 @@ impl StringUtils {
             end -= 1;
         }
         &value[start..end]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn is_identifier_rejects_whitespace_names() {
+        // Finding 50: the C# IsIdentifier starts with the
+        // IsNullOrWhiteSpace guard (StringUtils.cs:38-39) — whitespace
+        // names (including the >= U+007F whitespace such as U+00A0 and
+        // U+2003) fail, while the port's >= 0x7F first-char rule passed
+        // them.
+        assert!(!StringUtils::is_identifier(""));
+        assert!(!StringUtils::is_identifier(" \t"));
+        assert!(!StringUtils::is_identifier("\u{00A0}"));
+        assert!(!StringUtils::is_identifier("\u{2003}"));
+        assert!(StringUtils::is_identifier("a"));
+        assert!(StringUtils::is_identifier("_abc1"));
+        assert!(StringUtils::is_identifier("\u{00E9}"));
     }
 }
