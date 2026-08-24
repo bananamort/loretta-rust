@@ -14,10 +14,12 @@
 //     (the Luau parses the keyword cleanly); the port asserts the LUA51
 //     parse errors are non-empty and the Luau parse is clean (the full_moon
 //     error codes differ from the C# parser codes).
-//   - Lexer_Lexes_Number_WithLeadingUnderscoresBeforePrefix: the three cases
-//     are dropped — the full_moon number scanning has no
-//     leading-underscore-before-prefix support (`0_____b111001` lexes as
-//     `0` + an identifier).
+//   - Lexer_Lexes_Number_WithLeadingUnderscoresBeforePrefix: the C# lexes
+//     each case as ONE NumericLiteralToken with the value — full_moon's
+//     number scanning has no leading-underscore-before-prefix support
+//     (`0_____b111001` lexes as `0_____` + `b111001`), so the test pins
+//     the full_moon token split (the value equivalence is unreachable;
+//     Finding 51).
 
 use full_moon::tokenizer::{StringLiteralQuoteType, TokenType};
 
@@ -231,8 +233,26 @@ fn lexer_token_cache_correctly_handles_syntax_options() {
 
 #[test]
 fn lexer_lexes_number_with_leading_underscores_before_prefix() {
-    // Issue 149 — the three C# cases
-    // (`0_____b111001`, `0_____xFFFF`, `0_xFFFF`) are dropped — the full_moon
-    // number scanning has no leading-underscore-before-prefix support (the
-    // text lexes as `0` + an identifier), documented above.
+    // Issue 149 — the C# lexes each input as ONE NumericLiteralToken
+    // with the binary/hex value (0_____b111001 -> 57, 0_____xFFFF ->
+    // 65535, 0_xFFFF -> 65535). full_moon's number scanning consumes
+    // the leading underscores into the number token and the prefix
+    // letter starts an identifier (`0_____` + `b111001`), so the
+    // token-kind equivalence is pinned against the full_moon tokens
+    // (the value equivalence is unreachable — the full_moon Number
+    // token carries no value; Finding 51 restored the assertions).
+    for text in ["0_____b111001", "0_____xFFFF", "0_xFFFF"] {
+        let tokens = LexicalTestsBase::lex(text, None);
+        assert_eq!(tokens.len(), 3, "the full_moon split for {text}");
+        assert!(
+            matches!(tokens[0].kind, TokenType::Number { .. }),
+            "the first token must be the number for {text}: {:?}",
+            tokens[0].kind
+        );
+        assert!(
+            matches!(tokens[1].kind, TokenType::Identifier { .. }),
+            "the second token must be the identifier for {text}: {:?}",
+            tokens[1].kind
+        );
+    }
 }
