@@ -666,6 +666,34 @@ fn length_counts_utf16_units_like_the_csharp_string_length() {
 }
 
 #[test]
+fn concat_parenthesized_operands_panic_like_the_csharp_throw() {
+    // Finding 38: the C# concat checks the DIRECT operand kind and
+    // throws ExceptionUtilities.Unreachable for parenthesized operands
+    // (ConstantFolder.cs:122-135) — the port's paren-stripping folded
+    // them (a crash/success asymmetry). The port now panics like the C#
+    // throw.
+    let result = std::panic::catch_unwind(|| {
+        let _ = fold_expression("('a') .. 'b'", false);
+    });
+    assert!(
+        result.is_err(),
+        "the parenthesized concat must panic like the C# throw"
+    );
+    let result = std::panic::catch_unwind(|| {
+        let _ = fold_expression("'a' .. ('b')", false);
+    });
+    assert!(
+        result.is_err(),
+        "the parenthesized concat must panic like the C# throw"
+    );
+    // The direct literals still fold.
+    let folded = fold_expression("'a' .. 'b'", false);
+    let actual = folded_value(&folded)
+        .unwrap_or_else(|| panic!("the fold must produce a literal: {folded:?}"));
+    assert_eq!(actual, LuaValue::String("ab".to_string()));
+}
+
+#[test]
 fn chained_const_table_access_folds_bottom_up() {
     // Finding 37: the lookup was gated on suffixes.len() == 1 — the C#
     // folds per access bottom-up (ConstantFolder.cs:336-407), so
