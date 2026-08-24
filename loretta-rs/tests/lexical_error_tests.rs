@@ -196,6 +196,32 @@ local num4 = 0x1p999999";
 }
 
 #[test]
+fn lexer_does_not_report_invalid_number_for_digitless_hex() {
+    // Finding 18: the C# hex parser has no digit-less ErrInvalidNumber
+    // rule — only the binary and octal parsers do
+    // (Lexer.Numbers.cs:81-85, 156-160). The Int64-format presets report
+    // ErrNumericLiteralTooLarge instead (the C# long.TryParse("")
+    // failure, Lexer.Numbers.cs:417-418).
+    parse_and_validate_lex(
+        "local num1 = 0x\nlocal num2 = 0x_\n",
+        &LuaSyntaxOptions::ALL_WITH_INTEGERS,
+        &[
+            exp(ErrorCode::ErrNumericLiteralTooLarge, 1, 14, "0x"),
+            exp(ErrorCode::ErrNumericLiteralTooLarge, 2, 14, "0x_"),
+        ],
+    );
+    // The double-only presets route the integer hex through
+    // HexFloat.DoubleFromHexString — no error for valid hex (the C#
+    // throws FormatException on the digit-less builder — the port's
+    // anti-crash silence).
+    parse_and_validate_lex(
+        "local num1 = 0xff\nlocal num2 = 0x\n",
+        &LuaSyntaxOptions::ALL,
+        &[],
+    );
+}
+
+#[test]
 fn lexer_emits_diagnostic_on_decimal_integer_overflow() {
     // Finding 17: the decimal path never accumulated the value, so the C#
     // long/ulong.TryParse failures (Lexer.Numbers.cs:248-251, 256-259,
