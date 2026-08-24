@@ -298,12 +298,11 @@ impl ScopeAndVariableWalker {
             ast::Stmt::NumericFor(nf) => {
                 // C# VisitNumericForStatement (…:195-221). The C# creates ONE
                 // statement node used for the block scope AND the iteration
-                // variable's declaration.
-                self.visit_expr(nf.start());
-                self.visit_expr(nf.end());
-                if let Some(step) = nf.step() {
-                    self.visit_expr(step);
-                }
+                // variable's declaration. The generated visitor visits the
+                // identifiers FIRST and the header expressions after
+                // (Syntax.xml.Internal.g.cs:9991-9995), so the node ids
+                // allocate in that order (Finding 41; the port used to
+                // visit the header expressions first).
                 let node = self.base.make_node("NumericForStatement", nf.to_string());
                 let scope = self.create_block_scope(node.clone());
                 self.record_statement_scope(&node, nf.for_token().start_position().bytes(), &scope);
@@ -319,16 +318,20 @@ impl ScopeAndVariableWalker {
                     self.record_identifier(id_name.clone(), nf.index_variable());
                     self.variables.insert(id_name, variable);
                 }
+                self.visit_expr(nf.start());
+                self.visit_expr(nf.end());
+                if let Some(step) = nf.step() {
+                    self.visit_expr(step);
+                }
                 self.visit_block(nf.block());
                 self.pop_scope(&scope);
             }
             ast::Stmt::GenericFor(gf) => {
                 // C# VisitGenericForStatement (…:223-252). The C# creates ONE
                 // statement node used for the block scope AND the iteration
-                // variables' declarations.
-                for expr in gf.expressions().iter() {
-                    self.visit_expr(expr);
-                }
+                // variables' declarations. The identifiers come first, then
+                // the header expressions (the generated visitor order,
+                // Syntax.xml.Internal.g.cs:9991-9995 — Finding 41).
                 let node = self.base.make_node("GenericForStatement", gf.to_string());
                 let scope = self.create_block_scope(node.clone());
                 self.record_statement_scope(&node, gf.for_token().start_position().bytes(), &scope);
@@ -346,6 +349,9 @@ impl ScopeAndVariableWalker {
                     let name_node = self.base.make_node("IdentifierName", identifier_name);
                     self.record_identifier(name_node.clone(), name);
                     self.variables.insert(name_node, variable);
+                }
+                for expr in gf.expressions().iter() {
+                    self.visit_expr(expr);
                 }
                 self.visit_block(gf.block());
                 self.pop_scope(&scope);
@@ -806,6 +812,34 @@ mod tests {
     use crate::scoping::iscope::IScope;
     use crate::scoping::ivariable::IVariable;
     use crate::script::scopeandvariablemanager::manager::ScopeAndVariableManager;
+    #[test]
+    fn for_loop_iteration_variables_are_recorded_before_the_header_expressions() {
+        // Finding 41: the C# generated visitor visits the for-loop
+        // identifiers FIRST and the header expressions after
+        // (Syntax.xml.Internal.g.cs:9991-9995) — the port used to visit
+        // the header expressions first, allocating the node ids in the
+        // opposite order (the audit's "(valid)" both ways; the port now
+        // matches the C# order).
+        let mut manager = ScopeAndVariableManager::new(vec![
+            "for i = f(), 10 do end\nfor k, v in pairs(t) do end".to_string(),
+        ]);
+        let state = manager.get_lazy_state();
+        let id_of = |name: &str| {
+            state
+                .variables
+                .iter()
+                .find(|(node, _)| node.text == name)
+                .map(|(node, _)| node.id)
+                .unwrap_or_else(|| panic!("the {name:?} identifier node must exist"))
+        };
+        // The iteration variable's identifier precedes the header
+        // expression's identifiers.
+        assert!(id_of("i") < id_of("f"));
+        assert!(id_of("k") < id_of("v"));
+        assert!(id_of("v") < id_of("pairs"));
+        assert!(id_of("v") < id_of("t"));
+    }
+
     #[test]
     fn builds_the_scope_tree() {
         let mut manager = ScopeAndVariableManager::new(vec![
