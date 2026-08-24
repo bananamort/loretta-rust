@@ -43,7 +43,7 @@ pub fn compute_diagnostics(code: &str, preset: &str) -> Result<(Vec<Diagnostic>,
     let options = preset_options(preset);
     let scanner_diags = loretta::errors::lexerdiagnostics::lexer_diagnostics(code, &options);
     let parser_diags = full_moon::parse(code)
-        .map(|ast| parser_diagnostics(&ast, &options))
+        .map(|ast| parser_diagnostics(&ast, &options, code))
         .unwrap_or_default();
     // The tree pass: the parser diagnostics and the token diagnostics merged
     // in source position order (the C# tree.GetDiagnostics()).
