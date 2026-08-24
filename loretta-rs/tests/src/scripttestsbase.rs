@@ -33,7 +33,7 @@ impl ScriptTestsBase {
             produced.is_empty(),
             "unexpected diagnostics for {code:?}: {produced:?}"
         );
-        let script = Script::new(vec![code.to_string()]);
+        let script = Script::new_with_options(vec![code.to_string()], options.clone());
         (ast, script)
     }
 
@@ -57,6 +57,9 @@ impl ScriptTestsBase {
                 "unexpected diagnostics for {code:?}: {produced:?}"
             );
         }
-        Script::new(codes.iter().map(|c| c.to_string()).collect())
+        Script::new_with_options(
+            codes.iter().map(|c| c.to_string()).collect(),
+            options.clone(),
+        )
     }
 }

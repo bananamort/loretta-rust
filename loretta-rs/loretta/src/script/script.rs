@@ -4,6 +4,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use crate::luasyntaxoptions::LuaSyntaxOptions;
 use crate::scoping::igotolabel::GotoLabel;
 use crate::scoping::iscope::{IScope, Scope};
 use crate::scoping::ivariable::{IVariable, SharedVariable};
@@ -34,8 +35,14 @@ pub struct Script {
     /// C# Script.SyntaxTrees (Script.cs:43) — the dropped SyntaxTree maps
     /// to the tree texts.
     trees: Vec<String>,
-    /// C# _scopeAndVariableManager (Script.cs:15).
-    scope_and_variable_manager: ScopeAndVariableManager,
+    /// C# _scopeAndVariableManager (Script.cs:15). Boxed to keep the
+    /// RenameResult::Ok variant small (the port's no-#[allow] rule).
+    scope_and_variable_manager: Box<ScopeAndVariableManager>,
+    /// The per-tree syntax options (the C# SyntaxTree carries its
+    /// LuaParseOptions; the port's trees are strings, so the options are
+    /// stored alongside — the rename gate's UseLuaJitIdentifierRules
+    /// check, Script.cs:158-165).
+    tree_options: Vec<LuaSyntaxOptions>,
 }
 
 impl Script {
@@ -46,12 +53,22 @@ impl Script {
 
     /// C# Script() + Script(ImmutableArray<SyntaxTree>) (Script.cs:20-41).
     /// The C# default-array ArgumentException maps to the empty-trees
-    /// interpretation (the port has no default-array state).
+    /// interpretation (the port has no default-array state). Trees without
+    /// explicit options parse with LuaParseOptions.Default = All
+    /// (LuaParseOptions.cs:15).
     pub fn new(trees: Vec<String>) -> Script {
+        Script::new_with_options(trees, LuaSyntaxOptions::ALL)
+    }
+
+    /// C# Script(ImmutableArray<SyntaxTree>) with one option set for every
+    /// tree (the C# tests parse each tree with the same LuaParseOptions).
+    pub fn new_with_options(trees: Vec<String>, options: LuaSyntaxOptions) -> Script {
+        let tree_count = trees.len();
         let scope_and_variable_manager = ScopeAndVariableManager::new(trees.clone());
         Script {
             trees,
-            scope_and_variable_manager,
+            scope_and_variable_manager: Box::new(scope_and_variable_manager),
+            tree_options: vec![options; tree_count],
         }
     }
 
@@ -185,14 +202,16 @@ impl Script {
         }
 
         if new_name.chars().any(|c| c as u32 >= 0x7F) {
-            // C#: the per-tree IdentifierNameNotSupportedError for trees
-            // without LuaJIT identifier rules (the dropped options map to
-            // the port's single tree mode).
-            for tree in &self.trees {
-                let _ = tree;
-                errors.push(RenameError::IdentifierNameNotSupported {
-                    tree_without_support: tree.clone(),
-                });
+            // C# Script.cs:158-165: only the AFFECTED trees — and only
+            // those without LuaJIT identifier rules — report the error.
+            for &idx in &trees_with_locations {
+                if let Some(options) = self.tree_options.get(idx) {
+                    if !options.use_lua_jit_identifier_rules {
+                        errors.push(RenameError::IdentifierNameNotSupported {
+                            tree_without_support: self.trees[idx].clone(),
+                        });
+                    }
+                }
             }
         }
 
@@ -201,7 +220,12 @@ impl Script {
         }
 
         let new_trees = self.rename_in_trees(variable, new_name, &trees_with_locations);
-        RenameResult::Ok(Script::new(new_trees))
+        // The C# rewritten trees keep their options (Script.cs:170-178).
+        RenameResult::Ok(Script {
+            trees: new_trees.clone(),
+            scope_and_variable_manager: Box::new(ScopeAndVariableManager::new(new_trees)),
+            tree_options: self.tree_options.clone(),
+        })
     }
 
     /// C# RenameVariable's final loop: the RenameRewriter over each affected
@@ -280,6 +304,60 @@ mod tests {
                 assert!(new_script.syntax_trees()[1].contains("print(renamed)"));
             }
             RenameResult::Err(errors) => panic!("rename failed: {errors:?}"),
+        }
+    }
+
+    #[test]
+    fn renames_to_luajit_identifier_names_when_the_tree_allows_them() {
+        // Finding 11: the C# gate is per-tree UseLuaJitIdentifierRules
+        // (Script.cs:158-165) — trees with LuaJIT identifier rules accept
+        // non-ASCII names.
+        let mut script = Script::new_with_options(
+            vec!["local a = 1\n".to_string()],
+            LuaSyntaxOptions::LUAJIT20,
+        );
+        let root = script.root_scope();
+        let file = root.borrow().contained_scopes()[0].clone();
+        let variable = file
+            .borrow()
+            .declared_variables()
+            .iter()
+            .find(|v| v.borrow().name() == "a")
+            .expect("the a variable")
+            .clone();
+        let result = script.rename_variable(&variable, "\u{30EB}");
+        match result {
+            RenameResult::Ok(new_script) => {
+                assert!(new_script.syntax_trees()[0].contains("local \u{30EB} = 1"));
+            }
+            RenameResult::Err(errors) => panic!("expected the rename to succeed: {errors:?}"),
+        }
+    }
+
+    #[test]
+    fn unsupported_identifier_error_only_for_affected_trees() {
+        // Finding 11: the C# gate reports only the trees with the
+        // variable's locations (Script.cs:158-165) — not every tree.
+        let mut script = Script::new_with_options(
+            vec!["local a = 1\n".to_string(), "local b = 2\n".to_string()],
+            LuaSyntaxOptions::LUA51,
+        );
+        let root = script.root_scope();
+        let root_contained = root.borrow().contained_scopes();
+        let files: Vec<_> = root_contained.iter().collect();
+        let variable = files[0]
+            .borrow()
+            .declared_variables()
+            .iter()
+            .find(|v| v.borrow().name() == "a")
+            .expect("the a variable")
+            .clone();
+        let result = script.rename_variable(&variable, "\u{FEFF}");
+        match result {
+            RenameResult::Err(errors) => {
+                assert_eq!(errors.len(), 1, "only the affected tree: {errors:?}");
+            }
+            other => panic!("expected the error: {other:?}"),
         }
     }
 }
