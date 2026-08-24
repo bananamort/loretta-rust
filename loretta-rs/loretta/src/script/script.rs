@@ -100,19 +100,26 @@ impl Script {
 
     /// C# Script.FindScope (Script.cs:96-112): walks the node's ancestors
     /// looking for the nearest scope of the provided kind or a more generic
-    /// one (the C# `scope.Kind <= kind` — the scope-kind ordering).
+    /// one (the C# `scope.Kind <= kind` — the scope-kind ordering). The
+    /// identifier/statement location store is consulted first (the port's
+    /// precomputed enclosing scopes), then the scope-created nodes' map
+    /// (Finding 14 keeps the two separate).
     pub fn find_scope(&mut self, node: &Node, kind: ScopeKind) -> Option<Rc<RefCell<Scope>>> {
         let state = self.scope_and_variable_manager.get_lazy_state();
         let mut current = Some(node.clone());
         while let Some(n) = current {
-            if let Some(scope) = state.scopes.get(&n) {
+            let scope = state
+                .location_scopes
+                .get(&n)
+                .or_else(|| state.scopes.get(&n));
+            if let Some(scope) = scope {
                 if scope.borrow().kind() as u8 <= kind as u8 {
                     return Some(scope.clone());
                 }
             }
             // The C# AncestorsAndSelf walk over the scope map — the parent
             // scope lookup happens through the containing chain.
-            current = match state.scopes.get(&n) {
+            current = match scope {
                 Some(scope) => scope.borrow().containing_scope(),
                 None => None,
             }
@@ -419,5 +426,41 @@ mod tests {
             }
             RenameResult::Err(errors) => panic!("rename failed: {errors:?}"),
         }
+    }
+
+    #[test]
+    fn get_scope_returns_null_for_identifier_nodes() {
+        // Finding 14: the C# _scopes map holds only scope-created nodes —
+        // GetScope(identifier) is null (Script.cs:55-59); the location
+        // store is separate.
+        let mut script = Script::new(vec!["print(a)\n".to_string()]);
+        let state = script.scope_and_variable_manager_state();
+        let (identifier, _) = state
+            .location_scopes
+            .iter()
+            .find(|(node, _)| node.kind_name() == "IdentifierName")
+            .expect("the identifier node");
+        assert!(
+            script.get_scope(identifier).is_none(),
+            "identifiers are not in the scopes map"
+        );
+    }
+
+    #[test]
+    fn find_scope_resolves_identifiers_via_the_location_store() {
+        // Finding 14: find_scope keeps resolving identifiers (the C#
+        // ancestor walk equivalent) after the location store split.
+        let mut script = Script::new(vec!["do print(a) end\n".to_string()]);
+        let state = script.scope_and_variable_manager_state();
+        let (identifier, scope) = state
+            .location_scopes
+            .iter()
+            .find(|(node, _)| node.kind_name() == "IdentifierName")
+            .expect("the identifier node");
+        assert_eq!(scope.borrow().kind(), ScopeKind::Block);
+        let found = script
+            .find_scope(identifier, ScopeKind::Block)
+            .expect("the found scope");
+        assert!(Rc::ptr_eq(&found, scope));
     }
 }

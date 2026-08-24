@@ -48,6 +48,7 @@ impl ScopeAndVariableManager {
                 HashMap::new(),
                 HashMap::new(),
                 Vec::new(),
+                HashMap::new(),
             );
         }
 
@@ -60,6 +61,7 @@ impl ScopeAndVariableManager {
         let mut variables: HashMap<Node, SharedVariable> = HashMap::new();
         let mut scopes: HashMap<Node, Rc<RefCell<Scope>>> = HashMap::new();
         let mut labels: HashMap<Node, Rc<RefCell<GotoLabel>>> = HashMap::new();
+        let mut location_scopes: HashMap<Node, Rc<RefCell<Scope>>> = HashMap::new();
 
         for tree in trees {
             tree_id_bases.push(next_id.get());
@@ -69,11 +71,19 @@ impl ScopeAndVariableManager {
                 &mut variables,
                 &mut scopes,
                 &mut labels,
+                &mut location_scopes,
                 &next_id,
             );
         }
 
-        State::new(root_scope, variables, scopes, labels, tree_id_bases)
+        State::new(
+            root_scope,
+            variables,
+            scopes,
+            labels,
+            tree_id_bases,
+            location_scopes,
+        )
     }
 
     /// C# AddTree (ScopeAndVariableManager.cs:56-74): the three walkers over
@@ -88,6 +98,7 @@ impl ScopeAndVariableManager {
         variables: &mut HashMap<Node, SharedVariable>,
         scopes: &mut HashMap<Node, Rc<RefCell<Scope>>>,
         labels: &mut HashMap<Node, Rc<RefCell<GotoLabel>>>,
+        location_scopes: &mut HashMap<Node, Rc<RefCell<Scope>>>,
         next_id: &std::rc::Rc<std::cell::Cell<u64>>,
     ) {
         let full_ast =
@@ -117,16 +128,15 @@ impl ScopeAndVariableManager {
         // (Finding 5 — the last tree must not win).
         variables.extend(walked_variables);
         labels.extend(walked_labels);
-        // The statement nodes the variables carry (the walker's
-        // location_scopes — the row-772 FindScope store) join the state's
-        // scopes map so the Script.FindScope ancestor walk can resolve them
-        // (the C# walks the node's parents; the port precomputes the
-        // enclosing scopes).
-        let mut merged_scopes = walked_scopes;
+        scopes.extend(walked_scopes);
+        // The identifier + statement location store stays SEPARATE from the
+        // scopes map (Finding 14): the C# _scopes holds only scope-created
+        // nodes, so Script.GetScope(identifier) must return null; the port's
+        // FindScope resolves the precomputed enclosing scopes here (the C#
+        // walks the node's parents; the port precomputes them).
         for (node, (_, scope)) in walker.location_scopes {
-            merged_scopes.insert(node, scope);
+            location_scopes.insert(node, scope);
         }
-        scopes.extend(merged_scopes);
         let _ = walker;
     }
 }
