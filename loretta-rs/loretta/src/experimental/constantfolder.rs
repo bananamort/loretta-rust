@@ -945,6 +945,11 @@ fn num_mod(l: NumValue, r: NumValue) -> NumValue {
     }
 }
 
+/// C# Math.Pow((double) leftNum, (double) rightNum) (ConstantFolder.cs —
+/// the Caret case). The port uses f64::powf — the same platform pow, and
+/// the corpus-visible cases agree; last-ulp differences vs the .NET
+/// runtime are theoretically possible on some inputs (Finding 66 — note
+/// only, the corpus agrees).
 fn num_pow(l: NumValue, r: NumValue) -> f64 {
     let a = match l {
         NumValue::Long(x) => x as f64,
