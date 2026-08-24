@@ -711,9 +711,16 @@ impl<'a> Scanner<'a> {
         {
             self.error_current(ErrorCode::ErrNumberSuffixNotSupportedInVersion);
         }
-        if digits < 1 {
-            self.error_current(ErrorCode::ErrInvalidNumber);
-        }
+        // No digit-less ErrInvalidNumber for hex — only the C# binary and
+        // octal parsers have that rule (Lexer.Numbers.cs:81-85, 156-160);
+        // the hex parser (306-435) has none (Finding 18). The
+        // Int64-format presets report TooLarge for the digit-less builder
+        // instead (the C# long.TryParse("") failure, Lexer.Numbers.cs:
+        // 417-418); the double-only presets route the integer hex through
+        // HexFloat.DoubleFromHexString with no error for valid text (the
+        // C# throws FormatException on the digit-less builder — the
+        // port's anti-crash silence, like the StringUtils trim
+        // adaptation).
         if is_hex_float {
             if !self.options.accept_hex_float_literals {
                 self.error_current(ErrorCode::ErrHexFloatLiteralNotSupportedInVersion);
@@ -722,8 +729,13 @@ impl<'a> Scanner<'a> {
             if hex_float_overflows(text) {
                 self.error_current(ErrorCode::ErrDoubleOverflow);
             }
-        } else if !is_unsigned_long && num > i64::MAX as u64 {
-            self.error_current(ErrorCode::ErrNumericLiteralTooLarge);
+        } else if self.options.hex_integer_format != IntegerFormats::NotSupported {
+            // The digit-less builder fails both TryParses; the value
+            // check keeps the C# ulong-escape (the ull suffix parses past
+            // i64::MAX, Lexer.Numbers.cs:364-371).
+            if digits == 0 || (!is_unsigned_long && num > i64::MAX as u64) {
+                self.error_current(ErrorCode::ErrNumericLiteralTooLarge);
+            }
         }
     }
 
