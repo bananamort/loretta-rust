@@ -428,14 +428,13 @@ impl ScopeAndVariableWalker {
                 // C# creates ONE statement node shared by the declaration, the
                 // write location, and the function scope; the name flows
                 // through the rewriter's VisitSimpleFunctionName (renamed).
+                // The node maps to the FUNCTION scope (the C#
+                // CreateFunctionScope(node), ScopeAndVariableWalker.cs:326) —
+                // no enclosing-scope record here, or the manager's
+                // location_scopes merge would overwrite it (Finding 9).
                 let node = self
                     .base
                     .make_node("LocalFunctionDeclarationStatement", lf.to_string());
-                self.record_statement_scope(
-                    &node,
-                    lf.local_token().start_position().bytes(),
-                    &self.scope(),
-                );
                 let name = lf.name().token().to_string();
                 if !name.trim().is_empty() {
                     let variable = Scope::create_variable_in(
@@ -1001,6 +1000,29 @@ mod tests {
         assert!(
             capturing.iter().any(|s| Rc::ptr_eq(s, function_scopes[0])),
             "a must record the function scope as a capturing scope"
+        );
+    }
+
+    #[test]
+    fn local_function_statement_nodes_map_to_their_function_scope() {
+        // Finding 9: the C# CreateFunctionScope(node) maps the local
+        // function's statement node to the FUNCTION scope
+        // (ScopeAndVariableWalker.cs:326) — the manager's location_scopes
+        // merge must not overwrite it with the enclosing scope.
+        let mut manager =
+            ScopeAndVariableManager::new(vec!["local function f() end\n".to_string()]);
+        let state = manager.get_lazy_state();
+        let (node, scope) = state
+            .scopes
+            .iter()
+            .find(|(node, _)| node.kind_name() == "LocalFunctionDeclarationStatement")
+            .expect("the local-function statement node");
+        assert_eq!(scope.borrow().kind(), ScopeKind::Function);
+        let scope_ref = scope.borrow();
+        let scope_node = scope_ref.node().expect("the function scope's node");
+        assert_eq!(
+            scope_node.id, node.id,
+            "the function scope's node must be the statement node itself"
         );
     }
 }
