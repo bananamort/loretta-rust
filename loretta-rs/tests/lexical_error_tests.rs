@@ -448,6 +448,52 @@ fn lexer_emits_diagnostic_when_hex_float_is_found_and_lua_syntax_options_accept_
 }
 
 #[test]
+fn lexer_emits_underscore_diagnostic_twice_for_prefixed_hex_literals() {
+    // Finding 24: the C# reports the underscore gating twice for the
+    // prefixed literals with an underscore at the prefix position —
+    // once at the dispatch (Lexer.cs:562-591, the '0'..prefix span) and
+    // once in the parser (Lexer.Numbers.cs:359-360, the full token
+    // text). The binary/octal in-parser checks use the digit-loop flag
+    // (Lexer.Numbers.cs:76-77, 153-154), so their prefix underscore
+    // stays single.
+    let source = "local num1 = 0_b101\nlocal num2 = 0_xF\nlocal num3 = 0b1_01";
+    let options = LuaSyntaxOptions {
+        accept_underscore_in_number_literals: false,
+        ..LuaSyntaxOptions::ALL
+    };
+    parse_and_validate_lex(
+        source,
+        &options,
+        &[
+            exp(
+                ErrorCode::ErrUnderscoreInNumericLiteralNotSupportedInVersion,
+                1,
+                14,
+                "0_b",
+            ),
+            exp(
+                ErrorCode::ErrUnderscoreInNumericLiteralNotSupportedInVersion,
+                2,
+                14,
+                "0_x",
+            ),
+            exp(
+                ErrorCode::ErrUnderscoreInNumericLiteralNotSupportedInVersion,
+                2,
+                14,
+                "0_xF",
+            ),
+            exp(
+                ErrorCode::ErrUnderscoreInNumericLiteralNotSupportedInVersion,
+                3,
+                14,
+                "0b1_01",
+            ),
+        ],
+    );
+}
+
+#[test]
 fn lexer_emits_diagnostic_when_underscore_in_number_is_found_and_lua_syntax_options_accept_underscores_in_numbers_is_false(
 ) {
     let source = "local num1 = 0b1010_1010\nlocal num2 = 0o7070_7070\nlocal num3 = 10_10.10_10\nlocal num4 = 0xf_f";

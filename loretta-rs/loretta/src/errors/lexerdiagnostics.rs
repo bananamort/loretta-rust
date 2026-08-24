@@ -606,28 +606,58 @@ impl<'a> Scanner<'a> {
     fn scan_number(&mut self) {
         let start = self.pos;
         self.lexeme_start = start;
-        let c1 = self.peek_at(1);
-        match (self.peek().expect("a digit"), c1) {
-            ('0', Some('x') | Some('X')) => {
-                self.pos += 2;
-                self.scan_hex_number();
+        if self.peek() == Some('0') {
+            // C# Lexer.cs:546-598: the underscores between the '0' and the
+            // prefix letter belong to the prefixed literal — the dispatch
+            // scans past them and reports the underscore gating here (the
+            // in-parser checks report it again — the C# emits twice for
+            // the prefixed literals, Finding 24).
+            let mut i = 1;
+            while self.peek_at(i) == Some('_') {
+                i += 1;
             }
-            ('0', Some('b') | Some('B')) => {
-                self.pos += 2;
-                self.scan_binary_number();
+            let has_prefix_underscores = i != 1;
+            match self.peek_at(i) {
+                Some('x') | Some('X') => {
+                    self.pos += i + 1;
+                    if !self.options.accept_underscore_in_number_literals && has_prefix_underscores
+                    {
+                        self.error_current(
+                            ErrorCode::ErrUnderscoreInNumericLiteralNotSupportedInVersion,
+                        );
+                    }
+                    self.scan_hex_number();
+                }
+                Some('b') | Some('B') => {
+                    self.pos += i + 1;
+                    if !self.options.accept_underscore_in_number_literals && has_prefix_underscores
+                    {
+                        self.error_current(
+                            ErrorCode::ErrUnderscoreInNumericLiteralNotSupportedInVersion,
+                        );
+                    }
+                    self.scan_binary_number();
+                }
+                Some('o') | Some('O') => {
+                    self.pos += i + 1;
+                    if !self.options.accept_underscore_in_number_literals && has_prefix_underscores
+                    {
+                        self.error_current(
+                            ErrorCode::ErrUnderscoreInNumericLiteralNotSupportedInVersion,
+                        );
+                    }
+                    self.scan_octal_number();
+                }
+                _ => self.scan_decimal_number(),
             }
-            ('0', Some('o') | Some('O')) => {
-                self.pos += 2;
-                self.scan_octal_number();
-            }
-            _ => self.scan_decimal_number(),
+        } else {
+            self.scan_decimal_number();
         }
         self.only_shebangs_and_newlines = false;
         let _ = start;
     }
 
     fn scan_hex_number(&mut self) {
-        let mut has_underscores = false;
         let mut digits = 0usize;
         let mut is_hex_float = false;
         let mut num: u64 = 0;
@@ -652,7 +682,6 @@ impl<'a> Scanner<'a> {
                 }
                 Some('_') => {
                     self.pos += 1;
-                    has_underscores = true;
                 }
                 _ => break,
             }
@@ -666,7 +695,6 @@ impl<'a> Scanner<'a> {
                     digits += 1;
                 } else if c == '_' {
                     self.pos += 1;
-                    has_underscores = true;
                 } else {
                     break;
                 }
@@ -679,11 +707,8 @@ impl<'a> Scanner<'a> {
                 self.pos += 1;
             }
             while let Some(c) = self.peek() {
-                if is_decimal(c) {
+                if is_decimal(c) || c == '_' {
                     self.pos += 1;
-                } else if c == '_' {
-                    self.pos += 1;
-                    has_underscores = true;
                 } else {
                     break;
                 }
@@ -710,7 +735,13 @@ impl<'a> Scanner<'a> {
         } else if self.advance_if_matches("i") {
             is_complex = true;
         }
-        if has_underscores && !self.options.accept_underscore_in_number_literals {
+        // C# Lexer.Numbers.cs:359-360: the hex underscore check runs on the
+        // FULL token text (info.Text.IndexOf('_')) — the prefix underscores
+        // (0_xF) included — so the dispatch-time and in-parser errors both
+        // land for those literals (Finding 24).
+        if !self.options.accept_underscore_in_number_literals
+            && self.source[self.byte_of_char(self.lexeme_start)..number_end].contains('_')
+        {
             self.error_current(ErrorCode::ErrUnderscoreInNumericLiteralNotSupportedInVersion);
         }
         if (is_unsigned_long || is_signed_long || is_complex)
