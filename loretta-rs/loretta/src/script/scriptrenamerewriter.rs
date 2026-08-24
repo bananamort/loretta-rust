@@ -65,6 +65,7 @@ impl VisitorMut for RenameRewriter {
 /// positions of the nodes mapping to the target variable, and replaces the
 /// tokens via the visitor.
 pub fn rename_in_tree(
+    tree_idx: usize,
     tree: &str,
     variable: &SharedVariable,
     new_name: &str,
@@ -77,8 +78,11 @@ pub fn rename_in_tree(
     };
     // The target node ids come from the script's memoized state (the C#
     // GetVariable map identity); the walk below reproduces the node ids to
-    // collect the token positions.
+    // collect the token positions. The state's node ids continue across
+    // trees (Finding 5), so the re-walk must seed its counter with this
+    // tree's id base.
     let state = script.scope_and_variable_manager_state();
+    let base = state.tree_id_bases.get(tree_idx).copied().unwrap_or(0);
     let target_nodes: HashSet<u64> = state
         .variables
         .iter()
@@ -94,6 +98,7 @@ pub fn rename_in_tree(
         ),
         std::collections::HashMap::new(),
         std::collections::HashMap::new(),
+        std::rc::Rc::new(std::cell::Cell::new(base)),
     );
     walker.visit_ast(&full_ast);
     let positions = walker.identifier_positions;

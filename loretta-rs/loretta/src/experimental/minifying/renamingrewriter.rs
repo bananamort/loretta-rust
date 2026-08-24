@@ -42,6 +42,9 @@ impl RenamingRewriter {
             Scope::new(crate::scoping::scopekind::ScopeKind::Global, None, None),
             std::collections::HashMap::new(),
             std::collections::HashMap::new(),
+            // The minifier's re-walk only needs its own node identities
+            // (the rename table works off this walk's records).
+            std::rc::Rc::new(std::cell::Cell::new(0)),
         );
         walker.visit_ast(full_ast);
         let records: Vec<IdentifierRecord> = walker.identifier_positions;
