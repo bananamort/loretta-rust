@@ -956,8 +956,68 @@ fn parse_double_literal(text: &str) -> Option<f64> {
     if text.starts_with("0x") || text.starts_with("0X") {
         HexFloat::double_from_hex_string(text).ok()
     } else {
-        text.parse::<f64>().ok()
+        parse_decimal_double(text)
     }
+}
+
+/// The C# RealParser.TryParseDouble (RealParser.cs:30-37) for the string
+/// extraction (Finding 28): the leading numeric run is the value and the
+/// trailing garbage is ignored (the FromSource loops, RealParser.cs:
+/// 288-368). An empty run (leading garbage or a leading sign — the C#
+/// "does not support a leading sign character") is NoDigits, which the
+/// C# returns as true with 0.0 (RealParser.cs:384-388). A digit-less
+/// exponent takes the MAX_EXP fallback (RealParser.cs:361-364): the C#
+/// overflows for '+'/none (the extraction fails) and underflows to 0.0
+/// for '-'. The C# RealParser is decimal — a "0x1.8p10" string yields
+/// 0.0 from the leading "0" (the decFloat comes before the hexFloat,
+/// Finding 31).
+fn parse_decimal_double(value: &str) -> Option<f64> {
+    let bytes = value.as_bytes();
+    let mut i = 0;
+    while i < bytes.len() && bytes[i].is_ascii_digit() {
+        i += 1;
+    }
+    if i < bytes.len() && bytes[i] == b'.' {
+        i += 1;
+        while i < bytes.len() && bytes[i].is_ascii_digit() {
+            i += 1;
+        }
+    }
+    // The C# NoDigits (RealParser.cs:384-388): the mantissa is empty —
+    // leading garbage, a leading sign, or a bare dot — and the C#
+    // returns true with 0.0 even when an exponent follows ("e5" -> 0.0).
+    if i == 0 || (i == 1 && bytes[0] == b'.') {
+        return Some(0.0);
+    }
+    if i < bytes.len() && (bytes[i] == b'e' || bytes[i] == b'E') {
+        i += 1;
+        let sign = match bytes.get(i) {
+            Some(b'-') => {
+                i += 1;
+                Some(-1)
+            }
+            Some(b'+') => {
+                i += 1;
+                Some(1)
+            }
+            _ => None,
+        };
+        let digits_start = i;
+        while i < bytes.len() && bytes[i].is_ascii_digit() {
+            i += 1;
+        }
+        if digits_start == i {
+            return match sign {
+                Some(-1) => Some(0.0),
+                _ => None,
+            };
+        }
+    }
+    let run = &value[..i];
+    if run.is_empty() {
+        return Some(0.0);
+    }
+    run.parse::<f64>().ok()
 }
 
 /// C# TryParseNumberInString (ConstantFolder.NumberParsing.cs:20-66).
@@ -982,8 +1042,11 @@ fn try_parse_number_in_string(value: &str) -> Option<NumValue> {
         );
     }
     // s_decFloatRegex with RealParser.TryParseDouble (invariant round-trip).
+    // The value is the DECIMAL run even for "0x..." strings — the C#
+    // RealParser takes the leading decimal run ("0x1.8p10" -> 0.0, the
+    // decFloat-first ordering, Finding 31).
     if is_dec_float(value) {
-        if let Some(f64) = parse_double_literal(value) {
+        if let Some(f64) = parse_decimal_double(value) {
             return Some(NumValue::Double(f64));
         }
     }
@@ -1025,14 +1088,32 @@ fn is_hex_integer(value: &str) -> bool {
     bytes[idx + 2..].iter().all(|b| b.is_ascii_hexdigit())
 }
 
-/// s_decFloatRegex: ^[+\-]?(\.\d+|\d+(\.\d+)?)([eE][+\-]?\d+)?$
+/// s_decFloatRegex: [+\-]?(\.\d+|\d+(\.\d+)?)([eE][+\-]?\d+)? — the C#
+/// regex is UNANCHORED (NumberParsing.cs:16-18): the string only needs
+/// to CONTAIN a match, so the leading garbage is skipped ("v1.5"
+/// contains "1.5"); the trailing garbage is ignored by the RealParser
+/// (Finding 28).
 fn is_dec_float(value: &str) -> bool {
     let bytes = value.as_bytes();
-    let mut idx = 0;
-    if bytes.first() == Some(&b'+') || bytes.first() == Some(&b'-') {
-        idx = 1;
+    for start in 0..bytes.len() {
+        let mut i = start;
+        if bytes[i] == b'+' || bytes[i] == b'-' {
+            i += 1;
+        }
+        if i >= bytes.len() || !(bytes[i] == b'.' || bytes[i].is_ascii_digit()) {
+            continue;
+        }
+        if dec_float_match(&bytes[i..]) {
+            return true;
+        }
     }
-    let rest = &bytes[idx..];
+    false
+}
+
+/// The decFloat pattern body (without the sign — the caller consumes it):
+/// (\.\d+ | \d+(\.\d+)?) ([eE][+\-]?\d+)? — a match anywhere in the slice
+/// (the trailing garbage after the matched number is not part of it).
+fn dec_float_match(rest: &[u8]) -> bool {
     if rest.is_empty() {
         return false;
     }
@@ -1062,20 +1143,21 @@ fn is_dec_float(value: &str) -> bool {
             }
         }
     }
-    // ([eE][+\-]?\d+)?
+    // ([eE][+\-]?\d+)? — the optional group: when the exponent digits
+    // are missing the group fails and the match is the number alone (the
+    // regex backtracks).
     if i < rest.len() && (rest[i] == b'e' || rest[i] == b'E') {
         i += 1;
         if i < rest.len() && (rest[i] == b'+' || rest[i] == b'-') {
             i += 1;
         }
-        if i == rest.len() || !rest[i].is_ascii_digit() {
-            return false;
-        }
-        while i < rest.len() && rest[i].is_ascii_digit() {
-            i += 1;
+        if i < rest.len() && rest[i].is_ascii_digit() {
+            while i < rest.len() && rest[i].is_ascii_digit() {
+                i += 1;
+            }
         }
     }
-    i == rest.len()
+    true
 }
 
 /// s_hexFloatRegex:
@@ -1527,7 +1609,10 @@ mod tests {
         );
         assert_eq!(
             try_parse_number_in_string("0x1.8p10"),
-            Some(NumValue::Double(1536.0))
+            // Finding 28/31: the decFloat comes first and the C# RealParser
+            // takes the leading decimal run — the "0" — so the extraction
+            // yields 0.0 (the C# oracle: print("0x1.8p10" + 1) -> print(1)).
+            Some(NumValue::Double(0.0))
         );
         assert_eq!(try_parse_number_in_string("abc"), None);
         // Any hex-integer string panics with the pinned .NET ArgumentException

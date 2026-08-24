@@ -538,6 +538,45 @@ fn constant_folder_folds_operations_correctly_with_string_extraction_enabled() {
 }
 
 #[test]
+fn string_number_extraction_is_unanchored() {
+    // Finding 28: the C# decFloat regex is UNANCHORED (the string only
+    // needs to contain a match, NumberParsing.cs:16-18) and the
+    // RealParser takes the leading numeric run — the trailing garbage is
+    // ignored, an empty run (leading garbage or a leading sign) is
+    // NoDigits → 0.0, and a digit-less exponent overflows for '+'/none
+    // (no extraction) but underflows to 0.0 for '-'. Every case pinned
+    // against the C# oracle on AllWithIntegers.
+    let cases: &[(&str, LuaValue)] = &[
+        ("'v1.5' + 1", LuaValue::Integer(1)),
+        ("'1.5x' + 1", LuaValue::Float(2.5)),
+        ("'1.x' + 1", LuaValue::Integer(2)),
+        ("'-1.5' + 1", LuaValue::Integer(1)),
+        ("'e5' + 1", LuaValue::Integer(1)),
+        ("'x1.5' + 1", LuaValue::Integer(1)),
+        ("' 1.5x' + 1", LuaValue::Float(2.5)),
+        ("'1.5e2x' + 1", LuaValue::Float(151.0)),
+        ("'0.0015' + 1", LuaValue::Float(1.0015)),
+        ("'1.5e-' + 1", LuaValue::Integer(1)),
+        ("'0x1.8p10' + 1", LuaValue::Integer(1)),
+    ];
+    for (source, expected) in cases {
+        let folded = fold_expression(source, true);
+        let actual = folded_value(&folded)
+            .unwrap_or_else(|| panic!("the fold of {source:?} must produce a literal: {folded:?}"));
+        assert_value(&actual, expected);
+    }
+    // The digit-less exponent with '+' or no sign overflows — the
+    // expression stays untouched.
+    for source in ["'1.5e' + 1", "'1.5e+' + 1"] {
+        let (folded, _wrapper) = folded_wrapper_text(source, true);
+        assert_eq!(
+            folded, source,
+            "{source:?} must stay unfolded (the C# overflow): {folded:?}"
+        );
+    }
+}
+
+#[test]
 fn unary_folds_take_the_operands_trivia() {
     // Finding 27: the C# folded literal takes the OPERAND's trivia
     // (LiteralExpressionWithTriviaFrom(value, operand),
