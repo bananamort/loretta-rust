@@ -19,6 +19,24 @@ is retired; the mapping is in the appendix. Do not reuse v2 numbers.
 | `cargo test` | 181 passed, 0 failed (= the 172 Oracle-1 `#[test]`s + ~9 internal unit tests across binaries) |
 | `differential check corpus/expected` | identical: 1870 · pending: 0 · FAILED: 0 |
 
+## Errata (independent verification pass, 2026-08-23)
+
+Four findings were re-checked against both sides by direct reads and corrected:
+
+- **Finding 16** — RESOLVED as a non-issue: the C# `AddReferencedVariable` early-returns
+  identically when the variable is declared in the scope (`IScope.cs:203-209`), and
+  `GetOrCreateVariable` also adds only locally. The Rust matches; the remaining delta in that
+  area is Finding 13 (Vec vs ISet dedupe).
+- **Finding 40** — arithmetic corrected: the C# start value is
+  `(getMaxDigits + MaxPrefixCount − digitCount) − minPrefixCount` and is always ≥ 4 with the
+  real constants, so the draft's "throws immediately at ≤0 / `getMaxDigits ≤1` ⇒ zero
+  attempts" case cannot occur.
+- **Finding 57** — recursion claim withdrawn: the `default_visit_*` helpers call the full_moon
+  trait's default methods, which are empty no-op hooks — no recursion. The real defect is that
+  the helpers are dead (imported by nothing) and never descend.
+- **Finding 63** — the missing `!=` row is boundary-forced (GLua-only syntax, GMod DROP, no
+  full_moon Symbol); only the `SYMBOL_ROWS` header comment's drop enumeration is incomplete.
+
 ## Artifact counts (derived by direct inspection)
 
 `nodes.json` 744 · `topo.json` 744 · `edges.json` 1335 · `test-nodes.json` 319 ·
@@ -127,10 +145,12 @@ One bullet per issue. Grouped by area; numbering is authoritative for fix tracki
     `script.rs:87-105` — v2's stronger claim withdrawn.)
 15. Two distinct `Parameter` nodes inserted per named parameter (`create_parameter` inserts at
     `:147-151`; callers insert again at `:447,:467,:541,:606`); C# has exactly one per node.
-16. UNVERIFIED LEAD — check before touching: `add_referenced_variable` early-returns when the
-    variable is declared in this scope, skipping parent recursion (`iscope.rs:216-228`), and
-    `get_or_create_variable_in` pushes without any parent walk; determine C#
-    `AddReferencedVariable`/`GetOrCreateVariable` recursion semantics first (`IScope.cs`).
+16. RESOLVED — NOT A DEFECT (checked against the C#): `add_referenced_variable` early-returns
+    when the variable is declared in this scope (`iscope.rs:216-228`) — the C#
+    `AddReferencedVariable` does exactly the same (`if (_declaredVariables.Contains(variable))
+    return;`, `IScope.cs:203-209`), and `GetOrCreateVariable` also adds only locally (the
+    parent walk happens in the lookup, `TryGetVariable`). The Rust matches; the remaining delta
+    in this area is Finding 13 (Vec vs ISet dedupe).
 
 ### C. Lexer-diagnostics scanner (vs the deleted C# lexer's observable diagnostics)
 
@@ -199,8 +219,13 @@ One bullet per issue. Grouped by area; numbering is authoritative for fix tracki
     (`RenamingRewriter.RenameTable.cs:78-80`, `AncestorsAndSelf().Any(...)`); the in-code
     comment claiming equivalence is false. Changes minified output with the default allocator.
 40. Alphabetic strategy tries ascending `min_prefix_count..=5` (`namingstrategies.rs:79-86`);
-    C# tries DESCENDING from `digitCount − minPrefixCount` to 1 with no upper cap and throws
-    immediately at ≤0 (`NamingStrategies.cs:33-45`, `getMaxDigits` ≤1 ⇒ zero attempts).
+    C# tries DESCENDING from `firstNameChar − minPrefixCount` (where
+    `firstNameChar = (getMaxDigits(slot) + MaxPrefixCount) − digitCount`,
+    `NamingStrategies.cs:20-34`) to 1, naming the suffix slices `fullName[prefixes..]` — i.e.
+    prefix counts 0..(firstNameChar−1) tried in descending order before throwing. With the
+    real constants the starting value is always ≥ 4, so the C# always makes attempts before
+    throwing (the v3 draft's "throws immediately at ≤0 / `getMaxDigits ≤1` ⇒ zero attempts"
+    case cannot occur).
 41. Numeric/generic-for loop-variable records created AFTER header expressions
     (`scopeandvariablewalker.rs:287-341`) vs C#'s generated visitor visiting identifiers first
     (`Syntax.xml.Internal.g.cs:9991-9995`) — different (valid) allocation orders.
@@ -270,8 +295,11 @@ One bullet per issue. Grouped by area; numbering is authoritative for fix tracki
     `parsing_regression_tests.rs:243-258`). Errors are PORT scope (PLAN §3); implement the
     gates (LUA0018 precedent), then restore C# expectations.
 57. Dead/misleading test infrastructure: `tests/src/parsingtestsbase.rs` is imported by nothing
-    and its visitor infinitely recurses (UFCS self-call, `:196-204`);
-    `tests/src/syntaxextensions.rs` likewise unused — delete or repair-and-wire. Also delete
+    and its `default_visit_*` helpers call the full_moon trait's default methods, which are
+    empty no-op hooks — no recursion, but the row-collector never descends and never records
+    anything, so it is dead and non-functional as the C# tree enumerator it claims to port
+    (`:196-204`); `tests/src/syntaxextensions.rs` likewise unused — delete or repair-and-wire.
+    Also delete
     the misleading `tests/syntax_normalizer_tests.rs` stub: the normalizer is DROP surface
     (Port Boundary), so removal plus a `PROGRESS.md` note is the only honest disposition.
 58. Assertion dimensions dropped: `ContextualKind` tuples unchecked in two lexical regression
@@ -295,7 +323,9 @@ One bullet per issue. Grouped by area; numbering is authoritative for fix tracki
 63. Stale/false comments: nearly every `mod.rs` says "Pending port …"; `constantfolder.rs`
     interp-comment claim (Finding 4); `renametable.rs` ancestor-equivalence claim (Finding 39);
     `SYMBOL_ROWS` header omits `!=` from the documented GLua drop list
-    (`lexicaltestdata.rs:125-129`); ShortToken Display labels every symbol generically
+    (`lexicaltestdata.rs:125-129`) — the missing `!=` row itself is boundary-forced (it is
+    GLua-only syntax, GMod is DROP, and full_moon has no `!`/`!=` Symbol), so only the header
+    comment's drop enumeration is incomplete; ShortToken Display labels every symbol generically
     `"SymbolToken"` (failure-message cosmetics only); find_variable deterministic tie-break vs
     C# arbitrary HashSet order (note only).
 66. Minor numeric note: folder exponentiation uses `f64::powf` where C# uses `Math.Pow` —
