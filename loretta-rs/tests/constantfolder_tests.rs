@@ -562,6 +562,29 @@ fn signed_strings_extract_like_the_csharp_realparser() {
 }
 
 #[test]
+fn hex_float_strings_extract_zero_like_the_csharp_decfloat_first() {
+    // Finding 31: the unanchored decFloat matches the leading "0" of a
+    // hex-float string FIRST and the C# RealParser stops at the "x"
+    // (NoDigits -> true with 0.0) — the hexFloat branch is never
+    // reached. The port used to route these to HexFloat and return the
+    // real value. Every case pinned against the C# oracle on
+    // AllWithIntegers.
+    let cases: &[(&str, LuaValue)] = &[
+        ("'0x1.8p10' + 1", LuaValue::Integer(1)),
+        ("'0x1p10' + 1", LuaValue::Integer(1)),
+        ("'0x.8p10' + 1", LuaValue::Integer(1)),
+        ("'0x1p-10' + 1", LuaValue::Integer(1)),
+        ("'x0x1.8p10' + 1", LuaValue::Integer(1)),
+    ];
+    for (source, expected) in cases {
+        let folded = fold_expression(source, true);
+        let actual = folded_value(&folded)
+            .unwrap_or_else(|| panic!("the fold of {source:?} must produce a literal: {folded:?}"));
+        assert_value(&actual, expected);
+    }
+}
+
+#[test]
 fn overflow_strings_stay_untouched() {
     // Finding 30: the C# RealParser returns FALSE on Overflow
     // (RealParser.cs:30-36) — the extraction fails and the expression
