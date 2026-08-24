@@ -1066,7 +1066,18 @@ fn is_newline(c: char) -> bool {
     matches!(c, '\n' | '\r')
 }
 
+/// C# CharUtils.IsWhitespace (CharUtils.cs:155-159) — [ \t\n\v\f\r] —
+/// the `\z` escape's skip set (Lexer.ShortString.cs:141). The
+/// dispatch-level whitespace skip uses the C# trivia set instead
+/// (Lexer.cs:735-748 — no newlines, the newline arm re-arms the shebang
+/// guard) — Finding 23.
 fn is_whitespace(c: char) -> bool {
+    c == ' ' || ('\t'..='\r').contains(&c)
+}
+
+/// C# LexSyntaxTrivia's whitespace characters (Lexer.cs:735-748) —
+/// ' ', '\t', '\v', '\f'; the newlines are separate trivia.
+fn is_trivia_whitespace(c: char) -> bool {
     matches!(c, ' ' | '\t' | '\u{0B}' | '\u{0C}')
 }
 
@@ -1103,7 +1114,7 @@ pub fn lexer_diagnostics(source: &str, options: &LuaSyntaxOptions) -> Vec<LexerD
     let mut s = Scanner::new(source, options);
     while !s.at_end() {
         let c = s.peek().expect("not at end");
-        if is_whitespace(c) {
+        if is_trivia_whitespace(c) {
             s.pos += 1;
             continue;
         }
