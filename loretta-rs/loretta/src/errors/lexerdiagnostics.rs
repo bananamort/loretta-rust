@@ -13,6 +13,7 @@
 
 use crate::backtickstringtype::BacktickStringType;
 use crate::errors::errorcode::ErrorCode;
+use crate::integerformats::IntegerFormats;
 use crate::luasyntaxoptions::LuaSyntaxOptions;
 
 /// A produced lexer diagnostic (the C# SyntaxDiagnosticInfo).
@@ -816,10 +817,22 @@ impl<'a> Scanner<'a> {
     fn scan_decimal_number(&mut self) {
         let mut is_float = false;
         let mut has_underscores = false;
+        // The accumulated integer value (the C# _builder digits —
+        // underscores skipped) for the TryParse overflow checks
+        // (Finding 17); only the integer part is parsed by the C# long
+        // paths, so the fraction/exponent loops don't feed it.
+        let mut num: u64 = 0;
+        let mut overflowed = false;
         loop {
             match self.peek() {
                 Some(c) if is_decimal(c) => {
                     self.pos += 1;
+                    let digit = decimal_value(c) as u64;
+                    if num > (u64::MAX - digit) / 10 {
+                        overflowed = true;
+                    } else {
+                        num = num * 10 + digit;
+                    }
                 }
                 Some('_') => {
                     self.pos += 1;
@@ -892,10 +905,41 @@ impl<'a> Scanner<'a> {
         {
             self.error_current(ErrorCode::ErrNumberSuffixNotSupportedInVersion);
         }
-        if is_float {
+        if is_unsigned_long {
+            // C# ulong.TryParse (Lexer.Numbers.cs:250-254).
+            if overflowed {
+                self.error_current(ErrorCode::ErrNumericLiteralTooLarge);
+            }
+        } else if is_signed_long {
+            // C# long.TryParse (Lexer.Numbers.cs:258-262).
+            if overflowed || num > i64::MAX as u64 {
+                self.error_current(ErrorCode::ErrNumericLiteralTooLarge);
+            }
+        } else if is_complex {
+            // C# RealParser.TryParseDouble (Lexer.Numbers.cs:266-270) — the
+            // integer text as a double.
             let text = &self.source[self.byte_of_char(self.lexeme_start)..number_end];
             if decimal_float_overflows(text) {
                 self.error_current(ErrorCode::ErrDoubleOverflow);
+            }
+        } else if is_float {
+            let text = &self.source[self.byte_of_char(self.lexeme_start)..number_end];
+            if decimal_float_overflows(text) {
+                self.error_current(ErrorCode::ErrDoubleOverflow);
+            }
+        } else if self.options.decimal_integer_format == IntegerFormats::NotSupported {
+            // C# RealParser.TryParseDouble (Lexer.Numbers.cs:272-279) — the
+            // integer text as a double.
+            let text = &self.source[self.byte_of_char(self.lexeme_start)..number_end];
+            if decimal_float_overflows(text) {
+                self.error_current(ErrorCode::ErrDoubleOverflow);
+            }
+        } else {
+            // C# long.TryParse (Lexer.Numbers.cs:282-295) — the Double and
+            // Int64 formats both parse the integer as a long
+            // (ErrNumericLiteralTooLarge on failure).
+            if overflowed || num > i64::MAX as u64 {
+                self.error_current(ErrorCode::ErrNumericLiteralTooLarge);
             }
         }
     }
