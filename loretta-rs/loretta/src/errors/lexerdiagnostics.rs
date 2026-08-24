@@ -440,6 +440,13 @@ impl<'a> Scanner<'a> {
                 }
             }
             'x' => {
+                // The C# \x (ShortString.cs:166-182): under
+                // AcceptInvalidEscapes && !AcceptHexEscapesInStrings the
+                // C# jumps to the default case (the silent echo) BEFORE
+                // the hex-digit parsing, so the missing-digit
+                // ErrInvalidStringEscape never fires (Finding 43).
+                let hex_silent = self.options.accept_invalid_escapes
+                    && !self.options.accept_hex_escapes_in_strings;
                 // The C# ParseHexadecimalEscapeInteger — up to two digits.
                 let mut read = 0;
                 while read < 2 {
@@ -451,7 +458,7 @@ impl<'a> Scanner<'a> {
                         _ => break,
                     }
                 }
-                if read < 1 {
+                if read < 1 && !hex_silent {
                     self.error_at(
                         self.byte_of_char(escape_start),
                         self.byte_pos() - self.byte_of_char(escape_start),

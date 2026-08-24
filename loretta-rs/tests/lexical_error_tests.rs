@@ -672,6 +672,21 @@ fn lexer_emits_diagnostic_when_bad_characters_are_found() {
 }
 
 #[test]
+fn hex_escape_missing_digits_are_silent_under_the_csharp_goto_default() {
+    // Finding 43: under AcceptInvalidEscapes && !AcceptHexEscapesInStrings
+    // the C# \x jumps to the default case (the silent echo) BEFORE the
+    // hex-digit parsing (ShortString.cs:166-171), so the missing-digit
+    // ErrInvalidStringEscape never fires. The Lua51 preset has exactly
+    // that option pair; the LuaJIT21 preset parses the digits.
+    parse_and_validate_lex("local s = \"\\xG\"", &LuaSyntaxOptions::LUA51, &[]);
+    parse_and_validate_lex(
+        "local s = \"\\xG\"",
+        &LuaSyntaxOptions::LUAJIT21,
+        &[exp(ErrorCode::ErrInvalidStringEscape, 1, 12, r"\x")],
+    );
+}
+
+#[test]
 fn lexer_emits_diagnostics_when_hex_escapes_are_found_and_lua_syntax_options_accept_hex_escapes_is_false(
 ) {
     let source = "local str1 = \"hello\\xAthere\"\n\
