@@ -50,25 +50,30 @@ pub struct ScopeAndVariableWalker {
 
 impl ScopeAndVariableWalker {
     /// C# ScopeAndVariableWalker(Scope, IDictionary, IDictionary)
-    /// (ScopeAndVariableWalker.cs:20-29).
+    /// (ScopeAndVariableWalker.cs:20-29). The shared node-id counter spans
+    /// all trees' walks (Finding 5) — node identities stay unique across
+    /// the accumulated state.
     pub fn new(
         root_scope: Rc<RefCell<Scope>>,
         variables: HashMap<Node, SharedVariable>,
         scopes: HashMap<Node, Rc<RefCell<Scope>>>,
+        next_id: std::rc::Rc<std::cell::Cell<u64>>,
     ) -> Self {
         let mut walker = ScopeAndVariableWalker {
             root_scope: root_scope.clone(),
             variables,
             scope_stack: Vec::new(),
-            base: BaseWalker::new(scopes.clone()),
+            base: BaseWalker::with_next_id(scopes.clone(), next_id.clone()),
             label_walker:
                 crate::script::scopeandvariablemanager::gotolabelwalker::GotoLabelWalker::new(
                     scopes.clone(),
                     HashMap::new(),
+                    next_id.clone(),
                 ),
             goto_walker: crate::script::scopeandvariablemanager::gotowalker::GotoWalker::new(
                 scopes,
                 HashMap::new(),
+                next_id,
             ),
             identifier_positions: Vec::new(),
             location_scopes: HashMap::new(),
@@ -777,7 +782,6 @@ mod tests {
     use crate::scoping::iscope::IScope;
     use crate::scoping::ivariable::IVariable;
     use crate::script::scopeandvariablemanager::manager::ScopeAndVariableManager;
-
     #[test]
     fn builds_the_scope_tree() {
         let mut manager = ScopeAndVariableManager::new(vec![
@@ -837,5 +841,53 @@ mod tests {
             vararg_parameters,
             vec!["...".to_string(), "...".to_string()]
         );
+    }
+
+    #[test]
+    fn multiple_trees_accumulate_state() {
+        // Finding 5: the C# shared builder dictionaries accumulate across
+        // trees (ScopeAndVariableManager.cs:35-47) — the port must not let
+        // the last tree overwrite the maps, and node identities must stay
+        // unique across trees.
+        let mut single_manager = ScopeAndVariableManager::new(vec!["local a = 1\n".to_string()]);
+        let single = single_manager.get_lazy_state();
+        let mut manager = ScopeAndVariableManager::new(vec![
+            "local a = 1\n".to_string(),
+            "local b = 2\n".to_string(),
+        ]);
+        let state = manager.get_lazy_state();
+        // Two trees hold exactly twice the single-tree entries (distinct
+        // node ids per tree, no overwrite).
+        assert_eq!(state.variables.len(), single.variables.len() * 2);
+        assert_eq!(state.scopes.len(), single.scopes.len() * 2);
+        assert_eq!(state.labels.len(), single.labels.len() * 2);
+        // Both file scopes exist under the shared root, each declaring its
+        // own variable.
+        let root = state.root_scope.borrow();
+        let root_contained = root.contained_scopes();
+        let files: Vec<_> = root_contained.iter().collect();
+        assert_eq!(files.len(), 2);
+        let file_a_names: Vec<String> = files[0]
+            .borrow()
+            .declared_variables()
+            .iter()
+            .map(|v| v.borrow().name().to_string())
+            .collect();
+        let file_b_names: Vec<String> = files[1]
+            .borrow()
+            .declared_variables()
+            .iter()
+            .map(|v| v.borrow().name().to_string())
+            .collect();
+        assert!(file_a_names.contains(&"a".to_string()));
+        assert!(file_b_names.contains(&"b".to_string()));
+        // The second tree's id base is the first tree's node count (every
+        // node the walk creates lands in at least one map, so the distinct
+        // ids are contiguous 0..count) — the rename rewriter's seed.
+        let mut ids: std::collections::HashSet<u64> = std::collections::HashSet::new();
+        ids.extend(single.variables.keys().map(|n| n.id));
+        ids.extend(single.scopes.keys().map(|n| n.id));
+        ids.extend(single.labels.keys().map(|n| n.id));
+        assert_eq!(state.tree_id_bases, vec![0, ids.len() as u64]);
     }
 }

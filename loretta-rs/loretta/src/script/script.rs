@@ -216,7 +216,7 @@ impl Script {
         for &idx in tree_indices {
             if let Some(tree) = new_trees.get(idx) {
                 let rewritten = crate::script::scriptrenamerewriter::rename_in_tree(
-                    tree, variable, new_name, self,
+                    idx, tree, variable, new_name, self,
                 );
                 new_trees[idx] = rewritten;
             }
@@ -248,6 +248,36 @@ mod tests {
                 assert!(text.contains("local renamed = 1"));
                 assert!(text.contains("print(renamed)"));
                 assert!(!text.contains("local a = 1"));
+            }
+            RenameResult::Err(errors) => panic!("rename failed: {errors:?}"),
+        }
+    }
+
+    #[test]
+    fn renames_a_variable_declared_in_the_second_tree() {
+        // Finding 5: with the shared node-id counter, the rename rewriter
+        // must reproduce the second tree's node ids via its recorded id
+        // base.
+        let mut script = Script::new(vec![
+            "local a = 1\n".to_string(),
+            "local b = 2\nprint(b)\n".to_string(),
+        ]);
+        let root = script.root_scope();
+        let root_contained = root.borrow().contained_scopes();
+        let files: Vec<_> = root_contained.iter().collect();
+        let variable = files[1]
+            .borrow()
+            .declared_variables()
+            .iter()
+            .find(|v| v.borrow().name() == "b")
+            .expect("the b variable")
+            .clone();
+        let result = script.rename_variable(&variable, "renamed");
+        match result {
+            RenameResult::Ok(new_script) => {
+                assert_eq!(new_script.syntax_trees()[0], "local a = 1\n");
+                assert!(new_script.syntax_trees()[1].contains("local renamed = 2"));
+                assert!(new_script.syntax_trees()[1].contains("print(renamed)"));
             }
             RenameResult::Err(errors) => panic!("rename failed: {errors:?}"),
         }
