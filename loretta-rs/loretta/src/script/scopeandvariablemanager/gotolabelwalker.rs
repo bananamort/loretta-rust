@@ -42,7 +42,19 @@ impl GotoLabelWalker {
         stmt_text: String,
     ) {
         let node = self.base.make_node("GotoLabelStatement", stmt_text);
-        let label = Scope::create_label_in(scope, name);
+        // Finding 6: the C# runs GotoLabelWalker before GotoWalker, so a
+        // goto always binds to the already-created label. The port's
+        // single pass can meet a forward goto first — it created a
+        // placeholder in this scope (get_or_create_label_in). Bind to
+        // that same-scope placeholder instead of creating a second label
+        // that orphans the jump — without ascending, so a label in a
+        // nested block still shadows an outer one (the C# CreateLabel
+        // targets only the current scope, IScope.cs:226-231).
+        let existing = scope.borrow().try_get_label_in_scope(name);
+        let label = match existing {
+            Some(label) => label,
+            None => Scope::create_label_in(scope, name),
+        };
         self.labels.insert(node, label);
     }
 
