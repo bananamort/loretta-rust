@@ -36,6 +36,10 @@ pub const FLAG_IS_NUM: u16 = FLAG_IS_DOUBLE | FLAG_IS_LONG | FLAG_IS_STRING_WITH
 #[derive(Clone)]
 pub struct ConstantFolder {
     options: ConstantFoldingOptions,
+    /// The syntax options the tree was parsed with — the C# token values
+    /// are computed by the lexer with the LuaParseOptions, so the escape
+    /// echo/skip is preset-dependent (Finding 36).
+    syntax_options: crate::luasyntaxoptions::LuaSyntaxOptions,
 }
 
 /// The numeric value of an expression (C# `dynamic` long/double).
@@ -47,8 +51,14 @@ pub enum NumValue {
 
 impl ConstantFolder {
     /// C# ConstantFolder(ConstantFoldingOptions) (ConstantFolder.cs:12-15).
-    pub fn new(options: ConstantFoldingOptions) -> Self {
-        ConstantFolder { options }
+    pub fn new(
+        options: ConstantFoldingOptions,
+        syntax_options: crate::luasyntaxoptions::LuaSyntaxOptions,
+    ) -> Self {
+        ConstantFolder {
+            options,
+            syntax_options,
+        }
     }
 
     /// C# LuaExtensions.ConstantFold: runs the rewriter over the tree.
@@ -77,7 +87,11 @@ impl ConstantFolder {
             ast::Expression::String(t) => {
                 flags |= FLAG_IS_STR;
                 if self.options.extract_numbers_from_strings
-                    && try_parse_number_in_string(&string_value(t)).is_some()
+                    && try_parse_number_in_string(&string_value(
+                        t,
+                        self.syntax_options.accept_invalid_escapes,
+                    ))
+                    .is_some()
                 {
                     flags |= FLAG_IS_STRING_WITH_NUMBER;
                 }
@@ -158,7 +172,10 @@ impl ConstantFolder {
                 let ast::Expression::String(t) = inner else {
                     unreachable!("IsStringWithNumber requires a string literal");
                 };
-                return try_parse_number_in_string(&string_value(t));
+                return try_parse_number_in_string(&string_value(
+                    t,
+                    self.syntax_options.accept_invalid_escapes,
+                ));
             }
             return Some(number_value(node));
         }
@@ -274,7 +291,10 @@ impl ConstantFolder {
                 // UTF-16 code-unit count, so #"é" is 1 and #"😀" is 2
                 // (Finding 32) — the port's .len() was the UTF-8 byte
                 // count.
-                let len = utf16_len(&get_string_value(&operand)) as f64;
+                let len = utf16_len(&get_string_value(
+                    &operand,
+                    self.syntax_options.accept_invalid_escapes,
+                )) as f64;
                 return literal_double(len, &leading, &trailing);
             }
             _ => {}
@@ -379,7 +399,9 @@ impl ConstantFolder {
                         ast::Expression::Symbol(t) if t.is_symbol(Symbol::False) => {
                             "false".to_string()
                         }
-                        ast::Expression::String(_) => get_string_value(&left),
+                        ast::Expression::String(_) => {
+                            get_string_value(&left, self.syntax_options.accept_invalid_escapes)
+                        }
                         _ => unreachable!("concat operand must be a literal"),
                     };
                     let right_str = match get_inner_expression(&right) {
@@ -389,7 +411,9 @@ impl ConstantFolder {
                         ast::Expression::Symbol(t) if t.is_symbol(Symbol::False) => {
                             "false".to_string()
                         }
-                        ast::Expression::String(_) => get_string_value(&right),
+                        ast::Expression::String(_) => {
+                            get_string_value(&right, self.syntax_options.accept_invalid_escapes)
+                        }
                         _ => unreachable!("concat operand must be a literal"),
                     };
                     return literal_str(format!("{left_str}{right_str}"), &leading, &trailing);
@@ -411,25 +435,25 @@ impl ConstantFolder {
             }
             ast::BinOp::LessThan(_) => {
                 if can_compare(left_flags, right_flags) {
-                    let result = compare(&left, &right, left_flags, right_flags);
+                    let result = compare(self, &left, &right, left_flags, right_flags);
                     return literal_bool(result < 0, &leading, &trailing);
                 }
             }
             ast::BinOp::LessThanEqual(_) => {
                 if can_compare(left_flags, right_flags) {
-                    let result = compare(&left, &right, left_flags, right_flags);
+                    let result = compare(self, &left, &right, left_flags, right_flags);
                     return literal_bool(result <= 0, &leading, &trailing);
                 }
             }
             ast::BinOp::GreaterThan(_) => {
                 if can_compare(left_flags, right_flags) {
-                    let result = compare(&left, &right, left_flags, right_flags);
+                    let result = compare(self, &left, &right, left_flags, right_flags);
                     return literal_bool(result > 0, &leading, &trailing);
                 }
             }
             ast::BinOp::GreaterThanEqual(_) => {
                 if can_compare(left_flags, right_flags) {
-                    let result = compare(&left, &right, left_flags, right_flags);
+                    let result = compare(self, &left, &right, left_flags, right_flags);
                     return literal_bool(result >= 0, &leading, &trailing);
                 }
             }
@@ -720,12 +744,12 @@ fn number_value(node: &ast::Expression) -> NumValue {
 }
 
 /// C# GetValue<string> — the decoded string value of a String literal.
-fn get_string_value(node: &ast::Expression) -> String {
+fn get_string_value(node: &ast::Expression, accept_invalid_escapes: bool) -> String {
     let inner = get_inner_expression(node);
     let ast::Expression::String(t) = inner else {
         unreachable!("string value requires a string literal");
     };
-    string_value(t)
+    string_value(t, accept_invalid_escapes)
 }
 
 /// The .NET string Length — the UTF-16 code-unit count (a char beyond
@@ -753,7 +777,8 @@ fn expr_equals(
         return true;
     }
     if has_e_flag(left_flags, FLAG_IS_STR) && has_e_flag(right_flags, FLAG_IS_STR) {
-        return get_string_value(left) == get_string_value(right);
+        return get_string_value(left, folder.syntax_options.accept_invalid_escapes)
+            == get_string_value(right, folder.syntax_options.accept_invalid_escapes);
     }
     if has_e_flag(left_flags, FLAG_IS_BOOL) && has_e_flag(right_flags, FLAG_IS_BOOL) {
         return has_e_flag(left_flags, FLAG_IS_TRUTHY) == has_e_flag(right_flags, FLAG_IS_TRUTHY);
@@ -775,6 +800,7 @@ fn can_compare(left_flags: u16, right_flags: u16) -> bool {
 
 /// C# compare local (ConstantFolder.cs:320-333).
 fn compare(
+    folder: &ConstantFolder,
     left: &ast::Expression,
     right: &ast::Expression,
     left_flags: u16,
@@ -796,8 +822,8 @@ fn compare(
     if has_e_flag(left_flags, FLAG_IS_STR) && has_e_flag(right_flags, FLAG_IS_STR) {
         // C# string.CompareOrdinal — byte-wise comparison.
         return long_cmp(
-            get_string_value(left).as_bytes(),
-            get_string_value(right).as_bytes(),
+            get_string_value(left, folder.syntax_options.accept_invalid_escapes).as_bytes(),
+            get_string_value(right, folder.syntax_options.accept_invalid_escapes).as_bytes(),
         );
     }
     panic!("Both expressions must have the same type.");
@@ -1237,7 +1263,7 @@ fn is_hex_float(value: &str) -> bool {
 
 /// Decodes the value of a string literal token (C# token.Value). Bracketed
 /// (long) strings do not process escapes; quoted strings do.
-fn string_value(token_ref: &TokenReference) -> String {
+fn string_value(token_ref: &TokenReference, accept_invalid_escapes: bool) -> String {
     let TokenType::StringLiteral {
         literal,
         multi_line_depth,
@@ -1250,12 +1276,14 @@ fn string_value(token_ref: &TokenReference) -> String {
     if *multi_line_depth > 0 {
         return text.to_string();
     }
-    unescape_lua_string(text)
+    unescape_lua_string(text, accept_invalid_escapes)
 }
 
 /// Lua escape decoding for quoted strings (\a \b \f \n \r \t \v \\ \" \' \z
-/// \xXX \u{...} \ddd).
-fn unescape_lua_string(text: &str) -> String {
+/// \xXX \u{...} \ddd) — the `accept_invalid_escapes` flag carries the C#
+/// LuaSyntaxOptions.AcceptInvalidEscapes (the lexer's preset-dependent
+/// echo/skip, ShortString.cs:199-205 — Finding 36).
+fn unescape_lua_string(text: &str, accept_invalid_escapes: bool) -> String {
     let mut out = String::new();
     let mut chars = text.chars();
     while let Some(c) = chars.next() {
@@ -1365,7 +1393,15 @@ fn unescape_lua_string(text: &str) -> String {
                     }
                 }
             }
-            Some(other) => out.push(other),
+            Some(other) => {
+                // The C# default escape case (ShortString.cs:199-205):
+                // with AcceptInvalidEscapes the character is echoed;
+                // without it the escape is skipped entirely (the C#
+                // sentinel).
+                if accept_invalid_escapes {
+                    out.push(other);
+                }
+            }
         }
     }
     out
@@ -1391,7 +1427,8 @@ fn lookup_table_field(
                 } else if let Some((key_expr, folder)) = brackets {
                     // C#: HasEFlag(keyExpression, IsStr) && GetValue == identifier
                     if folder.has_e_flag(key_expr, FLAG_IS_STR)
-                        && get_string_value(key_expr) == key.token().to_string()
+                        && get_string_value(key_expr, folder.syntax_options.accept_invalid_escapes)
+                            == key.token().to_string()
                     {
                         return Some(value.clone());
                     }
@@ -1400,8 +1437,14 @@ fn lookup_table_field(
             ast::Field::ExpressionKey { key, value, .. } => {
                 if let Some(name) = name {
                     // C#: key IsStr && GetValue(key) == member name
-                    if is_str_with_value(key, name) {
-                        return Some(value.clone());
+                    if let Some((_, folder)) = brackets {
+                        if is_str_with_value(
+                            key,
+                            name,
+                            folder.syntax_options.accept_invalid_escapes,
+                        ) {
+                            return Some(value.clone());
+                        }
                     }
                 } else if let Some((key_expr, _folder)) = brackets {
                     // C#: field.Key.IsEquivalentTo(keyExpression)
@@ -1420,10 +1463,10 @@ fn lookup_table_field(
 }
 
 /// C# GetValue<string>(key) == name check for the member access.
-fn is_str_with_value(key: &ast::Expression, name: &str) -> bool {
+fn is_str_with_value(key: &ast::Expression, name: &str, accept_invalid_escapes: bool) -> bool {
     let inner = get_inner_expression(key);
     match inner {
-        ast::Expression::String(t) => string_value(t) == name,
+        ast::Expression::String(t) => string_value(t, accept_invalid_escapes) == name,
         _ => false,
     }
 }
@@ -1689,9 +1732,12 @@ mod tests {
 
     fn fold_sample(code: &str) -> String {
         let ast = full_moon::parse(code).expect("parse");
-        let mut folder = ConstantFolder::new(ConstantFoldingOptions {
-            extract_numbers_from_strings: false,
-        });
+        let mut folder = ConstantFolder::new(
+            ConstantFoldingOptions {
+                extract_numbers_from_strings: false,
+            },
+            crate::luasyntaxoptions::LuaSyntaxOptions::ALL_WITH_INTEGERS,
+        );
         folder.fold(ast).to_string()
     }
 

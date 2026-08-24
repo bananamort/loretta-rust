@@ -104,7 +104,7 @@ fn fold_expression(source: &str, extract_numbers: bool) -> Expression {
     let options = ConstantFoldingOptions {
         extract_numbers_from_strings: extract_numbers,
     };
-    let folded = constant_fold(ast, options);
+    let folded = constant_fold(ast, options, syntax_options);
     let block = folded.nodes();
     let stmt = block
         .stmts()
@@ -128,7 +128,7 @@ fn folded_wrapper_text(source: &str, extract_numbers: bool) -> (String, String) 
     let options = ConstantFoldingOptions {
         extract_numbers_from_strings: extract_numbers,
     };
-    let folded = constant_fold(ast, options);
+    let folded = constant_fold(ast, options, syntax_options);
     let expr = {
         let block: &Block = folded.nodes();
         let stmt = block
@@ -666,6 +666,45 @@ fn length_counts_utf16_units_like_the_csharp_string_length() {
 }
 
 #[test]
+fn invalid_escapes_follow_accept_invalid_escapes() {
+    // Finding 36: the escape echo/skip is preset-dependent — the C#
+    // lexer computes the token values with the LuaParseOptions
+    // (ShortString.cs:199-205). The Lua51/Luau presets echo the invalid
+    // escape's character; the Lua53-class presets skip it entirely (the
+    // C# Lua53 constantfold harness crashes on the invalid-escape tree —
+    // the port's skip is the pinned lexer semantics).
+    let fold_with = |source: &str, syntax: &LuaSyntaxOptions| {
+        let ast = full_moon::parse(source).expect("parse");
+        let folded = constant_fold(
+            ast,
+            ConstantFoldingOptions {
+                extract_numbers_from_strings: false,
+            },
+            syntax.clone(),
+        );
+        folded.to_string()
+    };
+    // The Lua51 oracle: print("qx") — the escape echoed.
+    assert_eq!(
+        fold_with(r#"print("\q" .. "x")"#, &LuaSyntaxOptions::LUA51),
+        r#"print("qx")"#
+    );
+    assert_eq!(
+        fold_with(r#"print("\q" .. "x")"#, &LuaSyntaxOptions::LUAU),
+        r#"print("qx")"#
+    );
+    // The Lua53-class presets skip the escape (the C# lexer's sentinel).
+    assert_eq!(
+        fold_with(r#"print("\q" .. "x")"#, &LuaSyntaxOptions::LUA53),
+        r#"print("x")"#
+    );
+    assert_eq!(
+        fold_with(r#"print("\q" .. "x")"#, &LuaSyntaxOptions::LUA52),
+        r#"print("x")"#
+    );
+}
+
+#[test]
 fn overflow_strings_stay_untouched() {
     // Finding 30: the C# RealParser returns FALSE on Overflow
     // (RealParser.cs:30-36) — the extraction fails and the expression
@@ -732,6 +771,7 @@ fn unary_folds_take_the_operands_trivia() {
             ConstantFoldingOptions {
                 extract_numbers_from_strings: false,
             },
+            LuaSyntaxOptions::ALL_WITH_INTEGERS,
         );
         folded.to_string()
     };
