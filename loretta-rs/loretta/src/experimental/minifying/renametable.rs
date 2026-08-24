@@ -26,8 +26,9 @@ pub struct RenameTable {
     /// C# _namingStrategy (RenameTable.cs:9).
     naming_strategy: NamingStrategy,
     /// C# _lastUseCache (RenameTable.cs:10) — keyed by the variable's
-    /// declaration node id (the C# reference-identity key).
-    last_use_cache: HashMap<usize, Option<u64>>,
+    /// declaration node id (the C# reference-identity key); the value is
+    /// the last use's (id, start, end) byte span (Finding 39).
+    last_use_cache: HashMap<usize, Option<(u64, usize, usize)>>,
     /// C# _variableMap (RenameTable.cs:11) — (slot, newName).
     variable_map: HashMap<usize, (i32, String)>,
     /// C# _slotAllocator (RenameTable.cs:12).
@@ -72,30 +73,35 @@ impl RenameTable {
 
     /// C# GetLastUse (RenameTable.cs:27-41): the location the variable is
     /// last used — the read/write location with the highest source span, or
-    /// the declaration.
-    pub fn get_last_use(&mut self, variable: &SharedVariable) -> Option<u64> {
+    /// the declaration. Returns the (id, start, end) byte span of the last
+    /// use (the end for the AncestorsAndSelf descendant check — the C#
+    /// SyntaxNode equality, Finding 39).
+    pub fn get_last_use(&mut self, variable: &SharedVariable) -> Option<(u64, usize, usize)> {
         let key = Self::variable_key(variable);
         if !self.last_use_cache.contains_key(&key) {
-            let mut best: Option<(usize, u64)> = None;
+            let mut best: Option<(usize, Node)> = None;
             for node in variable.borrow().read_locations() {
                 if let Some((pos, _)) = self.location_scopes.get(&node) {
-                    if best.map(|(b, _)| *pos > b).unwrap_or(true) {
-                        best = Some((*pos, node.id));
+                    if best.as_ref().map(|(b, _)| *pos > *b).unwrap_or(true) {
+                        best = Some((*pos, node.clone()));
                     }
                 }
             }
             for node in variable.borrow().write_locations() {
                 if let Some((pos, _)) = self.location_scopes.get(&node) {
-                    if best.map(|(b, _)| *pos > b).unwrap_or(true) {
-                        best = Some((*pos, node.id));
+                    if best.as_ref().map(|(b, _)| *pos > *b).unwrap_or(true) {
+                        best = Some((*pos, node.clone()));
                     }
                 }
             }
-            let use_node = match best {
-                Some((_, id)) => Some(id),
-                None => variable.borrow().declaration().map(|node| node.id),
+            let use_span = match best {
+                Some((pos, node)) => Some((node.id, pos, pos + node.text.len())),
+                None => variable.borrow().declaration().map(|node| {
+                    let pos = self.location_scopes.get(node).map(|(p, _)| *p).unwrap_or(0);
+                    (node.id, pos, pos + node.text.len())
+                }),
             };
-            self.last_use_cache.insert(key, use_node);
+            self.last_use_cache.insert(key, use_span);
         }
         self.last_use_cache[&key]
     }
@@ -149,14 +155,22 @@ impl RenameTable {
 
         let (slot, new_name) = self.variable_map[&key].clone();
 
-        // If this is the last use of this variable, then we won't be needing
-        // it for the rest of the code so we can reuse the number it was
-        // using (the C# AncestorsAndSelf check maps to the node identity —
-        // the visits are identifier-level).
+        // C# RenameTable.cs:78-80: the slot is released when the visited
+        // node EQUALS the last use OR DESCENDS from it (the
+        // AncestorsAndSelf().Any(...) — the port's self-identity-only
+        // check missed the descendant case, and the in-code comment
+        // claiming equivalence was false — Finding 39). The port's node
+        // model has no parent links, so the descendant relation is the
+        // byte-span containment.
         let last_use = self.get_last_use(&variable);
-        if let Some(last_use_id) = last_use {
+        if let Some((last_use_id, last_start, last_end)) = last_use {
             if node.id == last_use_id {
                 self.slot_allocator.release_slot(slot);
+            } else if let Some((node_start, _)) = self.location_scopes.get(node) {
+                let node_end = *node_start + node.text.len();
+                if *node_start >= last_start && node_end <= last_end {
+                    self.slot_allocator.release_slot(slot);
+                }
             }
         }
 
