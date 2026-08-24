@@ -9,7 +9,7 @@ use crate::integerformats::IntegerFormats;
 ///
 /// "Accept" means not generating an error when parsing, but the syntax behind the option
 /// will still be parsed normally.
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone)]
 pub struct LuaSyntaxOptions {
     /// Whether to accept binary numbers (format: /0b[10]+/).
     pub accept_binary_numbers: bool,
@@ -67,6 +67,77 @@ pub struct LuaSyntaxOptions {
     pub accept_nesting_of_long_strings: bool,
     /// Defines how strings with backtick delimiters will be parsed.
     pub backtick_string_type: BacktickStringType,
+}
+
+/// The C# Equals (LuaSyntaxOptions.cs:660-688) deliberately omits
+/// AcceptUnicodeEscape and AcceptInvalidEscapes — two options that do
+/// not affect the resulting syntax tree — so the equality follows the
+/// C# field list exactly (Finding 42).
+impl PartialEq for LuaSyntaxOptions {
+    fn eq(&self, other: &Self) -> bool {
+        self.accept_binary_numbers == other.accept_binary_numbers
+            && self.accept_c_comment_syntax == other.accept_c_comment_syntax
+            && self.accept_compound_assignment == other.accept_compound_assignment
+            && self.accept_empty_statements == other.accept_empty_statements
+            && self.accept_c_boolean_operators == other.accept_c_boolean_operators
+            && self.accept_goto == other.accept_goto
+            && self.accept_hex_escapes_in_strings == other.accept_hex_escapes_in_strings
+            && self.accept_hex_float_literals == other.accept_hex_float_literals
+            && self.accept_octal_numbers == other.accept_octal_numbers
+            && self.accept_shebang == other.accept_shebang
+            && self.accept_underscore_in_number_literals
+                == other.accept_underscore_in_number_literals
+            && self.use_lua_jit_identifier_rules == other.use_lua_jit_identifier_rules
+            && self.accept_bitwise_operators == other.accept_bitwise_operators
+            && self.accept_whitespace_escape == other.accept_whitespace_escape
+            && self.continue_type == other.continue_type
+            && self.accept_if_expressions == other.accept_if_expressions
+            && self.accept_local_variable_attributes == other.accept_local_variable_attributes
+            && self.binary_integer_format == other.binary_integer_format
+            && self.octal_integer_format == other.octal_integer_format
+            && self.decimal_integer_format == other.decimal_integer_format
+            && self.hex_integer_format == other.hex_integer_format
+            && self.accept_typed_lua == other.accept_typed_lua
+            && self.accept_floor_division == other.accept_floor_division
+            && self.accept_lua_jit_number_suffixes == other.accept_lua_jit_number_suffixes
+            && self.accept_nesting_of_long_strings == other.accept_nesting_of_long_strings
+            && self.backtick_string_type == other.backtick_string_type
+    }
+}
+
+impl Eq for LuaSyntaxOptions {}
+
+/// The C# GetHashCode (LuaSyntaxOptions.cs:691-721) — the same field
+/// list as the Equals (the two omitted fields excluded).
+impl std::hash::Hash for LuaSyntaxOptions {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.accept_binary_numbers.hash(state);
+        self.accept_c_comment_syntax.hash(state);
+        self.accept_compound_assignment.hash(state);
+        self.accept_empty_statements.hash(state);
+        self.accept_c_boolean_operators.hash(state);
+        self.accept_goto.hash(state);
+        self.accept_hex_escapes_in_strings.hash(state);
+        self.accept_hex_float_literals.hash(state);
+        self.accept_octal_numbers.hash(state);
+        self.accept_shebang.hash(state);
+        self.accept_underscore_in_number_literals.hash(state);
+        self.use_lua_jit_identifier_rules.hash(state);
+        self.accept_bitwise_operators.hash(state);
+        self.accept_whitespace_escape.hash(state);
+        self.continue_type.hash(state);
+        self.accept_if_expressions.hash(state);
+        self.accept_local_variable_attributes.hash(state);
+        self.binary_integer_format.hash(state);
+        self.octal_integer_format.hash(state);
+        self.decimal_integer_format.hash(state);
+        self.hex_integer_format.hash(state);
+        self.accept_typed_lua.hash(state);
+        self.accept_floor_division.hash(state);
+        self.accept_lua_jit_number_suffixes.hash(state);
+        self.accept_nesting_of_long_strings.hash(state);
+        self.backtick_string_type.hash(state);
+    }
 }
 
 impl LuaSyntaxOptions {
@@ -485,5 +556,41 @@ impl std::fmt::Display for LuaSyntaxOptions {
                 self.backtick_string_type,
             )
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn equality_omits_the_escape_fields() {
+        // Finding 42: the C# Equals/GetHashCode deliberately omit
+        // AcceptUnicodeEscape and AcceptInvalidEscapes
+        // (LuaSyntaxOptions.cs:660-721) — two options that do not affect
+        // the resulting syntax tree.
+        let base = LuaSyntaxOptions::ALL;
+        let with_unicode = LuaSyntaxOptions {
+            accept_unicode_escape: false,
+            ..LuaSyntaxOptions::ALL
+        };
+        let with_invalid = LuaSyntaxOptions {
+            accept_invalid_escapes: false,
+            ..LuaSyntaxOptions::ALL
+        };
+        assert_eq!(base, with_unicode);
+        assert_eq!(base, with_invalid);
+        // The hash agrees (a HashSet lookup uses both).
+        let mut set = std::collections::HashSet::new();
+        set.insert(base.clone());
+        assert!(set.contains(&with_unicode));
+        assert!(set.contains(&with_invalid));
+        // Any OTHER field difference still differs.
+        let different = LuaSyntaxOptions {
+            accept_goto: false,
+            ..LuaSyntaxOptions::ALL
+        };
+        assert_ne!(base, different);
+        assert!(!set.contains(&different));
     }
 }
