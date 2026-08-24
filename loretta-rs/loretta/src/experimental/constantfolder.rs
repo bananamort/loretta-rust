@@ -705,9 +705,9 @@ fn number_value(node: &ast::Expression) -> NumValue {
             .unwrap_or_else(|| panic!("invalid number literal {text:?}"));
         NumValue::Double(parsed)
     } else {
-        let parsed = parse_integer_literal(&text)
-            .unwrap_or_else(|| panic!("invalid integer literal {text:?}"));
-        NumValue::Long(parsed)
+        // C# fold-as-0: TryParse failure leaves the default value and the
+        // lexer reports ERR_NumericLiteralTooLarge (Lexer.Numbers.cs).
+        NumValue::Long(parse_integer_literal(&text))
     }
 }
 
@@ -902,13 +902,31 @@ fn number_is_double(text: &str) -> bool {
         || text.contains('P')
 }
 
-/// Parses an integer literal (decimal or hex with optional 0x prefix).
-fn parse_integer_literal(text: &str) -> Option<i64> {
+/// Parses an integer literal (decimal, hex or binary) like the C# lexer's
+/// integer paths (Lexer.Numbers.cs): underscores are skipped (the C#
+/// Consume*Digits builders), overflow folds to 0 (TryParse's default out
+/// value, with ERR_NumericLiteralTooLarge reported by the diagnostics
+/// side), and hex digits are a two's-complement bit pattern
+/// (long.TryParse AllowHexSpecifier).
+fn parse_integer_literal(text: &str) -> i64 {
     let text = text.trim();
     if let Some(rest) = text.strip_prefix("0x").or_else(|| text.strip_prefix("0X")) {
-        i64::from_str_radix(rest, 16).ok()
+        // C# long.TryParse(AllowHexSpecifier) (Lexer.Numbers.cs:374-378):
+        // 0xffffffffffffffff is -1; values wider than 64 bits fail -> 0.
+        u64::from_str_radix(&rest.replace('_', ""), 16)
+            .map(|bits| bits as i64)
+            .unwrap_or(0)
+    } else if let Some(rest) = text.strip_prefix("0b").or_else(|| text.strip_prefix("0B")) {
+        // C# ParseBinaryNumber (Lexer.Numbers.cs:86-90): values with bit 63
+        // set (no ull suffix) fold to 0.
+        u64::from_str_radix(&rest.replace('_', ""), 2)
+            .ok()
+            .filter(|&bits| bits <= i64::MAX as u64)
+            .map(|bits| bits as i64)
+            .unwrap_or(0)
     } else {
-        text.parse::<i64>().ok()
+        // C# long.TryParse (Lexer.Numbers.cs:258-262, 282-295): overflow -> 0.
+        text.replace('_', "").parse::<i64>().unwrap_or(0)
     }
 }
 
