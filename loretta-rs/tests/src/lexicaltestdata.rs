@@ -565,9 +565,12 @@ pub fn get_tokens(options: &LuaSyntaxOptions) -> Vec<ShortToken> {
         ));
     }
 
-    // Long strings.
+    // Long strings. The C# raw-string content (LexicalTestData.cs:
+    // 295-300) holds the LITERAL `\n`/`\r\n`/`\r`/`\xFF` sequences —
+    // the port's real control characters were silent data drift from
+    // the oracle inputs (Finding 52).
     const LONG_STRING_CONTENT: &str =
-        "first line \n\nsecond line \r\n\nthird line \r\nfourth line \u{FF}.\n";
+        "first line \\n\nsecond line \\r\\n\nthird line \\r\nfourth line \\xFF.\n";
     for separator_count in 0..6 {
         tokens.push(long_string_token(separator_count, LONG_STRING_CONTENT));
     }
