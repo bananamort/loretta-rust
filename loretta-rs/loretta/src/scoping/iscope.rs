@@ -287,7 +287,15 @@ impl Scope {
         self.labels.get(name).cloned()
     }
 
-    /// C# GetOrCreateLabel (IScope.cs:215-224).
+    /// C# GetOrCreateLabel (IScope.cs:215-224). The C#
+    /// LorettaDebug.AssertNotNull(labelSyntax) (IScope.cs:218) is
+    /// [Conditional("DEBUG")] and fires on every goto — the GotoWalker's
+    /// single-arg call (GotoWalker.cs:26) passes null, and the assert
+    /// precedes the label-exists lookup — an upstream debug-only defect
+    /// the port does not replicate (Candidate C). The Option keeps the
+    /// release-build behavior: the null syntax flows into CreateLabel and
+    /// the port attaches the syntax later via set_label_syntax when the
+    /// label statement is visited.
     pub fn get_or_create_label_in(
         scope: &Rc<RefCell<Scope>>,
         name: &str,
