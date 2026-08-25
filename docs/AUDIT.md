@@ -70,6 +70,40 @@ readings could disagree (`.scratch/` probes, existing tests, differential), and 
 conclusion — fix it if it's real parity loss, refute it with evidence if it isn't, or document
 it as a spec-forced boundary if that's what it turns out to be.
 
+### Prior reviewer's opinion per candidate (input, not authority)
+
+The 2026-08-24 verification pass also formed opinions on each candidate. These are recorded so
+you can weigh the reasoning — they carry no authority; your own both-sides read does. Where you
+agree or disagree, say so in your report either way.
+
+- **A** — Believed REAL and worth fixing. Reasoning: `({["x"]=1}).x` is valid Lua on which the
+  outputs visibly diverge (probed live: C# folds to `print(1 )`, Rust leaves unfolded), and the
+  fix stays inside the boundary (~10 lines mirroring `ConstantFolder.cs:348-357`'s
+  ExpressionKeyed check). Suggested fix shape: pass the folder context through the Dot arm and
+  extend `lookup_table_field`'s ExpressionKey arm with an `is_str_with_value`-style comparison;
+  pin with a test asserting `({ ["x"] = 1 }) print(t.x)` folds.
+- **B** — Believed REAL but de minimis severity. Reasoning: Logic Parity says "same messages,"
+  and C#'s message is the constant `'name' must be a valid identifier.` (`nameof` compiles to
+  the literal); the fix is hardcoding that string at `iscope.rs:146`. No current test asserts
+  the panic text, which is why nothing catches it. Suggested: hardcode + add a message
+  assertion to the empty-rename test.
+- **C** — Believed NOT worth replicating verbatim. Reasoning: the C#
+  `AssertNotNull(labelSyntax)` fires debug-only, and C# itself passes null syntax for forward
+  gotos from GotoWalker (`GotoWalker.cs:26`, single-arg call) — so debug builds of upstream
+  would trip their own assert on any forward goto; Loretta's tests never combine rename+goto,
+  so upstream never noticed. The port's Option + `set_label_syntax` design avoids that defect.
+  Recommendation: keep the port's design, document the divergence from the assert at the call
+  site.
+- **D** — Believed UNOBSERVABLE for reachable variables. Reasoning: locals/params always carry
+  declaration locations and unreferenced globals never enter the map, so the zero-location path
+  cannot be reached through public API. If you find a reachable zero-location case, this
+  becomes real; otherwise recommend documenting rather than replicating the ArgumentException.
+- **E** — Believed correctly classified as Port-Boundary structural. Reasoning: full_moon
+  returns no AST on failure and any recovery layer would be a local Lua parser (Locked Decision
+  1 / Rationale). Recommendation: keep the drop, keep the in-code comment current.
+
+If your independent read contradicts any of these opinions, your read wins — record why.
+
 ## Binding workflow for landing fixes
 
 - One finding per PR; inside it, small gate-green commits (reorder/stub first, behavior flips
