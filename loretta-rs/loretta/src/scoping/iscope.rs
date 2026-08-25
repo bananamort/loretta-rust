@@ -141,9 +141,11 @@ impl Scope {
         // The C# null-check (IScope.cs:166) maps to the port's &str —
         // an empty name is NOT the null case: it falls through to the
         // identifier validation and panics like the C# ArgumentException
-        // (IScope.cs:167 — Finding 44).
+        // (IScope.cs:167 — Finding 44). The C# message is the literal
+        // `'name' must be a valid identifier.` — `nameof(name)` compiles
+        // to the parameter name, not the invalid value (Candidate B).
         if !StringUtils::is_identifier(name) {
-            panic!("'{name}' must be a valid identifier.");
+            panic!("'name' must be a valid identifier.");
         }
         for variable in &self.declared_variables {
             if variable.borrow().name() == name {
