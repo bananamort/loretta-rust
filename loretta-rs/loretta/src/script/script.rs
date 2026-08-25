@@ -380,6 +380,37 @@ mod tests {
     }
 
     #[test]
+    fn parse_error_trees_contribute_their_recovered_structure() {
+        // Candidate E (audit 2026-08-24): the C# LuaSyntaxTree never fails
+        // to produce a tree — parse errors become error nodes the walkers
+        // handle. full_moon's AstResult carries the reconstructed AST
+        // alongside the errors (parser_structs.rs:257-263), so the tree
+        // contributes its recovered structure instead of being dropped
+        // (the old "full_moon returns no AST on parse failure" comment was
+        // false — into_result() is what discarded it).
+        let mut script = Script::new(vec!["local a = (1".to_string()]);
+        let root = script.root_scope();
+        let file = {
+            let root_ref = root.borrow();
+            root_ref.contained_scopes()[0].clone()
+        };
+        assert_eq!(
+            file.borrow().kind(),
+            crate::scoping::scopekind::ScopeKind::File
+        );
+        let declared = file.borrow().declared_variables();
+        let a = declared
+            .iter()
+            .find(|v| v.borrow().name() == "a")
+            .expect("the recovered tree's local variable")
+            .clone();
+        assert_eq!(
+            a.borrow().kind(),
+            crate::scoping::variablekind::VariableKind::Local
+        );
+    }
+
+    #[test]
     fn renames_a_local_variable() {
         let mut script = Script::new(vec!["local a = 1\nprint(a)\n".to_string()]);
         let root = script.root_scope();

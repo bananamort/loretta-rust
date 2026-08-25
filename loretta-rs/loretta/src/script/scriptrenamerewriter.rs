@@ -71,11 +71,11 @@ pub fn rename_in_tree(
     new_name: &str,
     script: &mut crate::script::script::Script,
 ) -> String {
-    let full_ast = match full_moon::parse_fallible(tree, full_moon::LuaVersion::new()).into_result()
-    {
-        Ok(ast) => ast,
-        Err(_) => return tree.to_string(),
-    };
+    // The C# RenameRewriter runs over the error-recovery tree root — the
+    // C# tree never fails to parse (Candidate E). full_moon's AstResult
+    // carries the reconstructed AST alongside the errors, so the recovered
+    // tree is renamed like the C# visits its error nodes.
+    let full_ast = full_moon::parse_fallible(tree, full_moon::LuaVersion::new()).into_ast();
     // The target node ids come from the script's memoized state (the C#
     // GetVariable map identity); the walk below reproduces the node ids to
     // collect the token positions. The state's node ids continue across
