@@ -32,7 +32,15 @@ impl GotoWalker {
     }
 
     /// C# VisitGotoStatement (GotoWalker.cs:20-27): gets-or-creates the
-    /// label and adds the jump.
+    /// label and adds the jump. The C# calls GetOrCreateLabel with the
+    /// default (null) labelSyntax (GotoWalker.cs:26) — and its
+    /// LorettaDebug.AssertNotNull(labelSyntax) (IScope.cs:218) is
+    /// [Conditional("DEBUG")], firing on EVERY goto before the
+    /// label-exists lookup, so a C# debug build trips its own assert on
+    /// any goto (an upstream defect, Debug.cs:39-41). The port's
+    /// release-build parity keeps the None; the syntax is attached later
+    /// via set_label_syntax when the label statement is visited
+    /// (Candidate C — documented, not replicated).
     pub fn visit_goto_stmt(
         &mut self,
         scope: &Rc<RefCell<Scope>>,
