@@ -576,12 +576,12 @@ impl ConstantFolder {
                 };
                 let found = match index {
                     ast::Index::Dot { name, .. } => {
-                        lookup_table_field(&table, Some(&name.token().to_string()), None)
+                        lookup_table_field(&table, Some(&name.token().to_string()), None, self)
                     }
                     ast::Index::Brackets { expression, .. }
                         if self.has_e_flag(expression, FLAG_IS_SCALAR) =>
                     {
-                        lookup_table_field(&table, None, Some((expression, self)))
+                        lookup_table_field(&table, None, Some(expression), self)
                     }
                     #[allow(unreachable_patterns)]
                     _ => None,
@@ -1425,13 +1425,18 @@ fn unescape_lua_string(text: &str, accept_invalid_escapes: bool) -> String {
     out
 }
 
-/// C# member/element lookup over the table's fields (Reverse order).
-/// `name` is the member name for `.x` accesses; `brackets` carries the key
-/// expression + the folder for `[k]` accesses.
+/// C# member/element lookup over the table's fields (Reverse order —
+/// ConstantFolder.cs:342, 377). `name` is the member name for `.x`
+/// accesses: BOTH the IdentifierKeyed and the ExpressionKeyed C# checks
+/// run on the dot path (ConstantFolder.cs:344-358). `key_expression` is
+/// the key expression for `[k]` accesses. The folder supplies the option
+/// flags and the string values (Finding A — the Dot arm used to pass
+/// brackets=None, making the ExpressionKeyed check unreachable there).
 fn lookup_table_field(
     table: &ast::TableConstructor,
     name: Option<&str>,
-    brackets: Option<(&ast::Expression, &ConstantFolder)>,
+    key_expression: Option<&ast::Expression>,
+    folder: &ConstantFolder,
 ) -> Option<ast::Expression> {
     let fields: Vec<&ast::Field> = table.fields().iter().collect();
     for field in fields.into_iter().rev() {
@@ -1442,7 +1447,7 @@ fn lookup_table_field(
                     if key.token().to_string() == name {
                         return Some(value.clone());
                     }
-                } else if let Some((key_expr, folder)) = brackets {
+                } else if let Some(key_expr) = key_expression {
                     // C#: HasEFlag(keyExpression, IsStr) && GetValue == identifier
                     if folder.has_e_flag(key_expr, FLAG_IS_STR)
                         && get_string_value(key_expr, folder.syntax_options.accept_invalid_escapes)
@@ -1455,16 +1460,12 @@ fn lookup_table_field(
             ast::Field::ExpressionKey { key, value, .. } => {
                 if let Some(name) = name {
                     // C#: key IsStr && GetValue(key) == member name
-                    if let Some((_, folder)) = brackets {
-                        if is_str_with_value(
-                            key,
-                            name,
-                            folder.syntax_options.accept_invalid_escapes,
-                        ) {
-                            return Some(value.clone());
-                        }
+                    // (ConstantFolder.cs:350-357) — the ExpressionKeyed
+                    // check runs on the dot path too.
+                    if is_str_with_value(key, name, folder.syntax_options.accept_invalid_escapes) {
+                        return Some(value.clone());
                     }
-                } else if let Some((key_expr, _folder)) = brackets {
+                } else if let Some(key_expr) = key_expression {
                     // C#: field.Key.IsEquivalentTo(keyExpression)
                     if expressions_equivalent(key, key_expr) {
                         return Some(value.clone());
