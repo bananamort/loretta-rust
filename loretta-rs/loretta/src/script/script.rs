@@ -149,12 +149,14 @@ impl Script {
 
     /// C# Script.RenameVariable (Script.cs:141-188): attempts to rename the
     /// provided variable with the new name. The C# argument checks are the
-    /// nulls (Script.cs:143-144) — there is NO empty-string check: the
-    /// empty name flows into the location handling, where the C#
+    /// nulls (Script.cs:143-144) — there is NO empty-string check at the
+    /// top: the empty name flows into the location handling, where the C#
     /// FindVariable rejects it with an ArgumentException (IScope.cs:166-167)
     /// and the port's find_variable panics with the same message (Finding
-    /// 44); a variable without locations renames to an empty string with no
-    /// changes, like the C# Ok result.
+    /// 44); a zero-location variable skips that path and the C# rewriter
+    /// ctor throws instead ("'newName' cannot be null or empty.",
+    /// Script.RenameRewriter.cs:14-17 — Candidate D), which the port
+    /// mirrors after the errors check.
     pub fn rename_variable(&mut self, variable: &SharedVariable, new_name: &str) -> RenameResult {
         let mut errors: Vec<RenameError> = Vec::new();
         let mut trees_with_locations: Vec<usize> = Vec::new();
@@ -255,6 +257,18 @@ impl Script {
             return RenameResult::Err(errors);
         }
 
+        // C#: `new RenameRewriter(this, variable, newName)` (Script.cs:169)
+        // — the ctor throws ArgumentException on IsNullOrEmpty(newName)
+        // (Script.RenameRewriter.cs:14-17: "'newName' cannot be null or
+        // empty."). The C# reaches it only when no location tripped the
+        // FindVariable validation — a zero-location variable, reachable
+        // via the implicit arg/... file-scope variables (declared with no
+        // node, IFileScope.cs:26-33) — and the port mirrors the throw as
+        // a panic (Candidate D).
+        if new_name.is_empty() {
+            panic!("'newName' cannot be null or empty.");
+        }
+
         let new_trees = self.rename_in_trees(variable, new_name, &trees_with_locations);
         // The C# rewritten trees keep their options (Script.cs:170-178).
         RenameResult::Ok(Script {
@@ -325,6 +339,44 @@ mod tests {
             .or_else(|| panic.downcast_ref::<String>().map(String::as_str))
             .expect("a panic message");
         assert_eq!(message, "'name' must be a valid identifier.");
+    }
+
+    #[test]
+    fn empty_rename_on_zero_location_variable_panics_like_the_rewriter_ctor() {
+        // Candidate D (audit 2026-08-24): the C# RenameVariable constructs
+        // the RenameRewriter after the errors check (Script.cs:169); its
+        // ctor throws ArgumentException on IsNullOrEmpty(newName)
+        // (Script.RenameRewriter.cs:14-17) even for a zero-location
+        // variable. The implicit arg/... file-scope variables are declared
+        // with no node (IFileScope.cs:26-33) — zero locations until
+        // referenced — so an empty rename on the unreferenced arg variable
+        // throws in the C#; the port mirrors the throw as a panic.
+        let mut script = Script::new(vec!["print('hi')\n".to_string()]);
+        let root = script.root_scope();
+        let file = root.borrow().contained_scopes()[0].clone();
+        let arg = file
+            .borrow()
+            .declared_variables()
+            .iter()
+            .find(|v| v.borrow().name() == "arg")
+            .expect("the implicit arg variable")
+            .clone();
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            script.rename_variable(&arg, "")
+        }));
+        let panic = match result {
+            Err(payload) => payload,
+            Ok(_) => panic!(
+                "the empty rename on a zero-location variable must panic \
+                 like the C# ArgumentException"
+            ),
+        };
+        let message: &str = panic
+            .downcast_ref::<&str>()
+            .copied()
+            .or_else(|| panic.downcast_ref::<String>().map(String::as_str))
+            .expect("a panic message");
+        assert_eq!(message, "'newName' cannot be null or empty.");
     }
 
     #[test]
