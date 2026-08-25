@@ -49,11 +49,11 @@ pub fn minify_with(
     naming_strategy: NamingStrategy,
     slot_allocator: Box<dyn ISlotAllocator>,
 ) -> String {
-    let full_ast = match full_moon::parse_fallible(tree, full_moon::LuaVersion::new()).into_result()
-    {
-        Ok(ast) => ast,
-        Err(_) => return tree.to_string(),
-    };
+    // The C# Minify runs the rewriters over the error-recovery tree root —
+    // the C# tree never fails to parse (Candidate E). full_moon's
+    // AstResult carries the reconstructed AST alongside the errors, so the
+    // recovered tree is minified like the C# visits its error nodes.
+    let full_ast = full_moon::parse_fallible(tree, full_moon::LuaVersion::new()).into_ast();
     let script = Script::new(vec![tree.to_string()]);
     let mut renaming_rewriter = RenamingRewriter::new(script, naming_strategy, slot_allocator);
     let renamed = renaming_rewriter.rewrite(&full_ast);

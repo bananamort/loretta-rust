@@ -101,18 +101,16 @@ impl ScopeAndVariableManager {
         location_scopes: &mut HashMap<Node, Rc<RefCell<Scope>>>,
         next_id: &std::rc::Rc<std::cell::Cell<u64>>,
     ) {
-        let full_ast =
-            match full_moon::parse_fallible(tree, full_moon::LuaVersion::new()).into_result() {
-                Ok(ast) => ast,
-                Err(_) => {
-                    // The C# (LuaSyntaxTree) never fails to produce a tree —
-                    // parse errors become error nodes the walkers handle.
-                    // full_moon returns no AST on parse failure, so the tree
-                    // is dropped and contributes nothing to the accumulated
-                    // state (structural boundary, Finding 5).
-                    return;
-                }
-            };
+        // The C# (LuaSyntaxTree) never fails to produce a tree — parse
+        // errors become error nodes the walkers handle. full_moon's
+        // parse_fallible likewise always produces an AST: the AstResult
+        // carries the reconstructed AST alongside the errors
+        // (parser_structs.rs:257-263 — into_result() is what discards it).
+        // The tree therefore contributes its recovered structure like the
+        // C# walkers process error nodes (Candidate E — the old comment
+        // claimed "full_moon returns no AST on parse failure", which was
+        // false; the drop was not boundary-forced).
+        let full_ast = full_moon::parse_fallible(tree, full_moon::LuaVersion::new()).into_ast();
         let mut walker = ScopeAndVariableWalker::new(
             root_scope.clone(),
             HashMap::new(),
