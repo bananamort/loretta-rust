@@ -715,6 +715,29 @@ fn chained_const_table_access_folds_bottom_up() {
 }
 
 #[test]
+fn dot_access_folds_expression_keyed_fields() {
+    // Finding A (audit 2026-08-24): the Dot arm passed brackets=None, so
+    // lookup_table_field's ExpressionKeyed check (is_str_with_value) was
+    // unreachable on the dot path — the C# checks BOTH key forms
+    // (ConstantFolder.cs:344-358), and the reverse iteration means the
+    // LAST matching field wins (ConstantFolder.cs:342). Pinned against
+    // the C# oracle.
+    let cases: &[(&str, LuaValue)] = &[
+        ("({[\"x\"] = 1}).x", LuaValue::Integer(1)),
+        ("({[\"x\"] = 1, [\"x\"] = 2}).x", LuaValue::Integer(2)),
+        ("({x = 10, [\"x\"] = 1}).x", LuaValue::Integer(1)),
+        ("({[\"x\"] = 1, x = 10}).x", LuaValue::Integer(10)),
+        ("({[\"x\"] = \"v\"}).x", LuaValue::String("v".to_string())),
+    ];
+    for (source, expected) in cases {
+        let folded = fold_expression(source, false);
+        let actual = folded_value(&folded)
+            .unwrap_or_else(|| panic!("the fold of {source:?} must produce a literal: {folded:?}"));
+        assert_value(&actual, expected);
+    }
+}
+
+#[test]
 fn invalid_escapes_follow_accept_invalid_escapes() {
     // Finding 36: the escape echo/skip is preset-dependent — the C#
     // lexer computes the token values with the LuaParseOptions
