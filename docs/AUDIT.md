@@ -104,6 +104,31 @@ agree or disagree, say so in your report either way.
 
 If your independent read contradicts any of these opinions, your read wins — record why.
 
+## Coverage limits of the 2026-08-24 audit (line-read these anchors yourself)
+
+The independent audit's pass was full-read for nearly everything, but it self-declared three
+coverage limits. They do not invalidate its findings, but they mean specific anchors were
+probe-checked rather than line-read — so YOUR Source Protocol read is the first true line-read
+for them:
+
+- **`Core/Portable/Compilation/ParseOptions.cs`** — probe-checked only (Candidate B/64's fix
+  anchors to `ParseOptions.cs:47-55`). Read the file itself before trusting the anchor.
+- **`Core/Portable/RealParser.cs`** — probe-checked only; Findings 28-31's C# behaviors
+  (sign→0.0, overflow→false, trailing-garbage tolerance) rest on probes plus the code read in
+  `NumberParsing.cs`. Read `RealParser.cs:15-17,30-37,288-368,384-392` yourself.
+- **DROP-side infrastructure received no review** — everything inside `Core/Portable`,
+  `Parser/`, `Syntax/`, and `Generated/` was skipped per Port Boundary (correct per docs), but
+  that also means nothing verifies those trees stayed byte-stable at b767b4e beyond git.
+  Spot-verify via `git -C references/Loretta status/log` if you want belt-and-braces.
+
+Additionally, two table-level "exact" verifications (unicode_categories vs Unicode data;
+LuaResources vs resx) trace back to mechanical diffs from an earlier session, re-cited rather
+than repeated. If you touch those tables, re-run the diff rather than citing this file.
+
+Count-decomposition caveat: the run's 231 passed decomposes as ~197 integration + ~35
+lib-unit by attribute count, while AGENTS.md frames it as 172 Oracle-1 + internals. Both end
+at 231/0; use raw cargo output as truth, not either decomposition.
+
 ## Binding workflow for landing fixes
 
 - One finding per PR; inside it, small gate-green commits (reorder/stub first, behavior flips
