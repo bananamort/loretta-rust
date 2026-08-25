@@ -311,10 +311,20 @@ mod tests {
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             script.rename_variable(&variable, "")
         }));
-        assert!(
-            result.is_err(),
-            "the empty name must panic like the C# ArgumentException"
-        );
+        // Candidate B (audit 2026-08-24): the C# message is the literal
+        // `'name' must be a valid identifier.` — `nameof(name)` compiles
+        // to the parameter name (IScope.cs:167), so the exact text is
+        // asserted regardless of the invalid input.
+        let panic = match result {
+            Err(payload) => payload,
+            Ok(_) => panic!("the empty name must panic like the C# ArgumentException"),
+        };
+        let message: &str = panic
+            .downcast_ref::<&str>()
+            .copied()
+            .or_else(|| panic.downcast_ref::<String>().map(String::as_str))
+            .expect("a panic message");
+        assert_eq!(message, "'name' must be a valid identifier.");
     }
 
     #[test]
