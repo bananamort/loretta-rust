@@ -1,45 +1,31 @@
 // Ported from Loretta.CodeAnalysis.Lua.Experimental.ConstantFolder (b767b4e)
-// C# source: src/Compilers/Lua/Experimental/ConstantFolder.cs,
-// ConstantFolder.ExpressionFlags.cs, ConstantFolder.NumberParsing.cs
+// C# source: src/Compilers/Lua/Experimental/ConstantFolder.cs
+// (The ExpressionFlags and NumberParsing partial-class members live in
+// expressionflags.rs and numparsing.rs.)
 
 use crate::experimental::constantfoldingoptions::ConstantFoldingOptions;
+use crate::experimental::expressionflags::{
+    has_e_flag, FLAG_IS_BOOL, FLAG_IS_CONSTANT_TABLE, FLAG_IS_DOUBLE, FLAG_IS_LONG, FLAG_IS_NIL,
+    FLAG_IS_NUM, FLAG_IS_SCALAR, FLAG_IS_STR, FLAG_IS_STRING_WITH_NUMBER, FLAG_IS_TRUTHY,
+};
+use crate::experimental::numparsing::try_parse_number_in_string;
 use crate::symbol_display::objectdisplay::ObjectDisplay;
 use crate::symbol_display::objectdisplayoptions::ObjectDisplayOptions;
 use crate::utilities::hexfloat::HexFloat;
-use crate::utilities::stringutils::StringUtils;
 use full_moon::ast;
 use full_moon::ast::span::ContainedSpan;
 use full_moon::tokenizer::{StringLiteralQuoteType, Symbol, Token, TokenReference, TokenType};
 use full_moon::visitors::{VisitMut, VisitorMut};
 use full_moon::ShortString;
 
-/// C# ConstantFolder.ExpressionFlags (ConstantFolder.ExpressionFlags.cs:8-26).
-pub const FLAG_IS_NIL: u16 = 1 << 0;
-pub const FLAG_IS_DOUBLE: u16 = 1 << 1;
-pub const FLAG_IS_STR: u16 = 1 << 2;
-pub const FLAG_IS_BOOL: u16 = 1 << 3;
-pub const FLAG_IS_TRUTHY: u16 = 1 << 4;
-pub const FLAG_IS_FALSEY: u16 = 1 << 5;
-pub const FLAG_IS_CONSTANT_TABLE: u16 = 1 << 6;
-pub const FLAG_IS_ANONYMOUS_FUNCTION: u16 = 1 << 7;
-pub const FLAG_IS_LONG: u16 = 1 << 8;
-pub const FLAG_IS_STRING_WITH_NUMBER: u16 = 1 << 9;
-
-pub const FLAG_CAN_CONVERT_TO_BOOL: u16 = FLAG_IS_TRUTHY | FLAG_IS_FALSEY;
-pub const FLAG_IS_SCALAR: u16 =
-    FLAG_IS_NIL | FLAG_IS_DOUBLE | FLAG_IS_LONG | FLAG_IS_STR | FLAG_IS_BOOL;
-pub const FLAG_IS_CONSTANT: u16 =
-    FLAG_IS_SCALAR | FLAG_IS_CONSTANT_TABLE | FLAG_IS_ANONYMOUS_FUNCTION;
-pub const FLAG_IS_NUM: u16 = FLAG_IS_DOUBLE | FLAG_IS_LONG | FLAG_IS_STRING_WITH_NUMBER;
-
 /// C# ConstantFolder (ConstantFolder.cs:8-15): the options-holding rewriter.
 #[derive(Clone)]
 pub struct ConstantFolder {
-    options: ConstantFoldingOptions,
+    pub(crate) options: ConstantFoldingOptions,
     /// The syntax options the tree was parsed with — the C# token values
     /// are computed by the lexer with the LuaParseOptions, so the escape
     /// echo/skip is preset-dependent (Finding 36).
-    syntax_options: crate::luasyntaxoptions::LuaSyntaxOptions,
+    pub(crate) syntax_options: crate::luasyntaxoptions::LuaSyntaxOptions,
 }
 
 /// The numeric value of an expression (C# `dynamic` long/double).
@@ -65,102 +51,6 @@ impl ConstantFolder {
     pub fn fold(&mut self, ast: ast::Ast) -> ast::Ast {
         let nodes = ast.nodes().clone().visit_mut(self);
         ast.with_nodes(nodes)
-    }
-
-    /// C# GetFlags (ConstantFolder.ExpressionFlags.cs:31-77). Computed purely
-    /// (the C# caches per SyntaxNode; the flags are a pure function of the
-    /// inner expression's shape, so the cache is behavior-neutral).
-    fn get_flags(&self, node: &ast::Expression) -> u16 {
-        let inner = get_inner_expression(node);
-        let mut flags: u16 = 0;
-        match inner {
-            ast::Expression::Symbol(t) if t.is_symbol(Symbol::Nil) => {
-                flags |= FLAG_IS_NIL;
-            }
-            ast::Expression::Number(t) => {
-                if number_is_double(&t.token().to_string()) {
-                    flags |= FLAG_IS_DOUBLE;
-                } else {
-                    flags |= FLAG_IS_LONG;
-                }
-            }
-            ast::Expression::String(t) => {
-                flags |= FLAG_IS_STR;
-                if self.options.extract_numbers_from_strings
-                    && try_parse_number_in_string(&string_value(
-                        t,
-                        self.syntax_options.accept_invalid_escapes,
-                    ))
-                    .is_some()
-                {
-                    flags |= FLAG_IS_STRING_WITH_NUMBER;
-                }
-            }
-            ast::Expression::Symbol(t)
-                if t.is_symbol(Symbol::True) || t.is_symbol(Symbol::False) =>
-            {
-                flags |= FLAG_IS_BOOL;
-            }
-            _ => {}
-        }
-        if can_convert_to_boolean(inner) {
-            flags |= if is_falsey(inner) {
-                FLAG_IS_FALSEY
-            } else {
-                FLAG_IS_TRUTHY
-            };
-        }
-        if let ast::Expression::TableConstructor(tc) = inner {
-            if self.is_const_table(tc) {
-                flags |= FLAG_IS_CONSTANT_TABLE;
-            }
-        }
-        if matches!(inner, ast::Expression::Function(_)) {
-            flags |= FLAG_IS_ANONYMOUS_FUNCTION;
-        }
-        flags
-    }
-
-    /// C# IsConstTable (ConstantFolder.ExpressionFlags.cs:79-118).
-    fn is_const_table(&self, table_constructor: &ast::TableConstructor) -> bool {
-        for field in table_constructor.fields().iter() {
-            match field {
-                ast::Field::NameKey { value, .. } => {
-                    if !self.is_const(value) {
-                        return false;
-                    }
-                }
-                ast::Field::ExpressionKey { key, value, .. } => {
-                    if !self.is_const(key) || !self.is_const(value) {
-                        return false;
-                    }
-                }
-                ast::Field::NoKey(value) => {
-                    if !self.is_const(value) {
-                        return false;
-                    }
-                }
-                // C# SetConstructor has no counterpart (the C# switch default
-                // throws UnexpectedValue); treat it as non-constant.
-                ast::Field::SetConstructor { .. } => return false,
-                #[allow(unreachable_patterns)]
-                _ => return false,
-            }
-        }
-        true
-    }
-
-    /// C# isConst local (ConstantFolder.ExpressionFlags.cs:116-117).
-    fn is_const(&self, node: &ast::Expression) -> bool {
-        has_e_flag(
-            self.get_flags(node),
-            FLAG_IS_CONSTANT | FLAG_IS_CONSTANT_TABLE,
-        )
-    }
-
-    /// C# HasEFlag(SyntaxNode, ExpressionFlags) (ConstantFolder.ExpressionFlags.cs:122-123).
-    fn has_e_flag(&self, node: &ast::Expression, wanted_flag: u16) -> bool {
-        has_e_flag(self.get_flags(node), wanted_flag)
     }
 
     /// C# TryGetNumValue (ConstantFolder.cs:498-515).
@@ -630,6 +520,7 @@ impl VisitorMut for ConstantFolder {
     }
 }
 
+// port-only: replaces the C# LiteralExpressionWithTriviaFrom (trivial there — the SyntaxFactory builds the token)
 /// C# WithTriviaFrom(SyntaxToken, SyntaxNode) (ConstantFolder.cs:435-439):
 /// the literal token takes the container's leading AND trailing trivia.
 fn literal_from_text(
@@ -651,6 +542,7 @@ fn literal_from_text(
     }
 }
 
+// port-only: replaces the C# LiteralExpressionWithTriviaFrom (trivial there — the SyntaxFactory builds the token)
 /// C# LiteralExpressionWithTriviaFrom(long) (ConstantFolder.cs:409-413).
 fn literal_long(value: i64, leading: &[Token], trailing: &[Token]) -> ast::Expression {
     let text = ObjectDisplay::format_literal_i64(value, ObjectDisplayOptions::NONE);
@@ -659,6 +551,7 @@ fn literal_long(value: i64, leading: &[Token], trailing: &[Token]) -> ast::Expre
     })
 }
 
+// port-only: replaces the C# LiteralExpressionWithTriviaFrom (trivial there — the SyntaxFactory builds the token)
 /// C# LiteralExpressionWithTriviaFrom(double) (ConstantFolder.cs:415-419).
 fn literal_double(value: f64, leading: &[Token], trailing: &[Token]) -> ast::Expression {
     let text = ObjectDisplay::format_literal_f64(value, ObjectDisplayOptions::NONE);
@@ -667,6 +560,7 @@ fn literal_double(value: f64, leading: &[Token], trailing: &[Token]) -> ast::Exp
     })
 }
 
+// port-only: replaces the C# LiteralExpressionWithTriviaFrom (trivial there — the SyntaxFactory builds the token)
 /// C# LiteralExpressionWithTriviaFrom(string) (ConstantFolder.cs:421-425).
 fn literal_str(value: String, leading: &[Token], trailing: &[Token]) -> ast::Expression {
     // C# Literal(string) = FormatLiteral(value, UseQuotes | EscapeNonPrintable)
@@ -690,6 +584,7 @@ fn literal_str(value: String, leading: &[Token], trailing: &[Token]) -> ast::Exp
     })
 }
 
+// port-only: replaces the C# LiteralExpressionWithTriviaFrom (trivial there — the SyntaxFactory builds the token)
 /// C# LiteralExpressionWithTriviaFrom(bool) (ConstantFolder.cs:427-433).
 fn literal_bool(value: bool, leading: &[Token], trailing: &[Token]) -> ast::Expression {
     let symbol = if value { Symbol::True } else { Symbol::False };
@@ -698,6 +593,7 @@ fn literal_bool(value: bool, leading: &[Token], trailing: &[Token]) -> ast::Expr
     })
 }
 
+// port-only: replaces the C# LiteralExpressionWithTriviaFrom (trivial there — the SyntaxFactory builds the token)
 /// Builds the literal expression from a numeric value (C# LiteralExpression
 /// with the corresponding kind).
 fn literal_num(value: NumValue, leading: &[Token], trailing: &[Token]) -> ast::Expression {
@@ -708,7 +604,7 @@ fn literal_num(value: NumValue, leading: &[Token], trailing: &[Token]) -> ast::E
 }
 
 /// C# GetInnerExpression (ConstantFolder.cs:447-450).
-fn get_inner_expression(node: &ast::Expression) -> &ast::Expression {
+pub(crate) fn get_inner_expression(node: &ast::Expression) -> &ast::Expression {
     match node {
         ast::Expression::Parentheses { expression, .. } => get_inner_expression(expression),
         other => other,
@@ -716,7 +612,7 @@ fn get_inner_expression(node: &ast::Expression) -> &ast::Expression {
 }
 
 /// C# CanConvertToBoolean (ConstantFolder.cs:458-470).
-fn can_convert_to_boolean(node: &ast::Expression) -> bool {
+pub(crate) fn can_convert_to_boolean(node: &ast::Expression) -> bool {
     match node {
         ast::Expression::Symbol(t) => {
             t.is_symbol(Symbol::Nil) || t.is_symbol(Symbol::True) || t.is_symbol(Symbol::False)
@@ -729,7 +625,7 @@ fn can_convert_to_boolean(node: &ast::Expression) -> bool {
 }
 
 /// C# IsFalsey (ConstantFolder.cs:477-481).
-fn is_falsey(node: &ast::Expression) -> bool {
+pub(crate) fn is_falsey(node: &ast::Expression) -> bool {
     debug_assert!(can_convert_to_boolean(node));
     matches!(
         node,
@@ -738,6 +634,7 @@ fn is_falsey(node: &ast::Expression) -> bool {
     )
 }
 
+// port-only: replaces the C# token.Value + Convert + Comparer<T> services
 /// C# GetValue(node) — the literal token's value for a Number node.
 fn number_value(node: &ast::Expression) -> NumValue {
     let inner = get_inner_expression(node);
@@ -765,17 +662,13 @@ fn get_string_value(node: &ast::Expression, accept_invalid_escapes: bool) -> Str
     string_value(t, accept_invalid_escapes)
 }
 
+// port-only: replaces the C# token.Value (precomputed by the lexer)
 /// The .NET string Length — the UTF-16 code-unit count (a char beyond
 /// 0xFFFF is a surrogate pair, two units).
 fn utf16_len(s: &str) -> usize {
     s.chars()
         .map(|c| if c as u32 > 0xFFFF { 2 } else { 1 })
         .sum()
-}
-
-/// C# HasEFlag(ExpressionFlags, ExpressionFlags) (ConstantFolder.ExpressionFlags.cs:120).
-fn has_e_flag(flags: u16, wanted_flag: u16) -> bool {
-    (flags & wanted_flag) != 0
 }
 
 /// C# exprEquals local (ConstantFolder.cs:302-314).
@@ -842,6 +735,7 @@ fn compare(
     panic!("Both expressions must have the same type.");
 }
 
+// port-only: replaces the C# Comparer<T>.Default.Compare
 fn long_cmp<T: Ord>(l: T, r: T) -> i32 {
     match l.cmp(&r) {
         std::cmp::Ordering::Less => -1,
@@ -850,6 +744,7 @@ fn long_cmp<T: Ord>(l: T, r: T) -> i32 {
     }
 }
 
+// port-only: replaces the C# Comparer<T>.Default.Compare
 fn double_cmp(l: f64, r: f64) -> i32 {
     if l < r {
         -1
@@ -860,6 +755,7 @@ fn double_cmp(l: f64, r: f64) -> i32 {
     }
 }
 
+// port-only: replaces the C# token.Value + Convert + Comparer<T> services
 fn get_double_value(node: &ast::Expression) -> f64 {
     match number_value(node) {
         NumValue::Double(d) => d,
@@ -867,6 +763,7 @@ fn get_double_value(node: &ast::Expression) -> f64 {
     }
 }
 
+// port-only: replaces the C# token.Value + Convert + Comparer<T> services
 fn get_long_value(node: &ast::Expression) -> i64 {
     match number_value(node) {
         NumValue::Long(v) => v,
@@ -874,6 +771,7 @@ fn get_long_value(node: &ast::Expression) -> i64 {
     }
 }
 
+// port-only: replaces the C# `dynamic` arithmetic (long/double promotion)
 fn num_value_eq(l: NumValue, r: NumValue) -> bool {
     match (l, r) {
         (NumValue::Long(a), NumValue::Long(b)) => a == b,
@@ -883,6 +781,7 @@ fn num_value_eq(l: NumValue, r: NumValue) -> bool {
     }
 }
 
+// port-only: replaces the C# `dynamic` arithmetic (long/double promotion)
 fn negate_num(v: NumValue) -> NumValue {
     match v {
         NumValue::Long(x) => NumValue::Long(x.wrapping_neg()),
@@ -890,6 +789,7 @@ fn negate_num(v: NumValue) -> NumValue {
     }
 }
 
+// port-only: replaces the C# `dynamic` arithmetic (long/double promotion)
 fn num_add(l: NumValue, r: NumValue) -> NumValue {
     match (l, r) {
         (NumValue::Long(a), NumValue::Long(b)) => NumValue::Long(a.wrapping_add(b)),
@@ -899,6 +799,7 @@ fn num_add(l: NumValue, r: NumValue) -> NumValue {
     }
 }
 
+// port-only: replaces the C# `dynamic` arithmetic (long/double promotion)
 fn num_sub(l: NumValue, r: NumValue) -> NumValue {
     match (l, r) {
         (NumValue::Long(a), NumValue::Long(b)) => NumValue::Long(a.wrapping_sub(b)),
@@ -908,6 +809,7 @@ fn num_sub(l: NumValue, r: NumValue) -> NumValue {
     }
 }
 
+// port-only: replaces the C# `dynamic` arithmetic (long/double promotion)
 fn num_mul(l: NumValue, r: NumValue) -> NumValue {
     match (l, r) {
         (NumValue::Long(a), NumValue::Long(b)) => NumValue::Long(a.wrapping_mul(b)),
@@ -917,6 +819,7 @@ fn num_mul(l: NumValue, r: NumValue) -> NumValue {
     }
 }
 
+// port-only: replaces the C# `dynamic` arithmetic (long/double promotion)
 fn num_div(l: NumValue, r: NumValue) -> f64 {
     match (l, r) {
         (NumValue::Long(a), NumValue::Long(b)) => a as f64 / b as f64,
@@ -926,6 +829,7 @@ fn num_div(l: NumValue, r: NumValue) -> f64 {
     }
 }
 
+// port-only: replaces the C# `dynamic` arithmetic (long/double promotion)
 fn num_mod(l: NumValue, r: NumValue) -> NumValue {
     match (l, r) {
         (NumValue::Long(a), NumValue::Long(b)) => {
@@ -945,6 +849,7 @@ fn num_mod(l: NumValue, r: NumValue) -> NumValue {
     }
 }
 
+// port-only: replaces the C# `dynamic` arithmetic (long/double promotion)
 /// C# Math.Pow((double) leftNum, (double) rightNum) (ConstantFolder.cs —
 /// the Caret case). The port uses f64::powf — the same platform pow, and
 /// the corpus-visible cases agree; last-ulp differences vs the .NET
@@ -962,12 +867,13 @@ fn num_pow(l: NumValue, r: NumValue) -> f64 {
     a.powf(b)
 }
 
+// port-only: replaces the C# token.Value + Convert + Comparer<T> services
 /// C# number classification: the token's Value is double iff the text has a
 /// '.', exponent ('e'/'E') or hex-float ('p'/'P'). In a hex literal the
 /// 'e'/'E' characters are DIGITS, not exponents — only '.' and 'p'/'P'
 /// (the hex-float markers) make it a double (e.g. 0xE5, 0x1e5 are
 /// integers — Finding 19).
-fn number_is_double(text: &str) -> bool {
+pub(crate) fn number_is_double(text: &str) -> bool {
     if text.starts_with("0x") || text.starts_with("0X") {
         text.contains('.') || text.contains('p') || text.contains('P')
     } else {
@@ -979,6 +885,7 @@ fn number_is_double(text: &str) -> bool {
     }
 }
 
+// port-only: replaces the C# token.Value + Convert + Comparer<T> services
 /// Parses an integer literal (decimal, hex or binary) like the C# lexer's
 /// integer paths (Lexer.Numbers.cs): underscores are skipped (the C#
 /// Consume*Digits builders), overflow folds to 0 (TryParse's default out
@@ -1007,6 +914,7 @@ fn parse_integer_literal(text: &str) -> i64 {
     }
 }
 
+// port-only: replaces the C# token.Value + Convert + Comparer<T> services
 /// Parses a double literal (decimal float or hex float).
 fn parse_double_literal(text: &str) -> Option<f64> {
     let text = text.trim();
@@ -1017,6 +925,7 @@ fn parse_double_literal(text: &str) -> Option<f64> {
     }
 }
 
+// port-only: replaces the C# token.Value + Convert + Comparer<T> services
 /// The C# RealParser.TryParseDouble (RealParser.cs:30-37) for the string
 /// extraction (Finding 28): the leading numeric run is the value and the
 /// trailing garbage is ignored (the FromSource loops, RealParser.cs:
@@ -1028,7 +937,7 @@ fn parse_double_literal(text: &str) -> Option<f64> {
 /// for '-'. The C# RealParser is decimal — a "0x1.8p10" string yields
 /// 0.0 from the leading "0" (the decFloat comes before the hexFloat,
 /// Finding 31).
-fn parse_decimal_double(value: &str) -> Option<f64> {
+pub(crate) fn parse_decimal_double(value: &str) -> Option<f64> {
     let bytes = value.as_bytes();
     let mut i = 0;
     while i < bytes.len() && bytes[i].is_ascii_digit() {
@@ -1077,211 +986,10 @@ fn parse_decimal_double(value: &str) -> Option<f64> {
     run.parse::<f64>().ok()
 }
 
-/// C# TryParseNumberInString (ConstantFolder.NumberParsing.cs:20-66).
-fn try_parse_number_in_string(value: &str) -> Option<NumValue> {
-    let value = StringUtils::trim(value);
-    // s_decIntegerRegex: ^[+\-]?\d+$ with long.TryParse(AllowLeadingSign)
-    if is_dec_integer(value) {
-        if let Ok(i64) = value.parse::<i64>() {
-            return Some(NumValue::Long(i64));
-        }
-    }
-    // s_hexIntegerRegex: ^[+\-]?0[xX][\da-fA-F]+$ with
-    // long.TryParse(AllowLeadingSign | AllowHexSpecifier) — on .NET 8+ this
-    // style combination throws ArgumentException at call time (pinned by the
-    // constantfold-hex corpus case), so any hex-integer string panics with
-    // the exact framework message.
-    if is_hex_integer(value) {
-        panic!(
-            "With the AllowHexSpecifier or AllowBinarySpecifier bit set in the enum bit field, \
-             the only other valid bits that can be combined into the enum value must be \
-             AllowLeadingWhite and AllowTrailingWhite. (Parameter 'style')"
-        );
-    }
-    // s_decFloatRegex with RealParser.TryParseDouble (invariant round-trip).
-    // The value is the DECIMAL run even for "0x..." strings — the C#
-    // RealParser takes the leading decimal run ("0x1.8p10" -> 0.0, the
-    // decFloat-first ordering, Finding 31). The C# returns FALSE on
-    // Overflow (RealParser.cs:30-36) — the extraction fails and the
-    // expression stays untouched (Finding 30); the literal path keeps
-    // the inf (the C# lexer's out value on overflow is the Infinity
-    // bits, Lexer.Numbers.cs:274-278).
-    if is_dec_float(value) {
-        if let Some(f64) = parse_decimal_double(value).filter(|v| !v.is_infinite()) {
-            return Some(NumValue::Double(f64));
-        }
-    }
-    // s_hexFloatRegex with HexFloat.DoubleFromHexString (try/catch -> None).
-    if is_hex_float(value) {
-        if let Ok(f64) = HexFloat::double_from_hex_string(value) {
-            return Some(NumValue::Double(f64));
-        }
-    }
-    None
-}
-
-/// s_decIntegerRegex: ^[+\-]?\d+$
-fn is_dec_integer(value: &str) -> bool {
-    let bytes = value.as_bytes();
-    let mut idx = 0;
-    if bytes.first() == Some(&b'+') || bytes.first() == Some(&b'-') {
-        idx = 1;
-    }
-    if idx == bytes.len() {
-        return false;
-    }
-    bytes[idx..].iter().all(|b| b.is_ascii_digit())
-}
-
-/// s_hexIntegerRegex: ^[+\-]?0[xX][\da-fA-F]+$
-fn is_hex_integer(value: &str) -> bool {
-    let bytes = value.as_bytes();
-    let mut idx = 0;
-    if bytes.first() == Some(&b'+') || bytes.first() == Some(&b'-') {
-        idx = 1;
-    }
-    if bytes.len() - idx < 3 {
-        return false;
-    }
-    if bytes[idx] != b'0' || (bytes[idx + 1] != b'x' && bytes[idx + 1] != b'X') {
-        return false;
-    }
-    bytes[idx + 2..].iter().all(|b| b.is_ascii_hexdigit())
-}
-
-/// s_decFloatRegex: [+\-]?(\.\d+|\d+(\.\d+)?)([eE][+\-]?\d+)? — the C#
-/// regex is UNANCHORED (NumberParsing.cs:16-18): the string only needs
-/// to CONTAIN a match, so the leading garbage is skipped ("v1.5"
-/// contains "1.5"); the trailing garbage is ignored by the RealParser
-/// (Finding 28).
-fn is_dec_float(value: &str) -> bool {
-    let bytes = value.as_bytes();
-    for start in 0..bytes.len() {
-        let mut i = start;
-        if bytes[i] == b'+' || bytes[i] == b'-' {
-            i += 1;
-        }
-        if i >= bytes.len() || !(bytes[i] == b'.' || bytes[i].is_ascii_digit()) {
-            continue;
-        }
-        if dec_float_match(&bytes[i..]) {
-            return true;
-        }
-    }
-    false
-}
-
-/// The decFloat pattern body (without the sign — the caller consumes it):
-/// (\.\d+ | \d+(\.\d+)?) ([eE][+\-]?\d+)? — a match anywhere in the slice
-/// (the trailing garbage after the matched number is not part of it).
-fn dec_float_match(rest: &[u8]) -> bool {
-    if rest.is_empty() {
-        return false;
-    }
-    // (\.\d+ | \d+(\.\d+)?)
-    let mut i = 0;
-    if rest[0] == b'.' {
-        i = 1;
-        if i == rest.len() || !rest[i].is_ascii_digit() {
-            return false;
-        }
-        while i < rest.len() && rest[i].is_ascii_digit() {
-            i += 1;
-        }
-    } else {
-        if !rest[0].is_ascii_digit() {
-            return false;
-        }
-        while i < rest.len() && rest[i].is_ascii_digit() {
-            i += 1;
-        }
-        if i < rest.len() && rest[i] == b'.' {
-            i += 1;
-            if i < rest.len() && rest[i].is_ascii_digit() {
-                while i < rest.len() && rest[i].is_ascii_digit() {
-                    i += 1;
-                }
-            }
-        }
-    }
-    // ([eE][+\-]?\d+)? — the optional group: when the exponent digits
-    // are missing the group fails and the match is the number alone (the
-    // regex backtracks).
-    if i < rest.len() && (rest[i] == b'e' || rest[i] == b'E') {
-        i += 1;
-        if i < rest.len() && (rest[i] == b'+' || rest[i] == b'-') {
-            i += 1;
-        }
-        if i < rest.len() && rest[i].is_ascii_digit() {
-            while i < rest.len() && rest[i].is_ascii_digit() {
-                i += 1;
-            }
-        }
-    }
-    true
-}
-
-/// s_hexFloatRegex:
-/// [+\-]?0x(\.[\da-fA-F]+|[\da-fA-F]+(\.[\da-fA-F]+)?)([pP][+\-]?\d+)?
-fn is_hex_float(value: &str) -> bool {
-    let bytes = value.as_bytes();
-    let mut idx = 0;
-    if bytes.first() == Some(&b'+') || bytes.first() == Some(&b'-') {
-        idx = 1;
-    }
-    let rest = &bytes[idx..];
-    if rest.len() < 2 || rest[0] != b'0' || (rest[1] != b'x' && rest[1] != b'X') {
-        return false;
-    }
-    let mut i = 2;
-    let mut digits = 0;
-    if i < rest.len() && rest[i] == b'.' {
-        i += 1;
-        if i == rest.len() || !rest[i].is_ascii_hexdigit() {
-            return false;
-        }
-        while i < rest.len() && rest[i].is_ascii_hexdigit() {
-            i += 1;
-            digits += 1;
-        }
-    } else {
-        if i == rest.len() || !rest[i].is_ascii_hexdigit() {
-            return false;
-        }
-        while i < rest.len() && rest[i].is_ascii_hexdigit() {
-            i += 1;
-            digits += 1;
-        }
-        if i < rest.len() && rest[i] == b'.' {
-            i += 1;
-            while i < rest.len() && rest[i].is_ascii_hexdigit() {
-                i += 1;
-                digits += 1;
-            }
-        }
-    }
-    if digits == 0 {
-        return false;
-    }
-    // ([pP][+\-]?\d+)?
-    if i < rest.len() && (rest[i] == b'p' || rest[i] == b'P') {
-        i += 1;
-        if i < rest.len() && (rest[i] == b'+' || rest[i] == b'-') {
-            i += 1;
-        }
-        if i == rest.len() || !rest[i].is_ascii_digit() {
-            return false;
-        }
-        while i < rest.len() && rest[i].is_ascii_digit() {
-            i += 1;
-        }
-    }
-    i == rest.len()
-}
-
+// port-only: replaces the C# token.Value (precomputed by the lexer)
 /// Decodes the value of a string literal token (C# token.Value). Bracketed
 /// (long) strings do not process escapes; quoted strings do.
-fn string_value(token_ref: &TokenReference, accept_invalid_escapes: bool) -> String {
+pub(crate) fn string_value(token_ref: &TokenReference, accept_invalid_escapes: bool) -> String {
     let TokenType::StringLiteral {
         literal,
         multi_line_depth,
@@ -1297,6 +1005,7 @@ fn string_value(token_ref: &TokenReference, accept_invalid_escapes: bool) -> Str
     unescape_lua_string(text, accept_invalid_escapes)
 }
 
+// port-only: replaces the C# token.Value (precomputed by the lexer)
 /// Lua escape decoding for quoted strings (\a \b \f \n \r \t \v \\ \" \' \z
 /// \xXX \u{...} \ddd) — the `accept_invalid_escapes` flag carries the C#
 /// LuaSyntaxOptions.AcceptInvalidEscapes (the lexer's preset-dependent
@@ -1425,6 +1134,7 @@ fn unescape_lua_string(text: &str, accept_invalid_escapes: bool) -> String {
     out
 }
 
+// port-only: replaces the C# inline Reverse-order field loop of the member/element access visits
 /// C# member/element lookup over the table's fields (Reverse order —
 /// ConstantFolder.cs:342, 377). `name` is the member name for `.x`
 /// accesses: BOTH the IdentifierKeyed and the ExpressionKeyed C# checks
@@ -1481,6 +1191,7 @@ fn lookup_table_field(
     None
 }
 
+// port-only: replaces the C# GetValue<string>(key) == name check inlined in the member access
 /// C# GetValue<string>(key) == name check for the member access.
 fn is_str_with_value(key: &ast::Expression, name: &str, accept_invalid_escapes: bool) -> bool {
     let inner = get_inner_expression(key);
@@ -1490,6 +1201,7 @@ fn is_str_with_value(key: &ast::Expression, name: &str, accept_invalid_escapes: 
     }
 }
 
+// port-only: replaces the C# IsEquivalentTo (dropped Roslyn SyntaxNode method)
 /// C# IsEquivalentTo: the field key is syntactically identical to the index
 /// key (ignoring trivia).
 fn expressions_equivalent(a: &ast::Expression, b: &ast::Expression) -> bool {
@@ -1504,6 +1216,7 @@ fn expressions_equivalent(a: &ast::Expression, b: &ast::Expression) -> bool {
         .all(|(ta, tb)| ta.token().to_string() == tb.token().to_string())
 }
 
+// port-only: replaces the Roslyn trivia plumbing (GetLeadingTrivia/WithLeadingTrivia)
 /// Collects the non-trivia tokens of an expression in source order.
 fn collect_expr_tokens(expr: &ast::Expression) -> Vec<TokenReference> {
     struct TokenGrabber {
@@ -1520,6 +1233,7 @@ fn collect_expr_tokens(expr: &ast::Expression) -> Vec<TokenReference> {
     grabber.tokens
 }
 
+// port-only: replaces the Roslyn trivia plumbing (GetLeadingTrivia/WithLeadingTrivia)
 /// C# node.GetLeadingTrivia() — the leading trivia of the expression's first
 /// token (collected via the full token walk, so every kind is covered).
 fn first_leading(expr: &ast::Expression) -> Vec<Token> {
@@ -1529,6 +1243,7 @@ fn first_leading(expr: &ast::Expression) -> Vec<Token> {
         .unwrap_or_default()
 }
 
+// port-only: replaces the Roslyn trivia plumbing (GetLeadingTrivia/WithLeadingTrivia)
 /// C# node.GetTrailingTrivia() — the trailing trivia of the expression's
 /// last token.
 fn last_trailing(expr: &ast::Expression) -> Vec<Token> {
@@ -1538,12 +1253,14 @@ fn last_trailing(expr: &ast::Expression) -> Vec<Token> {
         .unwrap_or_default()
 }
 
+// port-only: replaces the Roslyn trivia plumbing (GetLeadingTrivia/WithLeadingTrivia)
 /// Replaces the leading trivia of a token reference (C# WithLeadingTrivia).
 fn replace_leading(token_ref: TokenReference, leading: Vec<Token>) -> TokenReference {
     let trailing: Vec<Token> = token_ref.trailing_trivia().cloned().collect();
     TokenReference::new(leading, token_ref.token().to_owned(), trailing)
 }
 
+// port-only: replaces the Roslyn trivia plumbing (GetLeadingTrivia/WithLeadingTrivia)
 fn replace_prefix_first(prefix: ast::Prefix, leading: Vec<Token>) -> ast::Prefix {
     match prefix {
         ast::Prefix::Expression(e) => {
@@ -1555,6 +1272,7 @@ fn replace_prefix_first(prefix: ast::Prefix, leading: Vec<Token>) -> ast::Prefix
     }
 }
 
+// port-only: replaces the Roslyn trivia plumbing (GetLeadingTrivia/WithLeadingTrivia)
 fn replace_unop(unop: ast::UnOp, leading: Vec<Token>) -> ast::UnOp {
     let token = replace_leading(unop.token().clone(), leading);
     match unop {
@@ -1568,6 +1286,7 @@ fn replace_unop(unop: ast::UnOp, leading: Vec<Token>) -> ast::UnOp {
     }
 }
 
+// port-only: replaces the Roslyn trivia plumbing (GetLeadingTrivia/WithLeadingTrivia)
 /// C# WithTriviaFrom(node, node) for the paren fold (ConstantFolder.cs:441-445):
 /// the leading trivia of the first token is replaced; the trailing stays.
 fn set_first_leading(expr: ast::Expression, leading: Vec<Token>) -> ast::Expression {
@@ -1677,6 +1396,7 @@ fn set_first_leading(expr: ast::Expression, leading: Vec<Token>) -> ast::Express
     }
 }
 
+// port-only: replaces the C# node.Expression view over the dropped SyntaxNode
 /// The expression view of a prefix (C# node.Expression).
 fn expr_from_prefix(prefix: &ast::Prefix) -> ast::Expression {
     match prefix {
@@ -1690,46 +1410,6 @@ fn expr_from_prefix(prefix: &ast::Prefix) -> ast::Expression {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn parses_number_forms() {
-        assert_eq!(try_parse_number_in_string("10"), Some(NumValue::Long(10)));
-        assert_eq!(try_parse_number_in_string("+10"), Some(NumValue::Long(10)));
-        assert_eq!(try_parse_number_in_string("-10"), Some(NumValue::Long(-10)));
-        assert_eq!(
-            try_parse_number_in_string("1.5"),
-            Some(NumValue::Double(1.5))
-        );
-        assert_eq!(
-            try_parse_number_in_string(".5"),
-            Some(NumValue::Double(0.5))
-        );
-        assert_eq!(
-            try_parse_number_in_string("1e2"),
-            Some(NumValue::Double(100.0))
-        );
-        assert_eq!(
-            try_parse_number_in_string("1E-2"),
-            Some(NumValue::Double(0.01))
-        );
-        assert_eq!(
-            try_parse_number_in_string("0x1.8p10"),
-            // Finding 28/31: the decFloat comes first and the C# RealParser
-            // takes the leading decimal run — the "0" — so the extraction
-            // yields 0.0 (the C# oracle: print("0x1.8p10" + 1) -> print(1)).
-            Some(NumValue::Double(0.0))
-        );
-        assert_eq!(try_parse_number_in_string("abc"), None);
-        // Any hex-integer string panics with the pinned .NET ArgumentException
-        // (the AllowLeadingSign | AllowHexSpecifier style is invalid on
-        // .NET 8+; see the constantfold-hex corpus case).
-        for hex in ["0x10", "0Xff", "-0x10"] {
-            let result = std::panic::catch_unwind(|| {
-                let _ = try_parse_number_in_string(hex);
-            });
-            assert!(result.is_err(), "hex string {hex:?} must panic");
-        }
-    }
 
     #[test]
     fn folds_arithmetic() {
