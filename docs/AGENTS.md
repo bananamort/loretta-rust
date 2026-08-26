@@ -53,7 +53,7 @@ C# paths are under `../references/Loretta/src/`.
 | `Compilers/Lua/Portable/Scoping/` | PORT | `loretta/src/scoping/` |
 | `Compilers/Lua/Portable/Script/` | PORT | `loretta/src/script/` |
 | `Compilers/Lua/Portable/Utilities/` | PORT | `loretta/src/utilities/` |
-| `Compilers/Lua/Portable/LuaSyntaxOptions` + `LuaParseOptions` + enums + `Operations/` | ADAPT | `loretta/src/options.rs` |
+| `Compilers/Lua/Portable/LuaSyntaxOptions` + `LuaParseOptions` + enums + `Operations/` | ADAPT | `loretta/src/{luasyntaxoptions,luaparseoptions,backtickstringtype,continuetype,integerformats}.rs` + `operations/{binaryoperatorkind,unaryoperatorkind}.rs` |
 | `Compilers/Lua/Portable/SymbolDisplay/` | PORT | `loretta/src/symbol_display/` |
 | `Compilers/Lua/Experimental/` | PORT | `loretta/src/experimental/` |
 | `Compilers/Lua/CommandLine/` | PORT | `loretta-cli/src/main.rs` |
