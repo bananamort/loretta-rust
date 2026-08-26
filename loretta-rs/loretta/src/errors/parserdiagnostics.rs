@@ -2,7 +2,8 @@
 // parser-level diagnostics pass — the C# tree.GetDiagnostics() statements the
 // lexer pass does not cover. Ported: the version-gated statement rules the
 // differential corpus exercises (typed-Lua gates, goto/label gating with the
-// C# reachability — see below), the single '&'/'|' bitwise gating, and the
+// C# reachability — see below), the single '&'/'|' bitwise gating, the
+// compound-assignment LUA1013 gate for the plain operators, and the
 // LUA0018 identifier-statement pair for a goto under a goto-disabled preset.
 // NOT ported (C# LanguageParser.cs / LanguageParser.Types.cs): the general
 // recovery diagnostics LUA1012 (:198), LUA1010/1011 (:973-976), LUA1001
@@ -21,7 +22,9 @@ use crate::continuetype::ContinueType;
 use crate::errors::errorcode::ErrorCode;
 use crate::errors::lexerdiagnostics::LexerDiagnostic;
 use crate::luasyntaxoptions::LuaSyntaxOptions;
-use full_moon::ast::{BinOp, Expression, FunctionBody, LastStmt, LocalAssignment, Stmt};
+use full_moon::ast::{
+    BinOp, CompoundOp, Expression, FunctionBody, LastStmt, LocalAssignment, Stmt,
+};
 use full_moon::node::Node;
 use full_moon::visitors::Visitor;
 
@@ -40,6 +43,7 @@ pub fn parser_diagnostics(
         accept_if_expressions: options.accept_if_expressions,
         continue_is_identifier: options.continue_type == ContinueType::None,
         accept_bitwise_operators: options.accept_bitwise_operators,
+        accept_compound_assignment: options.accept_compound_assignment,
         accept_goto: options.accept_goto,
         accept_typed_lua: options.accept_typed_lua,
         source,
@@ -72,6 +76,12 @@ struct ContinueCollector<'a> {
     /// rule for them; '>>' gets no error at all — the parser combines two
     /// '>' tokens silently, LanguageParser.cs:840-845; Finding 22).
     accept_bitwise_operators: bool,
+    /// C# ParseCompoundAssignment (LanguageParser.cs:787-788): the whole
+    /// compound statement reports
+    /// ERR_CompoundAssignmentNotSupportedInLuaVersion when the option is
+    /// off — for the plain operators the C# lexer produces
+    /// unconditionally (probed 'x += 1' @Lua51 -> [LUA1013]).
+    accept_compound_assignment: bool,
     /// C# ParseGotoStatement / ParseGotoLabelStatement
     /// (LanguageParser.cs:608-609, 644-645): the goto statement and the
     /// label report ERR_GotoNotSupportedInLuaVersion on the whole node
@@ -339,6 +349,45 @@ impl Visitor for ContinueCollector<'_> {
                     .bytes();
                 let end = self.skip_trivia_to_optional_semicolon(end);
                 self.push(ErrorCode::ErrGotoNotSupportedInLuaVersion, start, end);
+            }
+            Stmt::CompoundAssignment(ca) if !self.accept_compound_assignment => {
+                // The C# ParseCompoundAssignment gate (LanguageParser.cs:
+                // 787-788): the whole compound statement carries LUA1013
+                // when the option is off. Only the plain operators the C#
+                // lexer produces unconditionally fire the clean gate —
+                // probed 'x += 1' @Lua51 -> [LUA1013] over [0..6),
+                // 'x += 1 ;' -> [0..8) (the node includes the semicolon).
+                // '//=' (DoubleSlashEqual) never does: its token requires
+                // AcceptFloorDivision AND AcceptCompoundAssignment in the
+                // C# lexer, so the C# emits the recovery family instead
+                // (probed @Lua51/@Lua53/FiveM); the cfxlua-only compound
+                // ops cannot appear under the default version.
+                let is_plain = matches!(
+                    ca.compound_operator(),
+                    CompoundOp::PlusEqual(_)
+                        | CompoundOp::MinusEqual(_)
+                        | CompoundOp::StarEqual(_)
+                        | CompoundOp::SlashEqual(_)
+                        | CompoundOp::CaretEqual(_)
+                        | CompoundOp::PercentEqual(_)
+                        | CompoundOp::TwoDotsEqual(_)
+                );
+                if is_plain {
+                    let start = ca
+                        .start_position()
+                        .expect("the compound statement start")
+                        .bytes();
+                    let end = ca
+                        .end_position()
+                        .expect("the compound statement end")
+                        .bytes();
+                    let end = self.skip_trivia_to_optional_semicolon(end);
+                    self.push(
+                        ErrorCode::ErrCompoundAssignmentNotSupportedInLuaVersion,
+                        start,
+                        end,
+                    );
+                }
             }
             Stmt::TypeDeclaration(decl) if !self.accept_typed_lua => {
                 // The whole `type T = T` (LanguageParser.cs:280-285).
