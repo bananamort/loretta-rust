@@ -296,16 +296,43 @@ impl ScopeAndVariableWalker {
                 }
             }
             ast::Stmt::NumericFor(nf) => {
-                // C# VisitNumericForStatement (…:195-221). The C# creates ONE
-                // statement node used for the block scope AND the iteration
-                // variable's declaration. The generated visitor visits the
-                // identifiers FIRST and the header expressions after
-                // (Syntax.xml.Internal.g.cs:9991-9995), so the node ids
-                // allocate in that order (Finding 41; the port used to
-                // visit the header expressions first).
+                // C# VisitNumericForStatement (ScopeAndVariableWalker.cs:
+                // 182-203): the header expressions are visited FIRST, in
+                // the enclosing scope — the identifiers resolve against the
+                // enclosing chain (a header `for i = i, 10 do` reads the
+                // outer i / a global, never the loop variable) and record
+                // the enclosing scope as their referencing scope. The block
+                // scope and the iteration variable come after. (The older
+                // order cited the LuaSyntaxRewriter's generated visit
+                // sequence, Syntax.xml.Internal.g.cs:9991-9995 — a class
+                // this walker never inherits; the ScopeAndVariableWalker's
+                // override is what runs.)
+                let enclosing = self.scope();
+                let header_start = self.identifier_positions.len();
+                self.visit_expr(nf.start());
+                self.visit_expr(nf.end());
+                if let Some(step) = nf.step() {
+                    self.visit_expr(step);
+                }
                 let node = self.base.make_node("NumericForStatement", nf.to_string());
                 let scope = self.create_block_scope(node.clone());
                 self.record_statement_scope(&node, nf.for_token().start_position().bytes(), &scope);
+                // The C# FindScope of the header identifiers lands on the
+                // loop statement's block scope (the ancestor walk,
+                // ScopeAndVariableManager.BaseWalker.cs:19-28 — the
+                // NumericForStatement node is in the scopes map), even
+                // though they were visited in the enclosing scope; the
+                // port's precomputed location records are rewritten to
+                // match. Identifiers inside a nested header scope (e.g. a
+                // header lambda) keep their own scope.
+                for index in header_start..self.identifier_positions.len() {
+                    let (id_node, pos, rec_scope) = &self.identifier_positions[index];
+                    if Rc::ptr_eq(rec_scope, &enclosing) {
+                        self.location_scopes
+                            .insert(id_node.clone(), (*pos, scope.clone()));
+                        self.identifier_positions[index].2 = scope.clone();
+                    }
+                }
                 let index_token = nf.index_variable().token().to_string();
                 if !index_token.trim().is_empty() {
                     let variable = Scope::create_variable_in(
@@ -318,23 +345,37 @@ impl ScopeAndVariableWalker {
                     self.record_identifier(id_name.clone(), nf.index_variable());
                     self.variables.insert(id_name, variable);
                 }
-                self.visit_expr(nf.start());
-                self.visit_expr(nf.end());
-                if let Some(step) = nf.step() {
-                    self.visit_expr(step);
-                }
                 self.visit_block(nf.block());
                 self.pop_scope(&scope);
             }
             ast::Stmt::GenericFor(gf) => {
-                // C# VisitGenericForStatement (…:223-252). The C# creates ONE
-                // statement node used for the block scope AND the iteration
-                // variables' declarations. The identifiers come first, then
-                // the header expressions (the generated visitor order,
-                // Syntax.xml.Internal.g.cs:9991-9995 — Finding 41).
+                // C# VisitGenericForStatement (ScopeAndVariableWalker.cs:
+                // 205-227): the header expressions are visited FIRST, in
+                // the enclosing scope (the C# override — not the
+                // LuaSyntaxRewriter's generated order, which this walker
+                // never inherits), then the block scope and the iteration
+                // variables.
+                let enclosing = self.scope();
+                let header_start = self.identifier_positions.len();
+                for expr in gf.expressions().iter() {
+                    self.visit_expr(expr);
+                }
                 let node = self.base.make_node("GenericForStatement", gf.to_string());
                 let scope = self.create_block_scope(node.clone());
                 self.record_statement_scope(&node, gf.for_token().start_position().bytes(), &scope);
+                // The C# FindScope of the header identifiers lands on the
+                // loop statement's block scope (the ancestor walk — the
+                // GenericForStatement node is in the scopes map); the
+                // port's location records are rewritten to match, like the
+                // numeric for.
+                for index in header_start..self.identifier_positions.len() {
+                    let (id_node, pos, rec_scope) = &self.identifier_positions[index];
+                    if Rc::ptr_eq(rec_scope, &enclosing) {
+                        self.location_scopes
+                            .insert(id_node.clone(), (*pos, scope.clone()));
+                        self.identifier_positions[index].2 = scope.clone();
+                    }
+                }
                 for name in gf.names().iter() {
                     let identifier_name = name.token().to_string();
                     if identifier_name.trim().is_empty() {
@@ -349,9 +390,6 @@ impl ScopeAndVariableWalker {
                     let name_node = self.base.make_node("IdentifierName", identifier_name);
                     self.record_identifier(name_node.clone(), name);
                     self.variables.insert(name_node, variable);
-                }
-                for expr in gf.expressions().iter() {
-                    self.visit_expr(expr);
                 }
                 self.visit_block(gf.block());
                 self.pop_scope(&scope);
@@ -813,31 +851,123 @@ mod tests {
     use crate::scoping::ivariable::IVariable;
     use crate::script::scopeandvariablemanager::manager::ScopeAndVariableManager;
     #[test]
-    fn for_loop_iteration_variables_are_recorded_before_the_header_expressions() {
-        // Finding 41: the C# generated visitor visits the for-loop
-        // identifiers FIRST and the header expressions after
-        // (Syntax.xml.Internal.g.cs:9991-9995) — the port used to visit
-        // the header expressions first, allocating the node ids in the
-        // opposite order (the audit's "(valid)" both ways; the port now
-        // matches the C# order).
+    fn for_loop_header_identifiers_resolve_in_the_enclosing_scope() {
+        // The C# walker visits the header expressions BEFORE creating the
+        // block scope (ScopeAndVariableWalker.cs:182-203, 205-227 — the
+        // override, not the LuaSyntaxRewriter's generated order, which
+        // this walker never inherits): a header identifier that collides
+        // with the loop variable resolves against the enclosing scope —
+        // `for i = i, 10 do end` reads/creates a GLOBAL i and
+        // `for k, v in f(k) do end` a GLOBAL k, never the iteration
+        // variables.
         let mut manager = ScopeAndVariableManager::new(vec![
-            "for i = f(), 10 do end\nfor k, v in pairs(t) do end".to_string(),
+            "for i = i, 10 do end\nfor k, v in f(k) do end".to_string(),
         ]);
         let state = manager.get_lazy_state();
-        let id_of = |name: &str| {
-            state
-                .variables
+        let root = state.root_scope.borrow();
+        let globals: Vec<String> = root
+            .declared_variables()
+            .iter()
+            .map(|v| v.borrow().name().to_string())
+            .collect();
+        assert!(
+            globals.contains(&"i".to_string()),
+            "the header i must resolve to a global: {globals:?}"
+        );
+        assert!(
+            globals.contains(&"k".to_string()),
+            "the header k must resolve to a global: {globals:?}"
+        );
+        assert!(globals.contains(&"f".to_string()));
+        // The loop blocks' iteration variables are still declared — and
+        // they carry NO read locations (the header reads belong to the
+        // globals).
+        let file_contained = root.contained_scopes();
+        let file = file_contained.first().expect("the file scope");
+        let block_contained = file.borrow().contained_scopes();
+        let blocks: Vec<_> = block_contained
+            .iter()
+            .filter(|s| s.borrow().kind() == ScopeKind::Block)
+            .collect();
+        assert_eq!(blocks.len(), 2);
+        for block in &blocks {
+            let block_ref = block.borrow();
+            let block_declared = block_ref.declared_variables();
+            let iterations: Vec<_> = block_declared
                 .iter()
-                .find(|(node, _)| node.text == name)
-                .map(|(node, _)| node.id)
-                .unwrap_or_else(|| panic!("the {name:?} identifier node must exist"))
-        };
-        // The iteration variable's identifier precedes the header
-        // expression's identifiers.
-        assert!(id_of("i") < id_of("f"));
-        assert!(id_of("k") < id_of("v"));
-        assert!(id_of("v") < id_of("pairs"));
-        assert!(id_of("v") < id_of("t"));
+                .filter(|v| v.borrow().kind() == VariableKind::Iteration)
+                .collect();
+            assert!(
+                !iterations.is_empty(),
+                "the block declares its loop variables"
+            );
+            for variable in iterations {
+                assert!(
+                    variable.borrow().read_locations().is_empty(),
+                    "the iteration variable must not carry the header reads"
+                );
+            }
+        }
+        // The header reads land on the globals (one each).
+        let root_declared = root.declared_variables();
+        let header_globals: Vec<_> = root_declared
+            .iter()
+            .filter(|v| v.borrow().name() == "i" || v.borrow().name() == "k")
+            .collect();
+        assert_eq!(header_globals.len(), 2);
+        for variable in header_globals {
+            assert_eq!(
+                variable.borrow().read_locations().len(),
+                1,
+                "the global must carry exactly the header read"
+            );
+        }
+    }
+
+    #[test]
+    fn for_loop_header_identifiers_resolve_to_an_outer_local() {
+        // `local i = 1\nfor i = i, 10 do end` — the C# resolves the
+        // header against the enclosing scope: the read registers on the
+        // outer local, no global is created, and the iteration variable
+        // carries no reads.
+        let mut manager =
+            ScopeAndVariableManager::new(vec!["local i = 1\nfor i = i, 10 do end".to_string()]);
+        let state = manager.get_lazy_state();
+        let root = state.root_scope.borrow();
+        let globals: Vec<String> = root
+            .declared_variables()
+            .iter()
+            .map(|v| v.borrow().name().to_string())
+            .collect();
+        assert!(
+            !globals.contains(&"i".to_string()),
+            "no global i is created: {globals:?}"
+        );
+        let root_contained = root.contained_scopes();
+        let file = root_contained.first().expect("the file scope");
+        let file_ref = file.borrow();
+        let file_declared = file_ref.declared_variables();
+        let outer = file_declared
+            .iter()
+            .find(|v| v.borrow().name() == "i" && v.borrow().kind() == VariableKind::Local)
+            .expect("the outer local i");
+        let reads = outer.borrow().read_locations();
+        assert_eq!(
+            reads.len(),
+            1,
+            "the header must be a read of the outer local"
+        );
+        assert_eq!(reads[0].kind_name(), "IdentifierName");
+        assert_eq!(reads[0].text, "i");
+        // The header identifier's FindScope record lands on the loop's
+        // block scope (the C# ancestor walk — the NumericForStatement
+        // node is in the scopes map, BaseWalker.cs:19-28), even though
+        // the identifier was visited in the enclosing scope.
+        let header_scope = state
+            .location_scopes
+            .get(&reads[0])
+            .expect("the header location record");
+        assert_eq!(header_scope.borrow().kind(), ScopeKind::Block);
     }
 
     #[test]
