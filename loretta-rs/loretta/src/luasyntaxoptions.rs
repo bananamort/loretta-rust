@@ -1,5 +1,12 @@
 // Ported from Loretta.CodeAnalysis.Lua.LuaSyntaxOptions (b767b4e): LuaSyntaxOptions
 // C# source: src/Compilers/Lua/Portable/LuaSyntaxOptions.cs
+// The ADAPT-cluster mapping notes from the deleted options.rs stub (the
+// LuaParseOptions / LuaSyntaxOptions / Operations cluster ports to
+// luasyntaxoptions.rs + luaparseoptions.rs + operations/):
+// Lua51->LuaVersion::lua51(), Lua52->lua52(), Lua53->lua53(), Lua54->lua54(),
+// LuaJIT->luajit(), Luau/Roblox->luau(), FiveM/CfxLua->cfxlua(), GMod/All ->
+// unsupported (use luau+cfxlua or error). GMod (GLua &&/||/!=/! and //, /* */)
+// is intentionally DROP per docs/AGENTS.md — no local parser maintenance.
 
 use crate::backtickstringtype::BacktickStringType;
 use crate::continuetype::ContinueType;
