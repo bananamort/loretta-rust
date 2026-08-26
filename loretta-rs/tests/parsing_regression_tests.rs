@@ -301,7 +301,8 @@ fn language_parser_label_lua1019_span_covers_the_trailing_semicolon() {
     // node including TryMatchSemicolon()'s token with its leading trivia
     // and excluding its trailing trivia (probed on the packaged runtime:
     // '::label::;' -> [0..10); '::label:: ;' -> [0..11);
-    // '::label::; print(1)' -> [0..10)).
+    // '::label::; print(1)' -> [0..10); '::label:: --c\n;' -> [0..15);
+    // '::label:: --[=[c]=]\n;' -> [0..21)).
     let text = "::label::;";
     let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUAU);
     assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
@@ -320,6 +321,20 @@ fn language_parser_label_lua1019_span_covers_the_trailing_semicolon() {
     let text = "::label::; print(1)";
     let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUAU);
     assert_eq!(diagnostics[0].squiggle(text), "::label::;");
+
+    let text = "::label:: --c\n;";
+    let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
+    assert_eq!(diagnostics[0].squiggle(text), "::label:: --c\n;");
+
+    let text = "::label:: --[=[c]=]\n;";
+    let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
+    assert_eq!(diagnostics[0].squiggle(text), "::label:: --[=[c]=]\n;");
+
+    let text = "::label:: --c\nprint(1)";
+    let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    assert_eq!(diagnostics[0].squiggle(text), "::label::");
 }
 
 #[test]
@@ -329,23 +344,32 @@ fn language_parser_disabled_goto_emits_the_identifier_statement_pair() {
     // SyntaxFacts.HasKeywordBeenDisabled), so `goto x;` parses as two bare
     // identifier expression statements and the C# observably emits LUA0018
     // on each — never LUA1019 (probed @Lua51/@Luau: [LUA0018, LUA0018];
-    // @LuaJIT20 both sides clean).
+    // @LuaJIT20 both sides clean). The second statement node includes
+    // TryMatchSemicolon()'s token, so its span covers the identifier
+    // through the `;` with the semicolon's leading trivia (probed:
+    // 'goto x;' -> [5..7), 'goto x ;' -> [5..8), 'goto x --c\n;' ->
+    // [5..12)).
     for options in [&LuaSyntaxOptions::LUA51, &LuaSyntaxOptions::LUAU] {
-        let text = "goto x;";
-        let diagnostics = tree_diagnostics(text, options);
-        assert_eq!(diagnostics.len(), 2, "two diagnostics: {diagnostics:?}");
-        assert_eq!(
-            diagnostics[0].code,
-            loretta::errors::errorcode::ErrorCode::ErrNonFunctionCallBeingUsedAsStatement
-        );
-        assert_eq!(diagnostics[0].line_col(text), (1, 1));
-        assert_eq!(diagnostics[0].squiggle(text), "goto");
-        assert_eq!(
-            diagnostics[1].code,
-            loretta::errors::errorcode::ErrorCode::ErrNonFunctionCallBeingUsedAsStatement
-        );
-        assert_eq!(diagnostics[1].line_col(text), (1, 6));
-        assert_eq!(diagnostics[1].squiggle(text), "x");
+        for (text, second_squiggle) in [
+            ("goto x;", "x;"),
+            ("goto x ;", "x ;"),
+            ("goto x --c\n;", "x --c\n;"),
+        ] {
+            let diagnostics = tree_diagnostics(text, options);
+            assert_eq!(diagnostics.len(), 2, "two diagnostics: {diagnostics:?}");
+            assert_eq!(
+                diagnostics[0].code,
+                loretta::errors::errorcode::ErrorCode::ErrNonFunctionCallBeingUsedAsStatement
+            );
+            assert_eq!(diagnostics[0].line_col(text), (1, 1));
+            assert_eq!(diagnostics[0].squiggle(text), "goto");
+            assert_eq!(
+                diagnostics[1].code,
+                loretta::errors::errorcode::ErrorCode::ErrNonFunctionCallBeingUsedAsStatement
+            );
+            assert_eq!(diagnostics[1].line_col(text), (1, 6));
+            assert_eq!(diagnostics[1].squiggle(text), second_squiggle);
+        }
     }
 }
 
