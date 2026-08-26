@@ -281,7 +281,9 @@ fn language_parser_luau_goto_generates_correct_error() {
     // The C# expects the ERR_GotoNotSupportedInLuaVersion for the Luau
     // preset (acceptGoto false) on the whole `::label::` at (1,1) — the
     // gate is ported in the parser diagnostics (Finding 56 restored the
-    // C# expectation).
+    // C# expectation). The C#'s label arm is reachable only under
+    // !AcceptGoto && AcceptTypedLua (the ColonColonToken lexer condition,
+    // Lexer.cs:272-283), which is exactly Luau's shape.
     let text = "::label::";
     let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUAU);
     assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
@@ -291,6 +293,74 @@ fn language_parser_luau_goto_generates_correct_error() {
     );
     assert_eq!(diagnostics[0].line_col(text), (1, 1));
     assert_eq!(diagnostics[0].squiggle(text), "::label::");
+}
+
+#[test]
+fn language_parser_label_lua1019_span_covers_the_trailing_semicolon() {
+    // AUDIT.md Finding 4(a): the C# gates on the whole GotoLabelStatement
+    // node including TryMatchSemicolon()'s token with its leading trivia
+    // and excluding its trailing trivia (probed on the packaged runtime:
+    // '::label::;' -> [0..10); '::label:: ;' -> [0..11);
+    // '::label::; print(1)' -> [0..10)).
+    let text = "::label::;";
+    let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
+    assert_eq!(
+        diagnostics[0].code,
+        loretta::errors::errorcode::ErrorCode::ErrGotoNotSupportedInLuaVersion
+    );
+    assert_eq!(diagnostics[0].line_col(text), (1, 1));
+    assert_eq!(diagnostics[0].squiggle(text), "::label::;");
+
+    let text = "::label:: ;";
+    let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
+    assert_eq!(diagnostics[0].squiggle(text), "::label:: ;");
+
+    let text = "::label::; print(1)";
+    let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    assert_eq!(diagnostics[0].squiggle(text), "::label::;");
+}
+
+#[test]
+fn language_parser_disabled_goto_emits_the_identifier_statement_pair() {
+    // AUDIT.md Finding 4(b): under a goto-disabled preset the C# lexer
+    // demotes the keyword to an identifier (Lexer.Identifiers.cs:9-14 via
+    // SyntaxFacts.HasKeywordBeenDisabled), so `goto x;` parses as two bare
+    // identifier expression statements and the C# observably emits LUA0018
+    // on each — never LUA1019 (probed @Lua51/@Luau: [LUA0018, LUA0018];
+    // @LuaJIT20 both sides clean).
+    for options in [&LuaSyntaxOptions::LUA51, &LuaSyntaxOptions::LUAU] {
+        let text = "goto x;";
+        let diagnostics = tree_diagnostics(text, options);
+        assert_eq!(diagnostics.len(), 2, "two diagnostics: {diagnostics:?}");
+        assert_eq!(
+            diagnostics[0].code,
+            loretta::errors::errorcode::ErrorCode::ErrNonFunctionCallBeingUsedAsStatement
+        );
+        assert_eq!(diagnostics[0].line_col(text), (1, 1));
+        assert_eq!(diagnostics[0].squiggle(text), "goto");
+        assert_eq!(
+            diagnostics[1].code,
+            loretta::errors::errorcode::ErrorCode::ErrNonFunctionCallBeingUsedAsStatement
+        );
+        assert_eq!(diagnostics[1].line_col(text), (1, 6));
+        assert_eq!(diagnostics[1].squiggle(text), "x");
+    }
+}
+
+#[test]
+fn language_parser_label_is_unreachable_when_typed_lua_is_also_off() {
+    // The Label LUA1019 arm must not fire where the C#'s cannot: under
+    // Lua51 (AcceptGoto=false AND AcceptTypedLua=false) the C# lexer never
+    // produces ColonColonToken (Lexer.cs:272-283), no label statement is
+    // formed, and the C# output is its general parser-recovery diagnostics
+    // instead (probed @Lua51 '::label::': 17 recovery diagnostics from the
+    // LUA1012/1001/1006/1011/1003 family — unported, documented in the
+    // parserdiagnostics header).
+    let text = "::label::";
+    let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUA51);
+    assert!(diagnostics.is_empty(), "no LUA1019 under Lua51");
 }
 
 #[test]

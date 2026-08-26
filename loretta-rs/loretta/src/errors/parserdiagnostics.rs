@@ -1,8 +1,18 @@
 // Ported from Loretta.CodeAnalysis.Lua parser diagnostics (b767b4e): the
 // parser-level diagnostics pass — the C# tree.GetDiagnostics() statements the
-// lexer pass does not cover. Starts with the version-gated statement rules
-// the differential corpus exercises.
-// C# source: src/Compilers/Lua/Portable/Parser/LanguageParser.cs
+// lexer pass does not cover. Ported: the version-gated statement rules the
+// differential corpus exercises (typed-Lua gates, goto/label gating with the
+// C# reachability — see below), the single '&'/'|' bitwise gating, and the
+// LUA0018 identifier-statement pair for a goto under a goto-disabled preset.
+// NOT ported (C# LanguageParser.cs / LanguageParser.Types.cs): the general
+// recovery diagnostics LUA1012 (:198), LUA1010/1011 (:973-976), LUA1001
+// (EatToken, :333), LUA1014/1015/1017/1018 (Types.cs :116-123/:203-208/
+// :463-468), LUA0019 (:731/740/775), LUA0015 (:1378), and the general
+// LUA0018 non-call-expression-statement rule (:215-220) outside the continue
+// and disabled-goto cases. The op gates this pass on full_moon::parse
+// succeeding (differential/src/ops.rs:45-47), so parse-failed sources lose
+// these parser diagnostics entirely while the C# recovers a tree and keeps
+// going. C# source: src/Compilers/Lua/Portable/Parser/LanguageParser.cs
 // (ERR_NonFunctionCallBeingUsedAsStatement — Finding 46 corrected the
 // citation from the nonexistent Syntax/LuaParser.cs)
 
@@ -125,33 +135,87 @@ impl Visitor for ContinueCollector<'_> {
     fn visit_stmt(&mut self, stmt: &Stmt) {
         match stmt {
             Stmt::Goto(goto) if !self.accept_goto => {
-                // The C# error covers the whole `goto label`
-                // (LanguageParser.cs:608-609).
+                // The C# NEVER reaches ParseGotoStatement's LUA1019 gate
+                // (LanguageParser.cs:608-609): when AcceptGoto is false the
+                // keyword itself is demoted to an identifier
+                // (Lexer.Identifiers.cs:9-14 via
+                // SyntaxFacts.HasKeywordBeenDisabled, SyntaxFacts.cs:48-54),
+                // so `goto x;` parses as TWO bare identifier expression
+                // statements and the C# observably emits LUA0018 on each
+                // (probed @Lua51/@Luau: [LUA0018, LUA0018]; the gate needs
+                // !AcceptGoto while the keyword needs AcceptGoto —
+                // unreachable). The port replicates the observable pair over
+                // the goto token and the label-name token.
                 let start = goto
                     .goto_token()
                     .start_position()
                     .expect("the goto start")
                     .bytes();
                 let end = goto
-                    .label_name()
+                    .goto_token()
                     .end_position()
                     .expect("the goto end")
                     .bytes();
-                self.push(ErrorCode::ErrGotoNotSupportedInLuaVersion, start, end);
+                self.push(
+                    ErrorCode::ErrNonFunctionCallBeingUsedAsStatement,
+                    start,
+                    end,
+                );
+                let label_start = goto
+                    .label_name()
+                    .start_position()
+                    .expect("the label name start")
+                    .bytes();
+                let label_end = goto
+                    .label_name()
+                    .end_position()
+                    .expect("the label name end")
+                    .bytes();
+                self.push(
+                    ErrorCode::ErrNonFunctionCallBeingUsedAsStatement,
+                    label_start,
+                    label_end,
+                );
             }
-            Stmt::Label(label) if !self.accept_goto => {
-                // The C# error covers the whole `::label::`
-                // (LanguageParser.cs:644-645).
+            // The C# label LUA1019 is reachable only when the lexer produces
+            // ColonColonToken — AcceptGoto || AcceptTypedLua
+            // (Lexer.cs:272-283) — while the gate needs !AcceptGoto, i.e.
+            // !AcceptGoto && AcceptTypedLua (Luau). Under presets with
+            // neither (Lua51), the C# never forms a label statement and its
+            // output is the general parser-recovery diagnostics instead.
+            Stmt::Label(label) if !self.accept_goto && self.accept_typed_lua => {
+                // The C# error covers the whole GotoLabelStatement node
+                // (LanguageParser.cs:631-648): `::label::` plus the optional
+                // TryMatchSemicolon() token INCLUDING its leading trivia,
+                // excluding the semicolon's trailing trivia (probed on the
+                // packaged runtime: '::label::;' -> [0..10), '::label:: ;' ->
+                // [0..11), '::label::; print(1)' -> [0..10)).
                 let start = label
                     .left_colons()
                     .start_position()
                     .expect("the label start")
                     .bytes();
-                let end = label
+                let mut end = label
                     .right_colons()
                     .end_position()
                     .expect("the label end")
                     .bytes();
+                let bytes = self.source.as_bytes();
+                let mut cursor = end;
+                while matches!(
+                    bytes.get(cursor),
+                    Some(b' ')
+                        | Some(b'\t')
+                        | Some(b'\r')
+                        | Some(b'\n')
+                        | Some(b'\x0B')
+                        | Some(b'\x0C')
+                ) {
+                    cursor += 1;
+                }
+                if bytes.get(cursor) == Some(&b';') {
+                    end = cursor + 1;
+                }
                 self.push(ErrorCode::ErrGotoNotSupportedInLuaVersion, start, end);
             }
             Stmt::TypeDeclaration(decl) if !self.accept_typed_lua => {
