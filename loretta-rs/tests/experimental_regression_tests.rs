@@ -93,3 +93,39 @@ fn slot_release_follows_the_last_use_like_the_csharp() {
         assert_eq!(minified, *expected, "minify({code:?})");
     }
 }
+
+#[test]
+fn sequential_panic_message_strips_exactly_the_counted_prefix_run() {
+    // AUDIT.md Finding 5 (sub-item 2): the C# panic path
+    // (NamingStrategies.cs:107) formats `name.Remove(0, prefixes)` —
+    // EXACTLY the counted run (MaxPrefixCount + 1 prepended chars),
+    // preserving any prefix chars that belong to the BASE name. The port's
+    // old trim_start_matches stripped ALL of them, diverging when the
+    // caller's alphabet contains the prefix char.
+    //
+    // Setup: prefix '_', alphabet ["x", "_a"] — slot 1 generates the base
+    // name "_a" (an alphabet ELEMENT containing the prefix char — the only
+    // way a base name starts with it). Every candidate ("_a" through
+    // "______a") is unavailable, so all six tries fail and the strategy
+    // panics; the C# Remove(0, 6) leaves the base name's own underscore
+    // intact.
+
+    let strategy = NamingStrategies::sequential('_', &["x".to_string(), "_a".to_string()]);
+    let scope = Scope::new(ScopeKind::File, None, None);
+    {
+        for name in ["_a", "__a", "___a", "____a", "_____a", "______a"] {
+            Scope::create_variable_in(&scope, VariableKind::Local, name, None);
+        }
+    }
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| strategy(1, &[scope])));
+    let payload = result.expect_err("the exhausted strategy must panic");
+    let message = payload
+        .downcast_ref::<String>()
+        .cloned()
+        .or_else(|| payload.downcast_ref::<&str>().map(|s| s.to_string()))
+        .expect("a string panic payload");
+    assert_eq!(
+        message, "Code has too many variables named _a with '_'s at the start.",
+        "the base name keeps its own leading underscore (C# Remove(0, 6)): {message}"
+    );
+}
