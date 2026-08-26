@@ -9,7 +9,6 @@ pub mod luaparseoptions;
 pub mod luaresources;
 pub mod luasyntaxoptions;
 pub mod operations;
-pub mod options;
 pub mod scoping;
 pub mod script;
 pub mod symbol_display;
