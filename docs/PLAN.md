@@ -147,8 +147,10 @@ one file per distinctive name: `RenamingRewriter.RenameTable.cs` -> `minifying/r
 the `ConstantFolder` partial trio -> `experimental/{constantfolder,expressionflags,numparsing}.rs`).
 Files with **no C# counterpart** are sanctioned additions, each justified in its header:
 
-- `errors/lexerdiagnostics.rs`, `errors/parserdiagnostics.rs` — the diagnostic rules of the
-  DROPped lexer/parser, re-implemented over source text / the recovered AST (Port Boundary).
+- `errors/lexerdiagnostics/` (lexer.rs, shortstring.rs, numbers.rs, identifiers.rs — the
+  dropped lexer's partial-file mirror) and `errors/parserdiagnostics.rs` — the diagnostic
+  rules of the DROPped lexer/parser, re-implemented over source text / the recovered AST
+  (Port Boundary).
 - `luaresources.rs` — `LuaResources.resx` + `.Designer.cs` as one resource module.
 - `symbol_display/unicode_categories.rs` — generated .NET `CharUnicodeInfo` oracle table.
 - `*/mod.rs`, `lib.rs` — module glue only.
