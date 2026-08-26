@@ -569,6 +569,10 @@ impl<'a> Scanner<'a> {
         let start = self.pos;
         self.lexeme_start = start;
         self.pos += 1; // the '`'
+                       // The C# sub-scanner's first-error slot — one PER
+                       // ScanInterpolatedStringLiteral invocation (each nested recursion
+                       // has its own InterpolatedStringScanner, Lexer.ShortString.cs:312).
+        let mut sub_error: Option<(usize, usize, ErrorCode, Vec<String>)> = None;
         let mut unfinished = false;
         loop {
             match self.peek() {
@@ -584,33 +588,64 @@ impl<'a> Scanner<'a> {
                     self.pos += 1;
                     break;
                 }
+                Some('{') => {
+                    // The C# HandleOpenBraceInContent +
+                    // ScanInterpolatedStringLiteralHoleBalancedText
+                    // (Lexer.ShortString.cs:437-580): '{{' reports
+                    // LUA0035; an unclosed hole reports LUA0034; a
+                    // mismatched closer reports ERR_SyntaxError with the
+                    // expected-char argument. The TrySetError semantics
+                    // keep the FIRST error only.
+                    self.scan_backtick_hole(&mut sub_error);
+                }
                 Some('\\') => {
-                    // The escaped character (incl. the escaped newline) does
-                    // not end the string (the C# InterpolatedStringScanner).
-                    self.pos += 1;
-                    if !self.at_end() {
-                        self.pos += 1;
-                    }
+                    // The C# InterpolatedStringScanner contents loop runs
+                    // ScanEscapeSequence per '\' (Lexer.ShortString.cs:
+                    // 424-427) — "handle escapes but not care about their
+                    // issues" — and ScanEscapeSequence's AddError calls
+                    // still land on the token, so the escape diagnostics
+                    // fire inside backtick strings too (AUDIT.md Finding
+                    // 1(a); probed @Lua54 'local x = `a\qb`': C#
+                    // [LUA0036, LUA0001, LUA0001]).
+                    self.scan_escape_sequence();
                 }
                 Some(_) => {
                     self.pos += 1;
                 }
             }
         }
+        // The C# ScanInterpolatedStringLiteralEnd (Lexer.ShortString.cs:
+        // 376-403): the missing-close-quote error goes through TrySetError —
+        // first-wins against any hole or nested-scan error recorded earlier
+        // on this level's slot.
         if unfinished {
-            // The C#: MakeError(Position - 1, width: 1) — the last character.
-            self.error_at(
+            Self::try_set_error(
+                &mut sub_error,
                 self.byte_pos().saturating_sub(1),
                 1,
                 ErrorCode::ErrUnfinishedString,
                 Vec::new(),
             );
-            return;
         }
-        // The C#: the interpolated gating error fires only for the None
-        // backtick type (the HashLiteral strings use the short-string
-        // scanner — Lexer.cs:622-625; Lexer.ShortString.cs:71-72).
-        if self.options.backtick_string_type == BacktickStringType::None {
+        if let Some((error_start, error_width, error_code, error_args)) = sub_error.take() {
+            // The C# AddError(error) (Lexer.ShortString.cs:70): the sub-
+            // scanner's first error, emitted BEFORE the gate (:70 vs
+            // :71-72).
+            self.error_at(error_start, error_width, error_code, error_args);
+        }
+        // The C# gate (Lexer.ShortString.cs:71-72) fires UNCONDITIONALLY
+        // after the scan for non-InterpolatedStringLiteral presets — the
+        // finished AND unfinished paths alike (AUDIT.md Finding 1(d)). The
+        // two paths diverge in WHERE the port emits it:
+        // - Unfinished: the token survives into statement position, so this
+        //   scanner mirrors the LEXER copy (the harness's token pass doubles
+        //   it like the C# tree+token passes).
+        // - Finished: in an expression context the C# parser supersedes the
+        //   token copy with its node-level error
+        //   (LanguageParser.InterpolatedString.cs:59-60) and the reference
+        //   reports LUA0036 once — so the finished-path emission lives in
+        //   parserdiagnostics.rs (the single-report pass) instead.
+        if unfinished && self.options.backtick_string_type == BacktickStringType::None {
             self.error_at(
                 self.byte_of_char(start),
                 self.byte_pos() - self.byte_of_char(start),
@@ -623,7 +658,186 @@ impl<'a> Scanner<'a> {
         self.only_shebangs_and_newlines = true;
     }
 
-    /// The C# number scanning (Lexer.Numbers.cs) — the diagnostics only.
+    /// The C# InterpolatedStringScanner's hole scanning
+    /// (Lexer.ShortString.cs:437-580): HandleOpenBraceInContent +
+    /// ScanInterpolatedStringLiteralHoleBalancedText +
+    /// ScanInterpolatedStringLiteralHoleBracketed. Diagnostics obey the
+    /// TrySetError first-error-wins rule on this scan's `sub_error` slot.
+    fn scan_backtick_hole(
+        &mut self,
+        sub_error: &mut Option<(usize, usize, ErrorCode, Vec<String>)>,
+    ) {
+        let open_brace_position = self.pos;
+        self.pos += 1; // the '{'
+        if self.peek() == Some('{') {
+            self.pos += 1;
+            // MakeError(openBracePosition - 1, width: 2).
+            let start = self.byte_of_char(open_brace_position.saturating_sub(1));
+            Self::try_set_error(
+                sub_error,
+                start,
+                2,
+                ErrorCode::ErrDoubleBraceInInterpolation,
+                Vec::new(),
+            );
+            return;
+        }
+        // ScanInterpolatedStringLiteralHoleBalancedText(endingChar: '}').
+        self.scan_hole_balanced_text('}', sub_error);
+        let close_brace_position = self.pos;
+        if self.peek() == Some('}') {
+            self.pos += 1;
+        } else {
+            // MakeError(openBracePosition - 1, width: 2).
+            let start = self.byte_of_char(open_brace_position.saturating_sub(1));
+            Self::try_set_error(
+                sub_error,
+                start,
+                2,
+                ErrorCode::ErrUnclosedExpressionHole,
+                Vec::new(),
+            );
+        }
+        let _ = close_brace_position;
+    }
+
+    /// The C# ScanInterpolatedStringLiteralHoleBalancedText
+    /// (Lexer.ShortString.cs:470-558). Newlines are always allowed inside a
+    /// hole. Nested backtick strings recurse through
+    /// ScanInterpolatedStringLiteral (whose gate fires per the preset);
+    /// quoted strings run ScanStringLiteral (the escape diagnostics fire).
+    fn scan_hole_balanced_text(
+        &mut self,
+        ending_char: char,
+        sub_error: &mut Option<(usize, usize, ErrorCode, Vec<String>)>,
+    ) {
+        loop {
+            match self.peek() {
+                None => return,
+                Some(c) if is_newline(c) => {
+                    // IsAtEnd(allowNewline: true) inside a hole: only a real
+                    // EOF stops the scan.
+                    if self.pos + 1 >= self.chars.len() {
+                        return;
+                    }
+                    self.pos += 1;
+                    continue;
+                }
+                Some(c) => {
+                    if c == '`' {
+                        // The C# recurses into ScanInterpolatedStringLiteral
+                        // for a nested interpolated string — which owns its
+                        // own first-error slot.
+                        self.scan_backtick_string();
+                        continue;
+                    }
+                    if c == ending_char || c == '}' || c == ')' || c == ']' {
+                        if c == ending_char {
+                            return;
+                        }
+                        // MakeError(Position, width: 1, ERR_SyntaxError,
+                        // endingChar) — then consume it.
+                        let start = self.byte_pos();
+                        Self::try_set_error(
+                            sub_error,
+                            start,
+                            1,
+                            ErrorCode::ErrSyntaxError,
+                            vec![ending_char.to_string()],
+                        );
+                        self.pos += 1;
+                        continue;
+                    }
+                    match c {
+                        '"' | '\'' => {
+                            // RecoveringFromRunawayLexing: after an error the
+                            // next quote ends the string scan (Lexer.
+                            // ShortString.cs:506-514); otherwise the nested
+                            // string's escape diagnostics fire.
+                            if sub_error.is_some() {
+                                return;
+                            }
+                            self.scan_short_string();
+                            continue;
+                        }
+                        '/' if self.options.accept_c_comment_syntax
+                            && self.peek_at(1) == Some('*') =>
+                        {
+                            self.scan_c_comment();
+                            continue;
+                        }
+                        '/' => {
+                            self.pos += 1;
+                            continue;
+                        }
+                        '-' => {
+                            // TryScanComment: '--' comments; anything else
+                            // consumes one char.
+                            if self.peek_at(1) == Some('-') {
+                                self.scan_comment();
+                            } else {
+                                self.pos += 1;
+                            }
+                            continue;
+                        }
+                        '{' => {
+                            self.scan_hole_bracketed('{', '}', sub_error);
+                            continue;
+                        }
+                        '(' => {
+                            self.scan_hole_bracketed('(', ')', sub_error);
+                            continue;
+                        }
+                        '[' => {
+                            if matches!(self.peek_at(1), Some('=') | Some('[')) {
+                                let was_terminated = self.try_scan_long_string();
+                                let _ = was_terminated;
+                            } else {
+                                self.scan_hole_bracketed('[', ']', sub_error);
+                            }
+                            continue;
+                        }
+                        _ => {
+                            self.pos += 1;
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// The C# ScanInterpolatedStringLiteralHoleBracketed
+    /// (Lexer.ShortString.cs:573-580).
+    fn scan_hole_bracketed(
+        &mut self,
+        start_char: char,
+        end_char: char,
+        sub_error: &mut Option<(usize, usize, ErrorCode, Vec<String>)>,
+    ) {
+        debug_assert_eq!(self.peek(), Some(start_char));
+        self.pos += 1;
+        self.scan_hole_balanced_text(end_char, sub_error);
+        if self.peek() == Some(end_char) {
+            self.pos += 1;
+        }
+    }
+
+    /// The C# InterpolatedStringScanner.TrySetError (Lexer.ShortString.cs:
+    /// 321-323): only the FIRST error is recorded.
+    fn try_set_error(
+        sub_error: &mut Option<(usize, usize, ErrorCode, Vec<String>)>,
+        start: usize,
+        width: usize,
+        code: ErrorCode,
+        args: Vec<String>,
+    ) {
+        if sub_error.is_none() {
+            *sub_error = Some((start, width, code, args));
+        }
+    }
+
+    /// The number scanning (Lexer.Numbers.cs) — the diagnostics only.
     fn scan_number(&mut self) {
         let start = self.pos;
         self.lexeme_start = start;

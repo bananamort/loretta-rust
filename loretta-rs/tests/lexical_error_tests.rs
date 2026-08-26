@@ -33,7 +33,6 @@ fn exp(code: ErrorCode, line: usize, col: usize, squiggle: &'static str) -> Expe
         args: Vec::new(),
     }
 }
-
 fn exp_args(
     code: ErrorCode,
     line: usize,
@@ -50,14 +49,31 @@ fn exp_args(
     }
 }
 
-/// The C# ParsingTestsBase.ParseAndValidateAsync (ParsingTestsBase.cs:44-51).
-/// The port's diagnostics are produced by the lexer-diagnostics scanner (the
-/// C# lexer is DROP; the full_moon parse panics on fatal-tokenizer inputs
-/// such as `@$\` — its luau-attribute path calls `current().unwrap()`,
-/// ast/parsers.rs:3709), so the C# parse + round-trip step is not performed
-/// here (the parser round trips are covered by the parser test suites).
+/// The C# ParsingTestsBase.ParseAndValidateAsync (ParsingTestsBase.cs:44-51):
+/// the TREE diagnostics (the lexer scanner merged with the parser
+/// diagnostics pass over the recovered AST, one copy — the C# tree carries
+/// each diagnostic once). The full_moon parse panics on fatal-tokenizer
+/// inputs such as `@\$\` (its luau-attribute path calls `current().unwrap()`,
+/// ast/parsers.rs:3709) and fails on unparseable sources — those cases skip
+/// the merge and assert the scanner diagnostics alone (documented: the C#
+/// recovers a tree there; the general recovery diagnostics are unported).
 fn parse_and_validate_lex(source: &str, options: &LuaSyntaxOptions, expected: &[Expected]) {
-    let produced = lexer_diagnostics(source, options);
+    let mut produced = lexer_diagnostics(source, options);
+    let source_owned = source.to_string();
+    let options_owned = options.clone();
+    let parse_result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        full_moon::parse(&source_owned).ok().map(|ast| {
+            loretta::errors::parserdiagnostics::parser_diagnostics(
+                &ast,
+                &options_owned,
+                &source_owned,
+            )
+        })
+    }));
+    if let Ok(Some(mut parser_diags)) = parse_result {
+        produced.append(&mut parser_diags);
+        produced.sort_by_key(|d| d.start);
+    }
     assert_eq!(
         produced.len(),
         expected.len(),
@@ -201,19 +217,36 @@ fn lexer_gates_only_shift_operators_not_single_bitwise_chars() {
     // the single '&'/'|' binary operators are the parser's rule
     // (LanguageParser.cs:908-912 — ported in parserdiagnostics.rs) and
     // '>>' gets no error at all (the parser combines two '>' tokens
-    // silently, LanguageParser.cs:840-845).
+    // silently, LanguageParser.cs:840-845). The C# TREE carries all three
+    // gates (probed @Lua51 via the harness: 3 unique LUA0021s — '<<' at
+    // (1,13), '&' at (3,15), '|' at (4,15); the harness op doubles each),
+    // so this test asserts through the combined tree diagnostics.
     parse_and_validate_lex(
         "local a = 1 << 2\n\
          local b = 3 >> 1\n\
          local c = x & y\n\
          local d = p | q\n",
         &LuaSyntaxOptions::LUA51,
-        &[exp(
-            ErrorCode::ErrBitwiseOperatorsNotSupportedInVersion,
-            1,
-            13,
-            "<<",
-        )],
+        &[
+            exp(
+                ErrorCode::ErrBitwiseOperatorsNotSupportedInVersion,
+                1,
+                13,
+                "<<",
+            ),
+            exp(
+                ErrorCode::ErrBitwiseOperatorsNotSupportedInVersion,
+                3,
+                13,
+                "&",
+            ),
+            exp(
+                ErrorCode::ErrBitwiseOperatorsNotSupportedInVersion,
+                4,
+                13,
+                "|",
+            ),
+        ],
     );
 }
 
@@ -922,6 +955,10 @@ fn lexer_emits_diagnostics_when_unicode_escapes_are_found_and_lua_syntax_options
 #[test]
 fn lexer_emits_diagnostics_when_interpolated_or_hash_strings_are_found_and_lua_syntax_options_backtick_string_type_is_none(
 ) {
+    // The finished-path LUA0036 is the C# PARSER's node-level error
+    // (LanguageParser.InterpolatedString.cs:59-60) — the tree carries it
+    // once (the parser supersedes the token copy), so this test asserts
+    // through the combined tree diagnostics.
     let source = "local a = `hello`\nlocal b = `hi!`";
     let options = LuaSyntaxOptions {
         backtick_string_type: BacktickStringType::None,
@@ -945,6 +982,65 @@ fn lexer_emits_diagnostics_when_interpolated_or_hash_strings_are_found_and_lua_s
             ),
         ],
     );
+}
+
+#[test]
+fn lexer_emits_the_unfinished_path_gate_too_when_backtick_string_type_is_none() {
+    // AUDIT.md Finding 1(d): the C# gate (Lexer.ShortString.cs:70-72)
+    // fires UNCONDITIONALLY after the scan — the unfinished path emits
+    // LUA0003 AND the LUA0036 gate (probed @Lua51 '`abc': [LUA0003,
+    // LUA0036, LUA1012]; the port's scanner carries both; the statement-
+    // position LUA1012 belongs to the unported general parser-recovery
+    // family, documented in the parserdiagnostics header).
+    let text = "local x = `abc";
+    let options = LuaSyntaxOptions {
+        backtick_string_type: BacktickStringType::None,
+        ..LuaSyntaxOptions::ALL
+    };
+    // The unfinished source fails the full_moon parse (no recovered AST),
+    // so this asserts the scanner's pair: the last-char LUA0003 plus the
+    // unconditional unfinished-path gate (the statement-position LUA1012
+    // belongs to the unported general parser-recovery family, documented
+    // in the parserdiagnostics header).
+    let produced = lexer_diagnostics(text, &options);
+    assert_eq!(produced.len(), 2, "two diagnostics: {produced:?}");
+    let (first_line, first_col) = produced[0].line_col(text);
+    assert_eq!(produced[0].code, ErrorCode::ErrUnfinishedString);
+    assert_eq!((first_line, first_col), (1, 14));
+    assert_eq!(produced[0].squiggle(text), "c");
+    assert_eq!(
+        produced[1].code,
+        ErrorCode::ErrInterpolatedStringsNotSupportedInVersion,
+        "the unfinished-path gate"
+    );
+    assert_eq!(produced[1].squiggle(text), "`abc");
+}
+
+#[test]
+fn parser_emits_the_finished_path_gate_once() {
+    // AUDIT.md Finding 1(d) count detail: in an expression context the C#
+    // reports LUA0036 ONCE (the parser node copy supersedes the token copy
+    // — LanguageParser.InterpolatedString.cs:59-60). Probed @Lua51
+    // 'local x = `ab`': C# [LUA0036] (was Rust [LUA0036, LUA0036]).
+    let text = "local x = `ab`";
+    let options = LuaSyntaxOptions {
+        backtick_string_type: BacktickStringType::None,
+        ..LuaSyntaxOptions::ALL
+    };
+    let mut produced = lexer_diagnostics(text, &options);
+    if let Ok(ast) = full_moon::parse(text) {
+        produced.extend(loretta::errors::parserdiagnostics::parser_diagnostics(
+            &ast, &options, text,
+        ));
+        produced.sort_by_key(|d| d.start);
+    }
+    assert_eq!(produced.len(), 1, "one diagnostic: {produced:?}");
+    assert_eq!(
+        produced[0].code,
+        ErrorCode::ErrInterpolatedStringsNotSupportedInVersion
+    );
+    assert_eq!(produced[0].line_col(text), (1, 11));
+    assert_eq!(produced[0].squiggle(text), "`ab`");
 }
 
 #[test]
@@ -995,4 +1091,84 @@ fn lexer_emits_diagnostics_when_nesting_long_strings() {
         &LuaSyntaxOptions::LUA51,
         &[exp(ErrorCode::ErrLua51NestingInLongString, 1, 11, "[[[[")],
     );
+}
+
+#[test]
+fn lexer_emits_escape_diagnostics_inside_backtick_strings() {
+    // AUDIT.md Finding 1(a): the C# contents loop runs ScanEscapeSequence
+    // per '\' (Lexer.ShortString.cs:424-427) and its AddError calls land
+    // on the token. Probed @Lua54 'local x = `a\qb`': C#
+    // [LUA0036, LUA0001, LUA0001] (tree pass: node gate + text-token
+    // escape; token pass: the escape again) — the port's combined set
+    // matches; silent under AcceptInvalidEscapes (@Luau: [] both).
+    let text = "local x = `a\\qb`";
+    let options = LuaSyntaxOptions::LUA54;
+    let mut produced = lexer_diagnostics(text, &options);
+    if let Ok(ast) = full_moon::parse(text) {
+        produced.extend(loretta::errors::parserdiagnostics::parser_diagnostics(
+            &ast, &options, text,
+        ));
+        produced.sort_by_key(|d| d.start);
+    }
+    assert_eq!(produced.len(), 2, "two diagnostics: {produced:?}");
+    assert_eq!(
+        produced[0].code,
+        ErrorCode::ErrInterpolatedStringsNotSupportedInVersion
+    );
+    assert_eq!(produced[0].squiggle(text), "`a\\qb`");
+    assert_eq!(produced[1].code, ErrorCode::ErrInvalidStringEscape);
+    assert_eq!(produced[1].line_col(text), (1, 13));
+    assert_eq!(produced[1].squiggle(text), "\\q");
+
+    // Silent when invalid escapes are accepted.
+    let luau_produced = lexer_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    assert!(
+        luau_produced.is_empty(),
+        "no diagnostics under Luau: {luau_produced:?}"
+    );
+}
+
+#[test]
+fn lexer_emits_hole_diagnostics_inside_backtick_strings() {
+    // AUDIT.md Finding 1(b): '{{' reports LUA0035 over the two braces
+    // minus one (MakeError(openBracePosition - 1, width: 2),
+    // Lexer.ShortString.cs:444-445); an unclosed hole reports LUA0034 the
+    // same way (:458-459); a mismatched closer reports ERR_SyntaxError
+    // with the expected-char argument (:498-503); TrySetError keeps the
+    // FIRST error only.
+    let options = LuaSyntaxOptions::LUAU;
+
+    let text = "local x = `a{{b}`";
+    let produced = lexer_diagnostics(text, &options);
+    assert_eq!(produced.len(), 1, "one diagnostic: {produced:?}");
+    assert_eq!(produced[0].code, ErrorCode::ErrDoubleBraceInInterpolation);
+    assert_eq!(produced[0].squiggle(text), "a{");
+
+    let text = "local x = `a{b`";
+    let produced = lexer_diagnostics(text, &options);
+    // The nested scan emits its own unfinished error during the contents;
+    // the hole's LUA0034 wins this level's first-error slot (the End
+    // error is TrySetError'd after it and suppressed).
+    assert_eq!(
+        produced.len(),
+        2,
+        "the nested unfinished + the unclosed hole: {produced:?}"
+    );
+    assert_eq!(produced[0].code, ErrorCode::ErrUnfinishedString);
+    assert_eq!(produced[1].code, ErrorCode::ErrUnclosedExpressionHole);
+    assert_eq!(produced[1].squiggle(text), "a{");
+
+    let text = "local x = `a{(b]}`";
+    // The ']' inside the '(' hole raises ERR_SyntaxError (expecting ')');
+    // the scan then runs off the string's closing backtick, so the nested
+    // level also reports its own unfinished error FIRST (the recursion's
+    // AddError fires during the contents, before this level's slot flush —
+    // the C# emission chronology). The parser-recovery LUA0015/LUA1003s
+    // the C# adds on top are unported (documented).
+    let produced = lexer_diagnostics(text, &options);
+    assert_eq!(produced.len(), 2, "two diagnostics: {produced:?}");
+    assert_eq!(produced[0].code, ErrorCode::ErrUnfinishedString);
+    assert_eq!(produced[1].code, ErrorCode::ErrSyntaxError);
+    assert_eq!(produced[1].arguments, vec![")".to_string()]);
+    assert_eq!(produced[1].squiggle(text), "]");
 }
