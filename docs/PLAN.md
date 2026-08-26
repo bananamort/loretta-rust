@@ -130,7 +130,7 @@ Failures after 3 genuine attempts: revert, re-queue at end of topo order with ri
 | `Compilers/Lua/Portable/Scoping/` | PORT | `loretta/src/scoping/` | 1 + 2 (scope tree) |
 | `Compilers/Lua/Portable/Script/` | PORT | `loretta/src/script/` | 1 + 2 (scope tree) |
 | `Compilers/Lua/Portable/Utilities/` | PORT | `loretta/src/utilities/` | 1 + 2 (samples) |
-| `Compilers/Lua/Portable/LuaSyntaxOptions` + `LuaParseOptions` + enums + `Operations/` | ADAPT | `loretta/src/options.rs` | 1 + 2 (per `LuaVersion`) |
+| `Compilers/Lua/Portable/LuaSyntaxOptions` + `LuaParseOptions` + enums + `Operations/` | ADAPT | `loretta/src/{luasyntaxoptions,luaparseoptions,backtickstringtype,continuetype,integerformats}.rs` + `operations/{binaryoperatorkind,unaryoperatorkind}.rs` | 1 + 2 (per `LuaVersion`) |
 | `Compilers/Lua/Portable/SymbolDisplay/` | PORT | `loretta/src/symbol_display/` | 1 + 2 (samples) |
 | `Compilers/Lua/Experimental/` | PORT | `loretta/src/experimental/` | 1 + 2 (fold/minify) |
 | `Compilers/Lua/CommandLine/` | PORT | `loretta-cli/src/main.rs` | 2 (CLI tests) |
@@ -139,3 +139,20 @@ Failures after 3 genuine attempts: revert, re-queue at end of topo order with ri
 
 - Counts: `Lua/Portable` 99 hand + 6 generated (108 with `obj/`), `Experimental` 14, `Core/Portable` 217, `Test/Portable` 31 (30 hand + 1 generated, 157 `[Test]`s excluding generated, 637 including Generated).
 - `LuaExtensions.cs` in `Portable/` is syntax helpers over dropped nodes — DROP. `Experimental/LuaExtensions.cs` is PORT.
+
+### Layout Mirror
+
+The Rust tree mirrors the C# file/directory layout and logic split 1:1 (partial classes become
+one file per distinctive name: `RenamingRewriter.RenameTable.cs` -> `minifying/renametable.rs`;
+the `ConstantFolder` partial trio -> `experimental/{constantfolder,expressionflags,numparsing}.rs`).
+Files with **no C# counterpart** are sanctioned additions, each justified in its header:
+
+- `errors/lexerdiagnostics.rs`, `errors/parserdiagnostics.rs` — the diagnostic rules of the
+  DROPped lexer/parser, re-implemented over source text / the recovered AST (Port Boundary).
+- `luaresources.rs` — `LuaResources.resx` + `.Designer.cs` as one resource module.
+- `symbol_display/unicode_categories.rs` — generated .NET `CharUnicodeInfo` oracle table.
+- `*/mod.rs`, `lib.rs` — module glue only.
+
+The obsolete C# `SyntaxExtensions.FoldConstants` (ConstantFolder.cs:572-583) is DROP — the
+`syntaxextensions.rs` tombstone that preserved it was deleted 2026-08-26 (PR #1401); the drop
+record lives in PROGRESS.md rows 99/294.
