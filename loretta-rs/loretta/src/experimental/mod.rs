@@ -6,4 +6,3 @@ pub mod expressionflags;
 pub mod luaextensions;
 pub mod minifying;
 pub mod numparsing;
-pub mod syntaxextensions;
