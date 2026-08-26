@@ -598,19 +598,28 @@ impl<'a> Scanner<'a> {
             }
         }
         if unfinished {
-            // The C#: MakeError(Position - 1, width: 1) — the last character.
+            // The C#: MakeError(Position - 1, width: 1) — the last character
+            // (probed: EOF-terminated '`abc' -> [3..4)).
             self.error_at(
                 self.byte_pos().saturating_sub(1),
                 1,
                 ErrorCode::ErrUnfinishedString,
                 Vec::new(),
             );
-            return;
         }
-        // The C#: the interpolated gating error fires only for the None
-        // backtick type (the HashLiteral strings use the short-string
-        // scanner — Lexer.cs:622-625; Lexer.ShortString.cs:71-72).
-        if self.options.backtick_string_type == BacktickStringType::None {
+        // The C# gate (Lexer.ShortString.cs:70-72) fires UNCONDITIONALLY
+        // after the scan for non-InterpolatedStringLiteral presets — the
+        // finished AND unfinished paths alike (AUDIT.md Finding 1(d)). The
+        // two paths diverge in WHERE the port emits it:
+        // - Unfinished: the token survives into statement position, so this
+        //   scanner mirrors the LEXER copy (the harness's token pass doubles
+        //   it like the C# tree+token passes).
+        // - Finished: in an expression context the C# parser supersedes the
+        //   token copy with its node-level error
+        //   (LanguageParser.InterpolatedString.cs:59-60) and the reference
+        //   reports LUA0036 once — so the finished-path emission lives in
+        //   parserdiagnostics.rs (the single-report pass) instead.
+        if unfinished && self.options.backtick_string_type == BacktickStringType::None {
             self.error_at(
                 self.byte_of_char(start),
                 self.byte_pos() - self.byte_of_char(start),
