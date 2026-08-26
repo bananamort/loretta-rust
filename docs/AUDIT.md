@@ -2,146 +2,237 @@
 
 This file is the working brief for the next fixing agent. It contains two things only:
 
-1. The **unresolved candidate findings** reported by the most recent independent audit
-   (2026-08-24), reproduced verbatim as reported. These are CLAIMS, not verdicts — the agent
-   must independently confirm or refute each one against both sources before touching code.
+1. The **unresolved findings** from the two independent full-port audits of 2026-08-25
+   (`docs/independent_audits/AUDIT_AGENT_DS.md`, `AUDIT_AGENT_OX.md`), each independently
+   re-verified against both sources on HEAD `aedd440`. These are claims + a prior reviewer's
+   opinion — the fixing agent must still make its own both-sides read before touching code.
 2. The **binding workflow** for landing fixes.
 
-Past audit rounds (2026-08-15 baseline → v2 → v3 → errata; 66 resolved findings) live in git
-history (`git log -- docs/AUDIT.md`, key commits `c33ced4`, `89e5795`, `0441b02`) and in the
-merged PRs (#1319–#1383). Do not treat their descriptions as current state.
+Previous rounds are closed and live in git history: the 2026-08-15 baseline → v2 → v3 → errata
+(66 resolved findings, PRs #1319–#1383) and candidates A–E from 2026-08-24 (all dispositioned,
+PRs #1388–#1392). Do not treat their descriptions as open.
 
 ## Before anything else
 
 - Read all four governing docs IN FULL: `docs/AGENTS.md`, `docs/PLAN.md`,
   `docs/TRANSLATION.md`, `docs/COMMIT.md`. They define verbatim parity, the Port Boundary
-  (full_moon is the lexer/parser/AST; Parser//Syntax//Core/Portable and GLua operators are
-  DROP), hard prohibitions, gates, and PR workflow. Where they are stricter than this file,
+  (full_moon is the lexer/parser/AST; `Parser/`, `Syntax/`, `Core/Portable` and GLua operators
+  are DROP), hard prohibitions, gates, and PR workflow. Where they are stricter than this file,
   they win.
-- Then independently re-audit for divergences NOT on the list below. A candidates list is not
-  a ceiling: you are responsible for your own full read of both trees, not just confirming
-  these claims.
+- Then independently re-audit for divergences NOT on the list below. A findings list is not a
+  ceiling: you are responsible for your own full read of both trees, not just confirming these.
 
-## Unresolved candidate findings (verbatim from the 2026-08-24 independent audit)
+## Baselines on HEAD `aedd440` (re-run yourself)
 
-**Candidate A — Dot access never folds expression-keyed table fields**
-`experimental/constantfolder.rs` Dot arm (~`:577-581`) calls
-`lookup_table_field(&table, Some(&name), None)` — with `brackets=None`, the
-`ExpressionKey` + `is_str_with_value` arm is unreachable.
-C# anchor: `ConstantFolder.cs:348-357` (VisitMemberAccessExpression) checks BOTH
-IdentifierKeyed (`Text == MemberName`) AND ExpressionKeyed
-(`HasEFlag(key, IsStr) && GetValue<string>(key) == MemberName`).
-Reported observable: `({ ["x"] = 1 }).x` folds to `1` in C#, stays unfolded in Rust
-(differential-probed on both harnesses during the audit). Bracket form and name-key form
-reported folding identically.
+fmt clean · clippy `-D warnings` clean · check clean · **tests 234 passed / 0 failed** ·
+differential **identical 1870 / pending 0 / FAILED 0** · drift **744 nodes / 1335 edges /
+topo 744**. All five findings below are invisible to these baselines — the corpus contains no
+backtick, if-expression, shadowed-for-loop, or goto/label inputs.
 
-**Candidate B — find_variable panic message diverges**
-`scoping/iscope.rs:146` panics `format!("'{name}' must be a valid identifier.")` —
-interpolates the actual invalid value.
-C# anchor: `IScope.cs:167`
-`throw new ArgumentException($"'{nameof(name)}' must be a valid identifier.")`.
-Note: `nameof(name)` compiles to the literal `"name"`, so the C# message is always
-`'name' must be a valid identifier.` regardless of input.
+## Unresolved findings
 
-**Candidate C — get_or_create_label_in accepts None label_syntax**
-`scoping/iscope.rs:289-300` takes `label_syntax: Option<lua52::Label>` with no non-null check;
-C# `IScope.cs:218` has `LorettaDebug.AssertNotNull(labelSyntax)` before use.
-Context to verify yourself: the only null-syntax caller is GotoWalker (forward gotos);
-`LorettaDebug.AssertNotNull` is `[Conditional("DEBUG")]`; C# debug builds would trip this
-assert on any forward goto — decide for yourself whether replicating that assert is parity
-or replicating an upstream defect.
+### Finding 1 — Backtick-string diagnostics are largely unported (DS F1) — VERIFIED REAL
 
-**Candidate D — empty-name rename with zero locations returns Ok**
-`script/script.rs` rename flow returns Ok unchanged when the variable has no locations; C#
-constructs `new RenameRewriter(...)` whose ctor throws ArgumentException on
-`string.IsNullOrEmpty(newName)` (`Script.RenameRewriter.cs:14-17`) even when the variable has
-no locations. Context to verify yourself: whether any reachable variable can have zero
-locations (locals/params carry declaration locations; unreferenced globals do not enter the
-map).
+**Port:** `loretta/src/errors/lexerdiagnostics.rs` `scan_backtick_string` (`:568-624`) +
+dispatch at `:1213`.
+**C# anchors:** `Lexer.ShortString.cs:54-73` (`ScanInterpolatedStringLiteral`),
+`:306-581` (`InterpolatedStringScanner`), `LanguageParser.cs:198`.
 
-**Candidate E — parse-failed trees contribute nothing**
-`manager.rs add_tree` drops trees where `full_moon::parse_fallible` errors; C#
-`LuaSyntaxTree` always yields an error-recovery tree. This was previously classified as a
-Port-Boundary structural consequence — verify that classification yourself against AGENTS.md
-Locked Decision 1 / Rationale before accepting it.
+The port's scanner walks to the closing backtick/newline and emits only
+`ERR_UnfinishedString` when unfinished, plus the `LUA0036` gating on the finished path under
+`BacktickStringType::None` (double-reported — see (d)). It omits:
 
-For every candidate: read the full C# file and the full Rust file, probe behavior where two
-readings could disagree (`.scratch/` probes, existing tests, differential), and reach YOUR OWN
-conclusion — fix it if it's real parity loss, refute it with evidence if it isn't, or document
-it as a spec-forced boundary if that's what it turns out to be.
+- **(a)** escape diagnostics inside the contents — C# runs `ScanEscapeSequence` per `\`
+  (`Lexer.ShortString.cs:426`);
+- **(b)** hole diagnostics — `LUA0034 ERR_UnclosedExpressionHole`,
+  `LUA0035 ERR_DoubleBraceInInterpolation`, and `ERR_SyntaxError` with the expected-char
+  argument in mismatched-delimiter holes;
+- **(c)** the parser's `LUA1012 ERR_InvalidStatement` when a backtick token survives into a
+  statement position;
+- **(d)** for `BacktickStringType::None` presets the unfinished path skips the `LUA0036`
+  gating error: C# emits LUA0003 **and then** the gate unconditionally
+  (`Lexer.ShortString.cs:70-72`), so an unfinished backtick yields LUA0003+LUA0036 (probed);
+  the port `return`s early on unfinished and never emits it there. Note the dispatch subtlety:
+  under a `HashLiteral` preset (FiveM) C# routes backticks through the short-string/hash
+  scanner (`Lexer.cs:622-625`) and never reaches the interpolated gate — probed: FiveM emits no
+  LUA0036 on either side; do not add it for HashLiteral presets. Additional count detail
+  (probed): on a FINISHED backtick under a None preset, C#'s net output is ONE LUA0036 — the
+  parser re-attaches it to the node (`LanguageParser.InterpolatedString.cs:60`), superseding
+  the lexer's token copy, and the harness op reports it once. The port emits it from the lexer
+  pass, so the harness op doubles it (2×LUA0036 vs C#'s 1×). The fix should move/deduplicate
+  the emission to match C#'s single report.
 
-### Prior reviewer's opinion per candidate (input, not authority)
+**Probed live on HEAD (both harnesses):** `` `abc `` @Lua51 → C# `[LUA0003, LUA0036, LUA1012]×2`,
+Rust `[LUA0003]×2`. Diverges on every preset and every backtick input. Error codes already
+exist in `errorcode.rs` (`ErrUnclosedExpressionHole = 34`, `ErrDoubleBraceInInterpolation = 35`,
+`ErrInterpolatedStringMustStartWithBacktickCharacter`); the resx strings are ported.
 
-The 2026-08-24 verification pass also formed opinions on each candidate. These are recorded so
-you can weigh the reasoning — they carry no authority; your own both-sides read does. Where you
-agree or disagree, say so in your report either way.
+### Finding 2 — If-expression gating and general parser-error diagnostics unported (DS F2) — VERIFIED REAL
 
-- **A** — Believed REAL and worth fixing. Reasoning: `({["x"]=1}).x` is valid Lua on which the
-  outputs visibly diverge (probed live: C# folds to `print(1 )`, Rust leaves unfolded), and the
-  fix stays inside the boundary (~10 lines mirroring `ConstantFolder.cs:348-357`'s
-  ExpressionKeyed check). Suggested fix shape: pass the folder context through the Dot arm and
-  extend `lookup_table_field`'s ExpressionKey arm with an `is_str_with_value`-style comparison;
-  pin with a test asserting `({ ["x"] = 1 }) print(t.x)` folds.
-- **B** — Believed REAL but de minimis severity. Reasoning: Logic Parity says "same messages,"
-  and C#'s message is the constant `'name' must be a valid identifier.` (`nameof` compiles to
-  the literal); the fix is hardcoding that string at `iscope.rs:146`. No current test asserts
-  the panic text, which is why nothing catches it. Suggested: hardcode + add a message
-  assertion to the empty-rename test.
-- **C** — Believed NOT worth replicating verbatim. Reasoning: the C#
-  `AssertNotNull(labelSyntax)` fires debug-only, and C# itself passes null syntax for forward
-  gotos from GotoWalker (`GotoWalker.cs:26`, single-arg call) — so debug builds of upstream
-  would trip their own assert on any forward goto; Loretta's tests never combine rename+goto,
-  so upstream never noticed. The port's Option + `set_label_syntax` design avoids that defect.
-  Recommendation: keep the port's design, document the divergence from the assert at the call
-  site.
-- **D** — Believed UNOBSERVABLE for reachable variables. Reasoning: locals/params always carry
-  declaration locations and unreferenced globals never enter the map, so the zero-location path
-  cannot be reached through public API. If you find a reachable zero-location case, this
-  becomes real; otherwise recommend documenting rather than replicating the ArgumentException.
-- **E** — Believed correctly classified as Port-Boundary structural. Reasoning: full_moon
-  returns no AST on failure and any recovery layer would be a local Lua parser (Locked Decision
-  1 / Rationale). Recommendation: keep the drop, keep the in-code comment current.
+**Port:** `loretta/src/errors/parserdiagnostics.rs` — no `Expression::If` arm; the op gates
+parser diagnostics on `full_moon::parse` succeeding (`differential/src/ops.rs:45-47`).
+**C# anchor:** `LanguageParser.cs:1329-1330`
+(`ERR_IfExpressionsNotSupportedInLuaVersion`, code exists in Rust as
+`ErrIfExpressionsNotSupportedInLuaVersion = 1008` but is never emitted).
 
-If your independent read contradicts any of these opinions, your read wins — record why.
+None of the general parser diagnostics (`LUA1012/1010/1011/1001/1014/1015/1017/1018`,
+`LUA0019 ERR_CannotBeAssignedTo`, `LUA0015`) are ported either — the file's own header says
+"Starts with the version-gated statement rules the differential corpus exercises."
 
-## Coverage limits of the 2026-08-24 audit (line-read these anchors yourself)
+**Probed live on HEAD (both harnesses):** `local x = if true then 1 else 2 end` @Lua51 →
+C# `[LUA1008, LUA1012, LUA1012]`, Rust `[]`. Diverges on every preset: those without
+`AcceptIfExpressions` add LUA1008 (Lua51 etc.), and those with it (Luau, All) still diverge
+because the port never emits the LUA1012s either (probed: Luau/All C# `[LUA1012, LUA1012]` vs
+Rust `[]`).
 
-The independent audit's pass was full-read for nearly everything, but it self-declared three
-coverage limits. They do not invalidate its findings, but they mean specific anchors were
-probe-checked rather than line-read — so YOUR Source Protocol read is the first true line-read
-for them:
+### Finding 3 — For-loop header expressions resolve through the loop's own block scope (DS F3) — VERIFIED REAL, highest priority
 
-- **`Core/Portable/Compilation/ParseOptions.cs`** — probe-checked only (Candidate B/64's fix
-  anchors to `ParseOptions.cs:47-55`). Read the file itself before trusting the anchor.
-- **`Core/Portable/RealParser.cs`** — probe-checked only; Findings 28-31's C# behaviors
-  (sign→0.0, overflow→false, trailing-garbage tolerance) rest on probes plus the code read in
-  `NumberParsing.cs`. Read `RealParser.cs:15-17,30-37,288-368,384-392` yourself.
-- **DROP-side infrastructure received no review** — everything inside `Core/Portable`,
-  `Parser/`, `Syntax/`, and `Generated/` was skipped per Port Boundary (correct per docs), but
-  that also means nothing verifies those trees stayed byte-stable at b767b4e beyond git.
-  Spot-verify via `git -C references/Loretta status/log` if you want belt-and-braces.
+**Port:** `loretta/src/script/scopeandvariablemanager/scopeandvariablewalker.rs:298-357`
+(numeric + generic): creates the block scope and the iteration variables BEFORE visiting the
+header expressions.
+**C# anchors:** `ScopeAndVariableManager.ScopeAndVariableWalker.cs:182-203` (numeric),
+`:205-227` (generic) — header expressions are visited FIRST, in the enclosing scope; the block
+scope + iteration variables come after.
 
-Additionally, two table-level "exact" verifications (unicode_categories vs Unicode data;
-LuaResources vs resx) trace back to mechanical diffs from an earlier session, re-cited rather
-than repeated. If you touch those tables, re-run the diff rather than citing this file.
+**Authority resolution (decided this pass):** the walker chain is
+`ScopeAndVariableWalker → BaseWalker : LuaSyntaxWalker : LuaSyntaxVisitor`. The generated
+method the port's comment cites (`Syntax.xml.Internal.g.cs:9989`) lives inside
+**`LuaSyntaxRewriter`** — a class this walker never inherits. The visitor-side generated
+`VisitNumericForStatement` (`Syntax.xml.Main.g.cs:380`) is `=> DefaultVisit(node)`. The C#
+override therefore always wins; the port's in-code justification (and its pinning test
+`for_loop_iteration_variables_are_recorded_before_the_header_expressions`) enshrine the wrong
+order.
 
-Count-decomposition caveat: the run's 231 passed decomposes as ~197 integration + ~35
-lib-unit by attribute count, while AGENTS.md frames it as 172 Oracle-1 + internals. Both end
-at 231/0; use raw cargo output as truth, not either decomposition.
+**Observable in the differential `scope` op itself** (contrary to DS's "not observable" note —
+the corpus simply lacks a shadowing input): `for i = i, 10 do end` @Lua51 → C# declares a
+**Global `i`** (header resolved against enclosing scope), Rust declares none (header bound to
+the iteration variable). Also diverges: header identifiers' referencing-scope records and node-id
+allocation order.
+
+### Finding 4 — Goto/label LUA1019 span edges (OX §3.2) — VERIFIED REAL (two sub-items)
+
+**(a) Label span excludes a trailing `;`.**
+C# `ParseGotoLabelStatement` (`LanguageParser.cs:631-648`) builds the node including
+`TryMatchSemicolon()` and gates on the whole node. Probed live: `::label::;` @Luau →
+C# LUA1019 span `[0..10]` = `'::label::;'`; the port's `Stmt::Label` arm
+(`parserdiagnostics.rs:142-156`) ends at `right_colons()`. Same applies to any trailing trivia
+(`::label:: ;` @Luau → C# span `[0..11]`). Invisible to oracles: the corpus has no `::` input.
+
+**(b) The port's `Stmt::Goto` LUA1019 arm is reachable where C#'s is dead.**
+In C#, `goto x;` under a goto-disabled preset can never reach `ParseGotoStatement`'s gate:
+`SyntaxFacts.HasKeywordBeenDisabled` (`SyntaxFacts.cs:52`) demotes the keyword to an identifier
+whenever `AcceptGoto` is false, so C# yields `LUA0018 ×2` (probed live @Lua51 and @Luau). C#'s
+goto-statement LUA1019 arm requires simultaneously `AcceptGoto == true` (keyword enabled) and
+`false` (gate) — unreachable upstream. In the port, full_moon still parses `goto x` as a
+`Stmt::Goto` where its version mapping enables goto syntax (e.g. Lua51/Luau), so the arm fires
+LUA1019 there where C# fires `LUA0018 ×2` (probed: `goto x;` @Lua51 → C# `[LUA0018, LUA0018]`,
+Rust `[LUA1019]`; on LuaJIT20 both sides are clean — no divergence).
+
+### Finding 5 — Minor documented-in-code divergences worth recording (DS minor notes) — VERIFIED, LOW severity
+
+These match their in-code documentation; record only so the fixing agent doesn't "fix" them
+blindly:
+
+- **FindVariable tie-break**: declaration-order vs C# `HashSet` enumeration order
+  (implementation-defined upstream; documented Finding 63).
+- **Sequential naming-strategy panic message**: `trim_start_matches(prefix)` strips ALL leading
+  prefix chars; C# `name.Remove(0, prefixes)` removes exactly the counted run. Differs only when
+  the generated name itself begins with the prefix character.
+- **Keyword-kind test coverage**: the test table has 22 keywords vs the C# data source's 26
+  (continue/type/typeof/export cannot dock on `Symbol::from_str`); the real consumer
+  `namingstrategies::is_keyword` covers all 26.
+
+Also verified NOT defects: OX's continue-position probe — the upstream test annotation
+`(9,14)` is off-by-one vs actual C# output `(9,13)`; the port asserts `(9,13)` and matches
+real behavior (re-probed this pass by reconstructing the exact raw-literal input). An upstream
+issue, not ours.
+
+## Prior reviewer's opinion per finding (input, not authority)
+
+Formed during the 2026-08-25 verification pass. Your own both-sides read wins; say so either way.
+
+- **Finding 1 — fix, in two tiers.**
+  Tier 1 (mechanical, do first): emit `LUA0036` on the unfinished path too (matching
+  `Lexer.ShortString.cs:70-72`'s unconditional post-scan gate under non-HashLiteral presets),
+  and fix the finished-path double-report: the port's lexer-level emission makes the harness op
+  report LUA0036 twice where C# reports it once (the parser node copy supersedes the token
+  copy) — emit once from one pass only. Tier 2: extend the scanner over the string contents —
+  escape scanning via the existing escape-diagnostics path (a), `{`/`}` hole tracking emitting
+  LUA0034/LUA0035/ERR_SyntaxError with C# spans (b), and the parser-side LUA1012 when a
+  backtick reaches statement position (c). Note the boundary: full_moon parses a backtick as a
+  valid token, so (a)/(b) live in our text-scanning layer (same layer as the rest of
+  lexerdiagnostics.rs) and (c) in parserdiagnostics.rs over the recovered AST. Suggested
+  probes: `` `abc `` , `` `a{ }b `` , `` `{{ `` , `` local x = `abc` `` × each preset, pinned as
+  tests + one corpus feature file (`features/backtick.lua`) so the differential covers it going
+  forward — adding corpus inputs requires regenerating expected outputs from the C# oracle
+  (never hand-edit them).
+
+- **Finding 2 — fix incrementally, gated on what full_moon can express.**
+  Add the `Expression::If` LUA1008 arm first (trivial, mirrors LanguageParser.cs:1329-1330).
+  Then add parser-diagnostics for inputs full_moon recovers structurally (e.g. LUA1012 on
+  malformed statement heads). General grammar errors (LUA1001/1010/1011/…) require detecting
+  malformed constructs full_moon may silently accept or drop — implement only those provable to
+  diverge via probe, and document the remainder as boundary-forced in the file header (replace
+  the "Starts with…" phrasing with an explicit list of what is and isn't ported and why). Keep
+  the `full_moon::parse` failure gate but document that parse-failed sources lose parser
+  diagnostics entirely (C# recovers a tree and keeps going).
+
+- **Finding 3 — fix; also repair the documentation and the test.**
+  Reorder both arms to visit header expressions before creating the block scope/iteration
+  variables, matching ScopeAndVariableWalker.cs:182-227. Delete or rewrite the incorrect
+  Syntax.xml.Internal.g.cs citation (it names LuaSyntaxRewriter's order, not this walker's), and
+  replace the pinning test with one asserting the C# semantics: `for i = i, 10 do end` declares
+  a global `i` for the header reference while the body sees the iteration variable. Watch node-id
+  allocation order (the original Finding-41 concern) — after reorder, ids allocate
+  header-expressions-first like C#. Verify no other differential scope outputs shift (run the
+  differential; expected: zero delta since the corpus has no such input, which is why you must
+  add `for i = i, 10 do end` as a scope-op fixture/test rather than rely on the corpus).
+
+- **Finding 4 — fix both sub-items together.**
+  (a) Extend the `Stmt::Label` span end past an immediately-following `;` (and decide: C#'s span
+  covers trailing trivia too because the node includes the semicolon token — replicate at least
+  the semicolon; document trivia inclusion explicitly). (b) For `Stmt::Goto` under
+  goto-disabled presets, emit what C# observably emits: the keyword is not a keyword there, so
+  C# produces `LUA0018` on `goto` (as a bare identifier statement) and again on `x` if it forms
+  a second expression statement — replicate the observable pair rather than keeping the dead
+  LUA1019 arm, OR keep the arm but document that it models C#'s dead path and never fires where
+  C#'s wouldn't. Recommended: replicate observable behavior (LUA0018-based), since Requirement 1
+  is behavioral parity. Add fixtures (`::label::;` under Luau, `goto x;` under Lua51) to tests;
+  corpus addition optional but welcome via regenerated expecteds.
+
+- **Finding 5 — mostly leave as-is.**
+  Tie-break: keep (upstream is implementation-defined). Sequential message: optionally align by
+  counting prefix runs instead of trim_start_matches (one-line change; low value). Keyword-kind
+  table: leave; consumer covers the full set. Do not chase the upstream (9,14) annotation.
+
+## Coverage notes carried forward (line-read these anchors yourself)
+
+- `Core/Portable/Compilation/ParseOptions.cs` and `Core/Portable/RealParser.cs` were
+  probe-checked, not line-read, in earlier rounds; the audits cite them only indirectly. Read
+  before trusting any anchor into them.
+- Both audits could not exhaustively verify `format_double_r` vs .NET "R" over the whole f64
+  domain, or `unicode_categories.rs` vs .NET CharUnicodeInfo beyond structural + spot checks
+  (^=Sk confirmed independently this pass; table verified 4108 arms, values 0..29, full scalar
+  coverage, single gap U+005F which is short-circuited by needs_escaping's ASCII list). If you
+  touch either, regenerate/re-verify rather than citing this file.
+- OX noted the packaged reference (0.2.14-nightly.26) vs repo commit `b767b4e` equivalence was
+  assumed in its probes; the probes reproduced here used the same package. Fine for parity
+  probing; flag if you find evidence of divergence.
 
 ## Binding workflow for landing fixes
 
-- One finding per PR; inside it, small gate-green commits (reorder/stub first, behavior flips
-  after). Never mix findings. Never land red at any commit.
+- One finding per PR; inside it, small gate-green commits. Never mix findings. Never land red at
+  any commit. Suggested order: Finding 3 (wrong docs + wrong test enshrined — smallest blast
+  radius, highest correctness value) → Finding 4 → Finding 1 tier 1 → Finding 2 (If arm) →
+  Finding 1 tier 2 → Finding 2 remainder → Finding 5 sweep.
 - Gates from `loretta-rs/`: fmt, clippy `-D warnings`, check/test
-  `--workspace --all-features --locked`, drift, differential byte-exact. Baselines:
-  tests 231 passed / 0 failed · differential identical 1870 / pending 0 / FAILED 0.
-  Recount yourself rather than trusting these numbers.
+  `--workspace --all-features --locked`, drift, differential byte-exact. Baselines above; recount
+  yourself.
 - Never push `main`: `gh pr create` → `gh pr checks --watch` → squash-merge with
   `--delete-branch`. Revert and re-queue on red.
-- Protected: `references/**`, `corpus/**` (incl. expected outputs), `docs/**` — never edit;
-  spec changes go through a separate `spec:` PR. Only writable markdown:
-  `loretta-rs/PROGRESS.md` (update touched rows in the same PR).
+- Protected: `references/**`, `corpus/**` (incl. expected outputs — regenerate from the C#
+  oracle only), `docs/**` — never edit; spec changes go through a separate `spec:` PR. Only
+  writable markdown: `loretta-rs/PROGRESS.md` (update touched rows in the same PR).
 - Probes live in `.scratch/` (gitignored); never committed.
-- Oracles decide correctness; compiling is not correct. If a delta appears, investigate —
-  never edit reference outputs to match Rust.
+- Oracles decide correctness; compiling is not correct. If a delta appears, investigate — never
+  edit reference outputs to match Rust.
