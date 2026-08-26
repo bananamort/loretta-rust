@@ -141,7 +141,15 @@ impl NamingStrategies {
             }
             panic!(
                 "Code has too many variables named {} with '{}'s at the start.",
-                name.trim_start_matches(prefix),
+                // C# NamingStrategies.cs:107: name.Remove(0, prefixes)
+                // strips EXACTLY the counted run (MaxPrefixCount + 1
+                // prepended chars at throw time), preserving any prefix
+                // chars that belong to the BASE name — reachable when the
+                // caller's alphabet contains the prefix char. The old
+                // trim_start_matches stripped ALL of them.
+                name.chars()
+                    .skip(NamingStrategies::MAX_PREFIX_COUNT + 1)
+                    .collect::<String>(),
                 prefix
             );
         })
