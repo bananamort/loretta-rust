@@ -37,6 +37,7 @@ pub fn parser_diagnostics(
 ) -> Vec<LexerDiagnostic> {
     let mut collector = ContinueCollector {
         backtick_is_none: options.backtick_string_type == BacktickStringType::None,
+        accept_if_expressions: options.accept_if_expressions,
         continue_is_identifier: options.continue_type == ContinueType::None,
         accept_bitwise_operators: options.accept_bitwise_operators,
         accept_goto: options.accept_goto,
@@ -57,6 +58,10 @@ struct ContinueCollector<'a> {
     /// reference reports it once. (The UNFINISHED-path copy stays in the
     /// lexerdiagnostics scanner — the token survives there.)
     backtick_is_none: bool,
+    /// C# ParseIfExpression (LanguageParser.cs:1329-1330): the whole
+    /// if-expression reports ERR_IfExpressionsNotSupportedInLuaVersion
+    /// when the option is off.
+    accept_if_expressions: bool,
     /// Under ContinueType::None the C# parser treats `continue` as an
     /// identifier expression statement (the only non-call expression
     /// statement the grammar can reach), which reports
@@ -119,6 +124,26 @@ impl Visitor for ContinueCollector<'_> {
                     .bytes();
                 self.push(
                     ErrorCode::ErrInterpolatedStringsNotSupportedInVersion,
+                    start,
+                    end,
+                );
+            }
+            Expression::IfExpression(if_expr) if !self.accept_if_expressions => {
+                // The C# ParseIfExpression gate (LanguageParser.cs:1329-1330):
+                // the whole if-expression carries
+                // ERR_IfExpressionsNotSupportedInLuaVersion when the option
+                // is off (the C# parses the expression under every preset —
+                // the dispatch at LanguageParser.cs:937 — and gates after).
+                let start = if_expr
+                    .start_position()
+                    .expect("the if expression start")
+                    .bytes();
+                let end = if_expr
+                    .end_position()
+                    .expect("the if expression end")
+                    .bytes();
+                self.push(
+                    ErrorCode::ErrIfExpressionsNotSupportedInLuaVersion,
                     start,
                     end,
                 );

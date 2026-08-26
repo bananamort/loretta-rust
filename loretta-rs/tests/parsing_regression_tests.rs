@@ -379,3 +379,28 @@ fn language_parser_lua52_type_cast_generates_error() {
     assert_eq!(diagnostics[0].line_col(text), (1, 11));
     assert_eq!(diagnostics[0].squiggle(text), "x :: table");
 }
+
+#[test]
+fn language_parser_if_expression_gates_under_presets_without_if_expressions() {
+    // AUDIT.md Finding 2 — the C# ParseIfExpression gate
+    // (LanguageParser.cs:1329-1330): the whole if-expression carries
+    // LUA1008 when AcceptIfExpressions is off. Probed @Lua51
+    // 'local x = if true then 1 else 2' -> [LUA1008] on both harnesses;
+    // @Luau (acceptIfExpressions) -> []. Note Luau's if-expressions have
+    // no trailing `end` (the C# ParseIfExpression consumes no EndKeyword).
+    let text = "local x = if true then 1 else 2";
+    let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUA51);
+    assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
+    assert_eq!(
+        diagnostics[0].code,
+        loretta::errors::errorcode::ErrorCode::ErrIfExpressionsNotSupportedInLuaVersion
+    );
+    assert_eq!(diagnostics[0].line_col(text), (1, 11));
+    assert_eq!(diagnostics[0].squiggle(text), "if true then 1 else 2");
+
+    let luau_diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    assert!(
+        luau_diagnostics.is_empty(),
+        "no gate under Luau: {luau_diagnostics:?}"
+    );
+}
