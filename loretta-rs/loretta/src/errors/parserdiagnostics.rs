@@ -16,6 +16,7 @@
 // (ERR_NonFunctionCallBeingUsedAsStatement — Finding 46 corrected the
 // citation from the nonexistent Syntax/LuaParser.cs)
 
+use crate::backtickstringtype::BacktickStringType;
 use crate::continuetype::ContinueType;
 use crate::errors::errorcode::ErrorCode;
 use crate::errors::lexerdiagnostics::LexerDiagnostic;
@@ -35,6 +36,7 @@ pub fn parser_diagnostics(
     source: &str,
 ) -> Vec<LexerDiagnostic> {
     let mut collector = ContinueCollector {
+        backtick_is_none: options.backtick_string_type == BacktickStringType::None,
         continue_is_identifier: options.continue_type == ContinueType::None,
         accept_bitwise_operators: options.accept_bitwise_operators,
         accept_goto: options.accept_goto,
@@ -48,6 +50,13 @@ pub fn parser_diagnostics(
 }
 
 struct ContinueCollector<'a> {
+    /// The C# parser's node-level LUA0036 for FINISHED backtick strings
+    /// (LanguageParser.InterpolatedString.cs:59-60): under
+    /// BacktickStringType::None the interpolated-string expression carries
+    /// the gating error, superseding the lexer's token copy — the
+    /// reference reports it once. (The UNFINISHED-path copy stays in the
+    /// lexerdiagnostics scanner — the token survives there.)
+    backtick_is_none: bool,
     /// Under ContinueType::None the C# parser treats `continue` as an
     /// identifier expression statement (the only non-call expression
     /// statement the grammar can reach), which reports
@@ -93,6 +102,27 @@ impl<'a> ContinueCollector<'a> {
 impl Visitor for ContinueCollector<'_> {
     fn visit_expression(&mut self, expression: &Expression) {
         match expression {
+            Expression::InterpolatedString(interpolated) if self.backtick_is_none => {
+                // The C# parser's node-level LUA0036 over the finished
+                // interpolated-string expression
+                // (LanguageParser.InterpolatedString.cs:59-60) — emitted
+                // from this single-report pass so the harness op counts it
+                // once like the reference (the lexer's token copy is
+                // superseded there).
+                let start = interpolated
+                    .start_position()
+                    .expect("the interpolated string start")
+                    .bytes();
+                let end = interpolated
+                    .end_position()
+                    .expect("the interpolated string end")
+                    .bytes();
+                self.push(
+                    ErrorCode::ErrInterpolatedStringsNotSupportedInVersion,
+                    start,
+                    end,
+                );
+            }
             Expression::BinaryOperator { binop, .. } => {
                 if !self.accept_bitwise_operators {
                     match binop {
