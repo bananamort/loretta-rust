@@ -350,6 +350,39 @@ fn lexer_token_cache_correctly_handles_syntax_options() {
 }
 
 #[test]
+fn continue_statement_span_covers_trivia_and_the_trailing_semicolon() {
+    // The C# LUA0018 sits on the whole expression statement — the keyword
+    // token AND TryMatchSemicolon()'s token with its leading trivia
+    // (LanguageParser.cs:215-220; probed on the packaged runtime:
+    // 'continue;' -> [0..9), 'continue ;' -> [0..10),
+    // 'continue --c\n;' -> [0..14)); no semicolon -> [0..8) (the trailing
+    // trivia belongs to the next token — 'continue --c' -> [0..8) too).
+    for (text, squiggle) in [
+        ("continue;", "continue;"),
+        ("continue ;", "continue ;"),
+        ("continue --c\n;", "continue --c\n;"),
+        ("continue", "continue"),
+        ("continue --c", "continue"),
+    ] {
+        let mut diagnostics = lexer_diagnostics(text, &LuaSyntaxOptions::LUA51);
+        let ast = full_moon::parse(text).expect("the full parse");
+        diagnostics.extend(loretta::errors::parserdiagnostics::parser_diagnostics(
+            &ast,
+            &LuaSyntaxOptions::LUA51,
+            text,
+        ));
+        diagnostics.sort_by_key(|d| d.start);
+        assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
+        assert_eq!(
+            diagnostics[0].code,
+            loretta::errors::errorcode::ErrorCode::ErrNonFunctionCallBeingUsedAsStatement
+        );
+        assert_eq!(diagnostics[0].line_col(text), (1, 1));
+        assert_eq!(diagnostics[0].squiggle(text), squiggle);
+    }
+}
+
+#[test]
 fn lexer_lexes_number_with_leading_underscores_before_prefix() {
     // Issue 149 — the C# lexes each input as ONE NumericLiteralToken
     // with the binary/hex value (0_____b111001 -> 57, 0_____xFFFF ->

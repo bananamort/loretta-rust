@@ -102,6 +102,81 @@ impl<'a> ContinueCollector<'a> {
             is_warning: false,
         });
     }
+
+    /// The C# statement nodes include TryMatchSemicolon()'s token — the
+    /// semicolon INCLUDING its leading trivia (whitespace and comments) is
+    /// part of the node's full span (probed on the packaged runtime:
+    /// '::label:: --c\n;' -> LUA1019 [0..15), 'goto x --c\n;' -> the second
+    /// LUA0018 [5..12), 'continue --c\n;' -> LUA0018 [0..14)). Returns the
+    /// span end: past the trivia and the `;` when a semicolon follows the
+    /// statement's last token, or the token end itself (the last token's
+    /// trailing trivia is excluded from the C# full span). C-style comments
+    /// cannot appear here: every preset where these arms fire has
+    /// accept_c_comment_syntax = false (Lua51/LuaJIT/Luau).
+    fn skip_trivia_to_optional_semicolon(&self, cursor: usize) -> usize {
+        let bytes = self.source.as_bytes();
+        let mut i = cursor;
+        loop {
+            while matches!(
+                bytes.get(i),
+                Some(b' ')
+                    | Some(b'\t')
+                    | Some(b'\r')
+                    | Some(b'\n')
+                    | Some(b'\x0B')
+                    | Some(b'\x0C')
+            ) {
+                i += 1;
+            }
+            if bytes.get(i) == Some(&b'-') && bytes.get(i + 1) == Some(&b'-') {
+                i += 2;
+                if bytes.get(i) == Some(&b'[') {
+                    // The long-comment form '--[[' '='* ... ']' '='* ']'
+                    // (the C# TryScanLongString, Lexer.cs:911-985).
+                    let mut eq = 0;
+                    let mut j = i + 1;
+                    while bytes.get(j) == Some(&b'=') {
+                        eq += 1;
+                        j += 1;
+                    }
+                    if bytes.get(j) == Some(&b'[') {
+                        let mut k = j + 1;
+                        loop {
+                            match bytes.get(k) {
+                                None => break,
+                                Some(b']') => {
+                                    let mut m = k + 1;
+                                    let mut eq2 = 0;
+                                    while eq2 < eq && bytes.get(m) == Some(&b'=') {
+                                        eq2 += 1;
+                                        m += 1;
+                                    }
+                                    if eq2 == eq && bytes.get(m) == Some(&b']') {
+                                        i = m + 1;
+                                        break;
+                                    }
+                                    k += 1;
+                                }
+                                _ => k += 1,
+                            }
+                        }
+                        continue;
+                    }
+                }
+                // A single-line comment runs to the end of the line.
+                while !matches!(bytes.get(i), None | Some(b'\n') | Some(b'\r')) {
+                    i += 1;
+                }
+                continue;
+            }
+            break;
+        }
+        if bytes.get(i) == Some(&b';') {
+            i + 1
+        } else {
+            cursor
+        }
+    }
 }
 
 impl Visitor for ContinueCollector<'_> {
@@ -226,10 +301,15 @@ impl Visitor for ContinueCollector<'_> {
                     .end_position()
                     .expect("the label name end")
                     .bytes();
+                // The C# second statement node includes TryMatchSemicolon()'s
+                // token — the span covers the identifier through the `;`
+                // (with its leading trivia): probed 'goto x;' -> [5..7),
+                // 'goto x ;' -> [5..8), 'goto x --c\n;' -> [5..12).
+                let end = self.skip_trivia_to_optional_semicolon(label_end);
                 self.push(
                     ErrorCode::ErrNonFunctionCallBeingUsedAsStatement,
                     label_start,
-                    label_end,
+                    end,
                 );
             }
             // The C# label LUA1019 is reachable only when the lexer produces
@@ -241,36 +321,23 @@ impl Visitor for ContinueCollector<'_> {
             Stmt::Label(label) if !self.accept_goto && self.accept_typed_lua => {
                 // The C# error covers the whole GotoLabelStatement node
                 // (LanguageParser.cs:631-648): `::label::` plus the optional
-                // TryMatchSemicolon() token INCLUDING its leading trivia,
-                // excluding the semicolon's trailing trivia (probed on the
-                // packaged runtime: '::label::;' -> [0..10), '::label:: ;' ->
-                // [0..11), '::label::; print(1)' -> [0..10)).
+                // TryMatchSemicolon() token INCLUDING its leading trivia
+                // (comments and whitespace), excluding the semicolon's
+                // trailing trivia (probed on the packaged runtime:
+                // '::label::;' -> [0..10), '::label:: ;' -> [0..11),
+                // '::label:: --c\n;' -> [0..15),
+                // '::label:: --[=[c]=]\n;' -> [0..21)).
                 let start = label
                     .left_colons()
                     .start_position()
                     .expect("the label start")
                     .bytes();
-                let mut end = label
+                let end = label
                     .right_colons()
                     .end_position()
                     .expect("the label end")
                     .bytes();
-                let bytes = self.source.as_bytes();
-                let mut cursor = end;
-                while matches!(
-                    bytes.get(cursor),
-                    Some(b' ')
-                        | Some(b'\t')
-                        | Some(b'\r')
-                        | Some(b'\n')
-                        | Some(b'\x0B')
-                        | Some(b'\x0C')
-                ) {
-                    cursor += 1;
-                }
-                if bytes.get(cursor) == Some(&b';') {
-                    end = cursor + 1;
-                }
+                let end = self.skip_trivia_to_optional_semicolon(end);
                 self.push(ErrorCode::ErrGotoNotSupportedInLuaVersion, start, end);
             }
             Stmt::TypeDeclaration(decl) if !self.accept_typed_lua => {
@@ -386,12 +453,13 @@ impl Visitor for ContinueCollector<'_> {
                 // statement — the keyword AND the semicolon
                 // (LanguageParser.cs:215-220); the full_moon LastStmt
                 // covers only the keyword token, so the trailing
-                // semicolon is included from the source (Finding 54).
+                // semicolon is included from the source (Finding 54;
+                // the semicolon's leading trivia too: probed
+                // 'continue;' -> [0..9), 'continue ;' -> [0..10),
+                // 'continue --c\n;' -> [0..14)).
                 let start = token.start_position().expect("the continue start").bytes();
-                let mut end = token.end_position().expect("the continue end").bytes();
-                if self.source.as_bytes().get(end) == Some(&b';') {
-                    end += 1;
-                }
+                let end = token.end_position().expect("the continue end").bytes();
+                let end = self.skip_trivia_to_optional_semicolon(end);
                 self.push(
                     ErrorCode::ErrNonFunctionCallBeingUsedAsStatement,
                     start,
