@@ -1092,3 +1092,83 @@ fn lexer_emits_diagnostics_when_nesting_long_strings() {
         &[exp(ErrorCode::ErrLua51NestingInLongString, 1, 11, "[[[[")],
     );
 }
+
+#[test]
+fn lexer_emits_escape_diagnostics_inside_backtick_strings() {
+    // AUDIT.md Finding 1(a): the C# contents loop runs ScanEscapeSequence
+    // per '\' (Lexer.ShortString.cs:424-427) and its AddError calls land
+    // on the token. Probed @Lua54 'local x = `a\qb`': C#
+    // [LUA0036, LUA0001, LUA0001] (tree pass: node gate + text-token
+    // escape; token pass: the escape again) — the port's combined set
+    // matches; silent under AcceptInvalidEscapes (@Luau: [] both).
+    let text = "local x = `a\\qb`";
+    let options = LuaSyntaxOptions::LUA54;
+    let mut produced = lexer_diagnostics(text, &options);
+    if let Ok(ast) = full_moon::parse(text) {
+        produced.extend(loretta::errors::parserdiagnostics::parser_diagnostics(
+            &ast, &options, text,
+        ));
+        produced.sort_by_key(|d| d.start);
+    }
+    assert_eq!(produced.len(), 2, "two diagnostics: {produced:?}");
+    assert_eq!(
+        produced[0].code,
+        ErrorCode::ErrInterpolatedStringsNotSupportedInVersion
+    );
+    assert_eq!(produced[0].squiggle(text), "`a\\qb`");
+    assert_eq!(produced[1].code, ErrorCode::ErrInvalidStringEscape);
+    assert_eq!(produced[1].line_col(text), (1, 13));
+    assert_eq!(produced[1].squiggle(text), "\\q");
+
+    // Silent when invalid escapes are accepted.
+    let luau_produced = lexer_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    assert!(
+        luau_produced.is_empty(),
+        "no diagnostics under Luau: {luau_produced:?}"
+    );
+}
+
+#[test]
+fn lexer_emits_hole_diagnostics_inside_backtick_strings() {
+    // AUDIT.md Finding 1(b): '{{' reports LUA0035 over the two braces
+    // minus one (MakeError(openBracePosition - 1, width: 2),
+    // Lexer.ShortString.cs:444-445); an unclosed hole reports LUA0034 the
+    // same way (:458-459); a mismatched closer reports ERR_SyntaxError
+    // with the expected-char argument (:498-503); TrySetError keeps the
+    // FIRST error only.
+    let options = LuaSyntaxOptions::LUAU;
+
+    let text = "local x = `a{{b}`";
+    let produced = lexer_diagnostics(text, &options);
+    assert_eq!(produced.len(), 1, "one diagnostic: {produced:?}");
+    assert_eq!(produced[0].code, ErrorCode::ErrDoubleBraceInInterpolation);
+    assert_eq!(produced[0].squiggle(text), "a{");
+
+    let text = "local x = `a{b`";
+    let produced = lexer_diagnostics(text, &options);
+    // The nested scan emits its own unfinished error during the contents;
+    // the hole's LUA0034 wins this level's first-error slot (the End
+    // error is TrySetError'd after it and suppressed).
+    assert_eq!(
+        produced.len(),
+        2,
+        "the nested unfinished + the unclosed hole: {produced:?}"
+    );
+    assert_eq!(produced[0].code, ErrorCode::ErrUnfinishedString);
+    assert_eq!(produced[1].code, ErrorCode::ErrUnclosedExpressionHole);
+    assert_eq!(produced[1].squiggle(text), "a{");
+
+    let text = "local x = `a{(b]}`";
+    // The ']' inside the '(' hole raises ERR_SyntaxError (expecting ')');
+    // the scan then runs off the string's closing backtick, so the nested
+    // level also reports its own unfinished error FIRST (the recursion's
+    // AddError fires during the contents, before this level's slot flush —
+    // the C# emission chronology). The parser-recovery LUA0015/LUA1003s
+    // the C# adds on top are unported (documented).
+    let produced = lexer_diagnostics(text, &options);
+    assert_eq!(produced.len(), 2, "two diagnostics: {produced:?}");
+    assert_eq!(produced[0].code, ErrorCode::ErrUnfinishedString);
+    assert_eq!(produced[1].code, ErrorCode::ErrSyntaxError);
+    assert_eq!(produced[1].arguments, vec![")".to_string()]);
+    assert_eq!(produced[1].squiggle(text), "]");
+}
