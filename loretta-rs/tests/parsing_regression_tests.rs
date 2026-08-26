@@ -428,3 +428,51 @@ fn language_parser_if_expression_gates_under_presets_without_if_expressions() {
         "no gate under Luau: {luau_diagnostics:?}"
     );
 }
+
+#[test]
+fn language_parser_compound_assignment_gates_without_compound_assignment() {
+    // The C# ParseCompoundAssignment gate (LanguageParser.cs:787-788): the
+    // whole compound statement carries LUA1013 when the option is off. The
+    // 7 plain operators the C# lexer produces unconditionally fire the
+    // clean single gate (probed @Lua51: 'x += 1' -> [LUA1013] [0..6),
+    // 'x += 1 ;' -> [0..8) — the node includes the semicolon with its
+    // leading trivia). '//=' never does: its token requires
+    // AcceptFloorDivision AND AcceptCompoundAssignment, so the C# emits
+    // the recovery family instead (probed @Lua51/@Lua53/FiveM).
+    for op in ["+=", "-=", "*=", "/=", "%=", "^=", "..="] {
+        let text = format!("x {op} 1");
+        let diagnostics = tree_diagnostics(&text, &LuaSyntaxOptions::LUA51);
+        assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
+        assert_eq!(
+            diagnostics[0].code,
+            loretta::errors::errorcode::ErrorCode::ErrCompoundAssignmentNotSupportedInLuaVersion
+        );
+        assert_eq!(diagnostics[0].line_col(&text), (1, 1));
+        assert_eq!(diagnostics[0].squiggle(&text), text.as_str());
+    }
+    // The semicolon (with its leading trivia) is part of the node span.
+    let text = "x += 1 ;";
+    let diagnostics = tree_diagnostics(text, &LuaSyntaxOptions::LUA51);
+    assert_eq!(diagnostics[0].squiggle(text), "x += 1 ;");
+    // The gate fires under the other !AcceptCompoundAssignment presets.
+    for options in [&LuaSyntaxOptions::LUA53, &LuaSyntaxOptions::FIVEM] {
+        let diagnostics = tree_diagnostics("x += 1", options);
+        assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
+        assert_eq!(
+            diagnostics[0].code,
+            loretta::errors::errorcode::ErrorCode::ErrCompoundAssignmentNotSupportedInLuaVersion
+        );
+    }
+    // '//=' never fires the clean gate (the C# recovery family is
+    // unported — the parserdiagnostics header).
+    let diagnostics = tree_diagnostics("x //= 1", &LuaSyntaxOptions::LUA51);
+    assert!(
+        diagnostics.is_empty(),
+        "no LUA1013 for //=: {diagnostics:?}"
+    );
+    // Compound-accepting presets stay clean.
+    for options in [&LuaSyntaxOptions::LUAU, &LuaSyntaxOptions::ALL] {
+        let diagnostics = tree_diagnostics("x += 1", options);
+        assert!(diagnostics.is_empty(), "no gate: {diagnostics:?}");
+    }
+}
