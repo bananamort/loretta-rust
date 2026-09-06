@@ -2,7 +2,7 @@
 
 This file is the working brief for the next fixing agent. It contains two things only:
 
-1. The **unresolved findings** from the two independent full-port audits of 2026-08-25
+1. The **findings** from the two independent full-port audits of 2026-08-25
    (`docs/independent_audits/AUDIT_AGENT_DS.md`, `AUDIT_AGENT_OX.md`), each independently
    re-verified against both sources on HEAD `aedd440`. These are claims + a prior reviewer's
    opinion — the fixing agent must still make its own both-sides read before touching code.
@@ -11,6 +11,45 @@ This file is the working brief for the next fixing agent. It contains two things
 Previous rounds are closed and live in git history: the 2026-08-15 baseline → v2 → v3 → errata
 (66 resolved findings, PRs #1319–#1383) and candidates A–E from 2026-08-24 (all dispositioned,
 PRs #1388–#1392). Do not treat their descriptions as open.
+
+## Status (2026-09-06 — all five findings below are RESOLVED)
+
+An independent review of all five findings (own both-sides reads, own probes on both harnesses
++ an independent C# span probe) confirmed the fixes landed by PRs #1393–#1397 and closed the
+remaining Finding 1 work in PR #1407. Per-finding resolution:
+
+- **Finding 1 — RESOLVED** (#1395 tiers 1+2 partial + **#1407** completion): the backtick
+  diagnostics are now node-level (the C# parser replaces the token and moves the rescan error
+  + the gate onto the node, `LanguageParser.InterpolatedString.cs:56-60` — the harness reports
+  them once), the FiveM (HashLiteral) backtick routes through the short-string scanner
+  (`Lexer.cs:622-625`), and the tree pass sorts in the C# tree-walk attachment order.
+  Boundary residue (documented in the `parserdiagnostics.rs` header + the new tests): the
+  parser-recovery `LUA1015/LUA1010/LUA1012` family and the statement-position ×2-vs-×1
+  token-survival case are gated on full_moon parse failures.
+- **Finding 2 — RESOLVED** (#1396): the `LUA1008` if-expression gate matches the C# on all
+  presets for canonical Luau if-expressions (probed). NOTE: the probe input in the finding
+  below (`local x = if true then 1 else 2 end`) is **not** a Luau if-expression — the C#
+  `ParseIfExpression` (`LanguageParser.cs:1271-1332`) consumes **no `end`**; the canonical
+  form matches. The general parser-recovery diagnostics remain unported and are now explicitly
+  listed in the `parserdiagnostics.rs` header (the documented boundary).
+- **Finding 3 — RESOLVED** (#1393): the header expressions resolve in the enclosing scope —
+  verified via the scope op on shadowing inputs (`for i = i, 10 do end` declares the Global
+  `i` on both sides). The authority resolution below is correct: the generated
+  `VisitNumericForStatement` the old comment cited is in `LuaSyntaxRewriter` (not inherited);
+  the walker's override is what runs.
+- **Finding 4 — RESOLVED** (#1394): the label span includes the trailing `;` and the disabled
+  `goto` emits the `LUA0018` pair — verified by an independent C# span probe
+  (`::label::;`→`[0,10)`, `::label:: ;`→`[0,11)`, `::label:: --c\n;`→`[0,15)`,
+  `::label:: --[=[c]=]\n;`→`[0,21)`, `goto x;`→`[0,4)+[5,2)`, …).
+- **Finding 5 — NOT DEFECTS** (#1397 fixed the sequential panic message; the tie-break and
+  keyword-table items are notes only): the C# `FindVariable` enumeration order is
+  implementation-defined (`HashSet`), and the real keyword consumer covers all 26. No further
+  fixes are warranted.
+
+The 2026-09-06 review also corrected two details: the baseline is **246 tests / 0 failed**
+(not 234 — the fix PRs added 12 tests; see Baselines), and the `#1395` "tiers 1+2" claim
+overstated the work (its tier-2 item (c) — the statement-position `LUA1012` — was not
+implemented; it is part of the documented boundary residue).
 
 ## Before anything else
 
@@ -22,16 +61,22 @@ PRs #1388–#1392). Do not treat their descriptions as open.
 - Then independently re-audit for divergences NOT on the list below. A findings list is not a
   ceiling: you are responsible for your own full read of both trees, not just confirming these.
 
-## Baselines on HEAD `aedd440` (re-run yourself)
+## Baselines (re-run yourself)
 
-fmt clean · clippy `-D warnings` clean · check clean · **tests 234 passed / 0 failed** ·
+Verified 2026-09-06 on the current `main` (HEAD `726494f`, after #1407):
+
+fmt clean · clippy `-D warnings` clean · check clean · **tests 250 passed / 0 failed** (the
+246 baseline at HEAD `e021c92` plus the 4 pinning tests added by #1407; the earlier `234`
+figure at `aedd440` was superseded — the fix PRs #1393–#1397 added 12 tests) ·
 differential **identical 1870 / pending 0 / FAILED 0** · drift **744 nodes / 1335 edges /
-topo 744**. All five findings below are invisible to these baselines — the corpus contains no
-backtick, if-expression, shadowed-for-loop, or goto/label inputs.
+topo 744**. The findings below were invisible to these baselines because the corpus contains
+no backtick, if-expression, shadowed-for-loop, or goto/label inputs — they are now covered by
+the pinning tests added in #1393–#1397/#1407 and the probes recorded in the resolution notes
+above.
 
-## Unresolved findings
+## Findings (all resolved — see Status)
 
-### Finding 1 — Backtick-string diagnostics are largely unported (DS F1) — VERIFIED REAL
+### Finding 1 — Backtick-string diagnostics are largely unported (DS F1) — RESOLVED (#1395 + #1407)
 
 **Port:** `loretta/src/errors/lexerdiagnostics.rs` `scan_backtick_string` (`:568-624`) +
 dispatch at `:1213`.
@@ -67,7 +112,7 @@ Rust `[LUA0003]×2`. Diverges on every preset and every backtick input. Error co
 exist in `errorcode.rs` (`ErrUnclosedExpressionHole = 34`, `ErrDoubleBraceInInterpolation = 35`,
 `ErrInterpolatedStringMustStartWithBacktickCharacter`); the resx strings are ported.
 
-### Finding 2 — If-expression gating and general parser-error diagnostics unported (DS F2) — VERIFIED REAL
+### Finding 2 — If-expression gating and general parser-error diagnostics unported (DS F2) — RESOLVED (#1396); remainder documented
 
 **Port:** `loretta/src/errors/parserdiagnostics.rs` — no `Expression::If` arm; the op gates
 parser diagnostics on `full_moon::parse` succeeding (`differential/src/ops.rs:45-47`).
@@ -85,7 +130,7 @@ C# `[LUA1008, LUA1012, LUA1012]`, Rust `[]`. Diverges on every preset: those wit
 because the port never emits the LUA1012s either (probed: Luau/All C# `[LUA1012, LUA1012]` vs
 Rust `[]`).
 
-### Finding 3 — For-loop header expressions resolve through the loop's own block scope (DS F3) — VERIFIED REAL, highest priority
+### Finding 3 — For-loop header expressions resolve through the loop's own block scope (DS F3) — RESOLVED (#1393)
 
 **Port:** `loretta/src/script/scopeandvariablemanager/scopeandvariablewalker.rs:298-357`
 (numeric + generic): creates the block scope and the iteration variables BEFORE visiting the
@@ -109,7 +154,7 @@ the corpus simply lacks a shadowing input): `for i = i, 10 do end` @Lua51 → C#
 the iteration variable). Also diverges: header identifiers' referencing-scope records and node-id
 allocation order.
 
-### Finding 4 — Goto/label LUA1019 span edges (OX §3.2) — VERIFIED REAL (two sub-items)
+### Finding 4 — Goto/label LUA1019 span edges (OX §3.2) — RESOLVED (#1394, both sub-items)
 
 **(a) Label span excludes a trailing `;`.**
 C# `ParseGotoLabelStatement` (`LanguageParser.cs:631-648`) builds the node including
@@ -128,7 +173,7 @@ goto-statement LUA1019 arm requires simultaneously `AcceptGoto == true` (keyword
 LUA1019 there where C# fires `LUA0018 ×2` (probed: `goto x;` @Lua51 → C# `[LUA0018, LUA0018]`,
 Rust `[LUA1019]`; on LuaJIT20 both sides are clean — no divergence).
 
-### Finding 5 — Minor documented-in-code divergences worth recording (DS minor notes) — VERIFIED, LOW severity
+### Finding 5 — Minor documented-in-code divergences worth recording (DS minor notes) — NOTES ONLY (no defects; #1397 fixed the message)
 
 These match their in-code documentation; record only so the fixing agent doesn't "fix" them
 blindly:
@@ -220,6 +265,9 @@ Formed during the 2026-08-25 verification pass. Your own both-sides read wins; s
   probing; flag if you find evidence of divergence.
 
 ## Binding workflow for landing fixes
+
+All five findings above are resolved (see Status) — no further work is owed for them. This
+workflow remains binding for any future finding:
 
 - One finding per PR; inside it, small gate-green commits. Never mix findings. Never land red at
   any commit. Suggested order: Finding 3 (wrong docs + wrong test enshrined — smallest blast
