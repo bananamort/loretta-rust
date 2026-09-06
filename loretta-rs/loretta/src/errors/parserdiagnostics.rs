@@ -17,7 +17,6 @@
 // (ERR_NonFunctionCallBeingUsedAsStatement — Finding 46 corrected the
 // citation from the nonexistent Syntax/LuaParser.cs)
 
-use crate::backtickstringtype::BacktickStringType;
 use crate::continuetype::ContinueType;
 use crate::errors::errorcode::ErrorCode;
 use crate::errors::lexerdiagnostics::LexerDiagnostic;
@@ -39,7 +38,6 @@ pub fn parser_diagnostics(
     source: &str,
 ) -> Vec<LexerDiagnostic> {
     let mut collector = ContinueCollector {
-        backtick_is_none: options.backtick_string_type == BacktickStringType::None,
         accept_if_expressions: options.accept_if_expressions,
         continue_is_identifier: options.continue_type == ContinueType::None,
         accept_bitwise_operators: options.accept_bitwise_operators,
@@ -55,13 +53,6 @@ pub fn parser_diagnostics(
 }
 
 struct ContinueCollector<'a> {
-    /// The C# parser's node-level LUA0036 for FINISHED backtick strings
-    /// (LanguageParser.InterpolatedString.cs:59-60): under
-    /// BacktickStringType::None the interpolated-string expression carries
-    /// the gating error, superseding the lexer's token copy — the
-    /// reference reports it once. (The UNFINISHED-path copy stays in the
-    /// lexerdiagnostics scanner — the token survives there.)
-    backtick_is_none: bool,
     /// C# ParseIfExpression (LanguageParser.cs:1329-1330): the whole
     /// if-expression reports ERR_IfExpressionsNotSupportedInLuaVersion
     /// when the option is off.
@@ -102,7 +93,9 @@ struct ContinueCollector<'a> {
 }
 
 impl<'a> ContinueCollector<'a> {
-    /// Pushes a diagnostic over the byte range [start, end).
+    /// Pushes a diagnostic over the byte range [start, end). Node-level
+    /// (the C# parser attaches these to nodes — the harness's tree pass
+    /// only, never doubled).
     fn push(&mut self, code: ErrorCode, start: usize, end: usize) {
         self.diagnostics.push(LexerDiagnostic {
             code,
@@ -110,6 +103,8 @@ impl<'a> ContinueCollector<'a> {
             width: end - start,
             arguments: Vec::new(),
             is_warning: false,
+            node_level: true,
+            sort_site: start,
         });
     }
 
@@ -192,27 +187,6 @@ impl<'a> ContinueCollector<'a> {
 impl Visitor for ContinueCollector<'_> {
     fn visit_expression(&mut self, expression: &Expression) {
         match expression {
-            Expression::InterpolatedString(interpolated) if self.backtick_is_none => {
-                // The C# parser's node-level LUA0036 over the finished
-                // interpolated-string expression
-                // (LanguageParser.InterpolatedString.cs:59-60) — emitted
-                // from this single-report pass so the harness op counts it
-                // once like the reference (the lexer's token copy is
-                // superseded there).
-                let start = interpolated
-                    .start_position()
-                    .expect("the interpolated string start")
-                    .bytes();
-                let end = interpolated
-                    .end_position()
-                    .expect("the interpolated string end")
-                    .bytes();
-                self.push(
-                    ErrorCode::ErrInterpolatedStringsNotSupportedInVersion,
-                    start,
-                    end,
-                );
-            }
             Expression::IfExpression(if_expr) if !self.accept_if_expressions => {
                 // The C# ParseIfExpression gate (LanguageParser.cs:1329-1330):
                 // the whole if-expression carries

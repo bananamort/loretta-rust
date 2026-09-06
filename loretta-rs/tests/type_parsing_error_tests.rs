@@ -37,7 +37,7 @@ fn tree_diagnostics(
         diagnostics.extend(loretta::errors::parserdiagnostics::parser_diagnostics(
             &ast, options, text,
         ));
-        diagnostics.sort_by_key(|d| d.start);
+        diagnostics.sort_by_key(|d| (d.sort_site, !d.node_level));
     }
     diagnostics
 }

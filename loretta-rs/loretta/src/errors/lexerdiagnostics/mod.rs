@@ -31,6 +31,20 @@ pub struct LexerDiagnostic {
     pub arguments: Vec<String>,
     /// Whether the code is a warning (the C# WRN_* codes).
     pub is_warning: bool,
+    /// Whether the diagnostic is attached to a NODE rather than a TOKEN
+    /// (the C# tree pass only — the harness's token pass skips these). The
+    /// backtick (interpolated-string) diagnostics are node-level: the C#
+    /// parser replaces the token with the node and moves the rescan error +
+    /// the gate onto it (LanguageParser.InterpolatedString.cs:56-60), so
+    /// the reference reports them ONCE, not doubled like token diagnostics.
+    pub node_level: bool,
+    /// The C# attachment site's start (the node/token start) — the tree
+    /// pass walks nodes/tokens in source order, emitting each attachment
+    /// site's diagnostics in attachment order. Token-level diagnostics
+    /// keep `start` (their span start — the same order as the C# walk for
+    /// disjoint tokens); the node-level backtick diagnostics use the
+    /// string's start so the site groups the gate with the hole error.
+    pub sort_site: usize,
 }
 
 impl LexerDiagnostic {
@@ -181,6 +195,8 @@ impl<'a> Scanner<'a> {
         self.byte_pos() - self.byte_of_char(self.lexeme_start)
     }
     /// The C# AddError(position, width, code, args) — absolute byte offsets.
+    /// Token-level (the C# attaches lexer diagnostics to the current
+    /// token — the harness's tree + token passes report them twice).
     fn error_at(&mut self, start: usize, width: usize, code: ErrorCode, args: Vec<String>) {
         self.diagnostics.push(LexerDiagnostic {
             code,
@@ -188,6 +204,30 @@ impl<'a> Scanner<'a> {
             width,
             arguments: args,
             is_warning: matches!(code, ErrorCode::WrnLineBreakMayAffectErrorReporting),
+            node_level: false,
+            sort_site: start,
+        });
+    }
+    /// The node-level variant — the C# tree pass only (the backtick
+    /// diagnostics the parser re-attaches to the node; the harness's token
+    /// pass must not double them). `site` is the node/token start the C#
+    /// attaches the diagnostic to.
+    fn error_at_node(
+        &mut self,
+        start: usize,
+        width: usize,
+        code: ErrorCode,
+        args: Vec<String>,
+        site: usize,
+    ) {
+        self.diagnostics.push(LexerDiagnostic {
+            code,
+            start,
+            width,
+            arguments: args,
+            is_warning: matches!(code, ErrorCode::WrnLineBreakMayAffectErrorReporting),
+            node_level: true,
+            sort_site: site,
         });
     }
     /// The C# AddError(code) — the current lexeme extent.

@@ -227,7 +227,21 @@ impl<'a> Scanner<'a> {
 
     /// The C# ScanInterpolatedStringLiteral diagnostics — the unfinished
     /// error (span = the last character) and the version gating.
+    /// `nested` marks a backtick string INSIDE a hole (the C# scans it as a
+    /// separate token whose survival depends on the hole's re-parse): the
+    /// C# probe shows a plain-unfinished NESTED string keeps its diagnostics
+    /// on the surviving token (reported twice — the tree + token passes),
+    /// while the OUTER plain-unfinished string in an expression position is
+    /// replaced by the node (reported once — the C# test suite's shape).
     pub(crate) fn scan_backtick_string(&mut self) {
+        self.scan_backtick_string_inner(false);
+    }
+
+    fn scan_backtick_string_nested(&mut self) {
+        self.scan_backtick_string_inner(true);
+    }
+
+    fn scan_backtick_string_inner(&mut self, nested: bool) {
         let start = self.pos;
         self.lexeme_start = start;
         self.pos += 1; // the '`'
@@ -280,6 +294,7 @@ impl<'a> Scanner<'a> {
         // 376-403): the missing-close-quote error goes through TrySetError —
         // first-wins against any hole or nested-scan error recorded earlier
         // on this level's slot.
+        let had_error_before_end = sub_error.is_some();
         if unfinished {
             Self::try_set_error(
                 &mut sub_error,
@@ -289,31 +304,56 @@ impl<'a> Scanner<'a> {
                 Vec::new(),
             );
         }
+        // The C# reports the backtick diagnostics ONCE (on the node — the
+        // parser replaces the token and moves the rescan error + the gate
+        // onto it, LanguageParser.InterpolatedString.cs:56-60) EXCEPT for
+        // a plain-unfinished NESTED string, whose token survives (probed:
+        // @Lua51 'local x = `a{b`' — the nested LUA0003 appears twice).
+        let node_level = !nested || !unfinished || had_error_before_end;
         if let Some((error_start, error_width, error_code, error_args)) = sub_error.take() {
             // The C# AddError(error) (Lexer.ShortString.cs:70): the sub-
             // scanner's first error, emitted BEFORE the gate (:70 vs
             // :71-72).
-            self.error_at(error_start, error_width, error_code, error_args);
+            if node_level {
+                self.error_at_node(
+                    error_start,
+                    error_width,
+                    error_code,
+                    error_args,
+                    self.byte_of_char(start),
+                );
+            } else {
+                self.error_at(error_start, error_width, error_code, error_args);
+            }
         }
         // The C# gate (Lexer.ShortString.cs:71-72) fires UNCONDITIONALLY
         // after the scan for non-InterpolatedStringLiteral presets — the
-        // finished AND unfinished paths alike (AUDIT.md Finding 1(d)). The
-        // two paths diverge in WHERE the port emits it:
-        // - Unfinished: the token survives into statement position, so this
-        //   scanner mirrors the LEXER copy (the harness's token pass doubles
-        //   it like the C# tree+token passes).
-        // - Finished: in an expression context the C# parser supersedes the
-        //   token copy with its node-level error
-        //   (LanguageParser.InterpolatedString.cs:59-60) and the reference
-        //   reports LUA0036 once — so the finished-path emission lives in
-        //   parserdiagnostics.rs (the single-report pass) instead.
-        if unfinished && self.options.backtick_string_type == BacktickStringType::None {
-            self.error_at(
-                self.byte_of_char(start),
-                self.byte_pos() - self.byte_of_char(start),
-                ErrorCode::ErrInterpolatedStringsNotSupportedInVersion,
-                Vec::new(),
-            );
+        // finished AND unfinished paths alike (AUDIT.md Finding 1(d)).
+        // Node-level per the rule above: the C# parser's AddError on the
+        // node (LanguageParser.InterpolatedString.cs:59-60) supersedes the
+        // lexer's token copy, so the reference reports the gate once. (The
+        // pre-fix design emitted the finished-path gate from the parser
+        // pass; it is emitted here because the parser pass is gated on
+        // full_moon::parse succeeding, which fails for hole-erroring
+        // inputs like `a{{b}` — the scanner has no such gate.)
+        if self.options.backtick_string_type == BacktickStringType::None {
+            let site = self.byte_of_char(start);
+            if node_level {
+                self.error_at_node(
+                    site,
+                    self.byte_pos() - site,
+                    ErrorCode::ErrInterpolatedStringsNotSupportedInVersion,
+                    Vec::new(),
+                    site,
+                );
+            } else {
+                self.error_at(
+                    site,
+                    self.byte_pos() - site,
+                    ErrorCode::ErrInterpolatedStringsNotSupportedInVersion,
+                    Vec::new(),
+                );
+            }
         }
         // A token ends the trivia run — the next run re-arms the shebang
         // guard (the C# per-run init, Lexer.cs:729; Finding 25).
@@ -390,7 +430,7 @@ impl<'a> Scanner<'a> {
                         // The C# recurses into ScanInterpolatedStringLiteral
                         // for a nested interpolated string — which owns its
                         // own first-error slot.
-                        self.scan_backtick_string();
+                        self.scan_backtick_string_nested();
                         continue;
                     }
                     if c == ending_char || c == '}' || c == ')' || c == ']' {

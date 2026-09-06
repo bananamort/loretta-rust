@@ -4,6 +4,7 @@
 // are re-implemented over the source text, see mod.rs).
 
 use super::*;
+use crate::backtickstringtype::BacktickStringType;
 use crate::errors::errorcode::ErrorCode;
 
 impl<'a> Scanner<'a> {
@@ -242,6 +243,14 @@ pub fn lexer_diagnostics(source: &str, options: &LuaSyntaxOptions) -> Vec<LexerD
             '[' if matches!(s.peek_at(1), Some('=') | Some('[')) => s.scan_long_string_token(),
             '#' if s.only_shebangs_and_newlines && s.peek_at(1) == Some('!') => s.scan_shebang(),
             '"' | '\'' => s.scan_short_string(),
+            // The C# '`' dispatch (Lexer.cs:622-625): under a HashLiteral
+            // preset the backtick is a FiveM hash string — the SHORT-STRING
+            // scanner (braces are plain content, the unfinished span is the
+            // whole lexeme); otherwise the interpolated scanner (the C#
+            // ScanInterpolatedStringLiteral for None/InterpolatedStringLiteral).
+            '`' if s.options.backtick_string_type == BacktickStringType::HashLiteral => {
+                s.scan_short_string()
+            }
             '`' => s.scan_backtick_string(),
             '0'..='9' => s.scan_number(),
             c if c.is_ascii_alphabetic() || c == '_' || c >= '\u{7F}' => s.scan_identifier(),
