@@ -46,15 +46,22 @@ pub fn compute_diagnostics(code: &str, preset: &str) -> Result<(Vec<Diagnostic>,
         .map(|ast| parser_diagnostics(&ast, &options, code))
         .unwrap_or_default();
     // The tree pass: the parser diagnostics and the token diagnostics merged
-    // in source position order (the C# tree.GetDiagnostics()).
+    // in the C# tree-walk order (the C# tree.GetDiagnostics()): the walk
+    // emits each attachment site's diagnostics in attachment order — the
+    // node-level backtick diagnostics (the gate + the rescan error, both on
+    // the interpolated-string node) sort at the node's site with the
+    // token-level diagnostics after them, reproducing the reference's
+    // [rescan error, gate, escape...] ordering.
     let mut tree: Vec<&LexerDiagnostic> = parser_diags.iter().chain(scanner_diags.iter()).collect();
-    tree.sort_by_key(|d| d.start);
+    tree.sort_by_key(|d| (d.sort_site, !d.node_level));
     let mut diagnostics: Vec<Diagnostic> = Vec::new();
     for d in &tree {
         push_diagnostic(&mut diagnostics, d);
     }
-    // The tokens pass: the token diagnostics again (source order).
-    for d in &scanner_diags {
+    // The tokens pass: the token diagnostics again (source order). The
+    // node-level diagnostics (the C# parser's node attachments) are not on
+    // any token and appear once.
+    for d in scanner_diags.iter().filter(|d| !d.node_level) {
         push_diagnostic(&mut diagnostics, d);
     }
     let has_errors = tree.iter().any(|d| !d.is_warning);

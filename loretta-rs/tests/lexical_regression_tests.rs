@@ -329,7 +329,7 @@ fn lexer_token_cache_correctly_handles_syntax_options() {
         &LuaSyntaxOptions::LUA51,
         text,
     ));
-    diagnostics.sort_by_key(|d| d.start);
+    diagnostics.sort_by_key(|d| (d.sort_site, !d.node_level));
     assert_eq!(diagnostics.len(), 1, "diagnostics: {diagnostics:?}");
     assert_eq!(
         diagnostics[0].code,
@@ -371,7 +371,7 @@ fn continue_statement_span_covers_trivia_and_the_trailing_semicolon() {
             &LuaSyntaxOptions::LUA51,
             text,
         ));
-        diagnostics.sort_by_key(|d| d.start);
+        diagnostics.sort_by_key(|d| (d.sort_site, !d.node_level));
         assert_eq!(diagnostics.len(), 1, "one diagnostic: {diagnostics:?}");
         assert_eq!(
             diagnostics[0].code,

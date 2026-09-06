@@ -72,7 +72,7 @@ fn parse_and_validate_lex(source: &str, options: &LuaSyntaxOptions, expected: &[
     }));
     if let Ok(Some(mut parser_diags)) = parse_result {
         produced.append(&mut parser_diags);
-        produced.sort_by_key(|d| d.start);
+        produced.sort_by_key(|d| (d.sort_site, !d.node_level));
     }
     assert_eq!(
         produced.len(),
@@ -1032,7 +1032,7 @@ fn parser_emits_the_finished_path_gate_once() {
         produced.extend(loretta::errors::parserdiagnostics::parser_diagnostics(
             &ast, &options, text,
         ));
-        produced.sort_by_key(|d| d.start);
+        produced.sort_by_key(|d| (d.sort_site, !d.node_level));
     }
     assert_eq!(produced.len(), 1, "one diagnostic: {produced:?}");
     assert_eq!(
@@ -1108,7 +1108,7 @@ fn lexer_emits_escape_diagnostics_inside_backtick_strings() {
         produced.extend(loretta::errors::parserdiagnostics::parser_diagnostics(
             &ast, &options, text,
         ));
-        produced.sort_by_key(|d| d.start);
+        produced.sort_by_key(|d| (d.sort_site, !d.node_level));
     }
     assert_eq!(produced.len(), 2, "two diagnostics: {produced:?}");
     assert_eq!(
@@ -1171,4 +1171,135 @@ fn lexer_emits_hole_diagnostics_inside_backtick_strings() {
     assert_eq!(produced[1].code, ErrorCode::ErrSyntaxError);
     assert_eq!(produced[1].arguments, vec![")".to_string()]);
     assert_eq!(produced[1].squiggle(text), "]");
+}
+
+/// The harness's DiagnosticsOp shape (differential/src/ops.rs
+/// compute_diagnostics): the tree pass (parser + scanner diagnostics merged
+/// in the C# tree-walk order) plus the tokens pass (the token-level scanner
+/// diagnostics again). The node-level backtick diagnostics appear once.
+fn harness_diagnostics(
+    source: &str,
+    options: &LuaSyntaxOptions,
+) -> Vec<loretta::errors::lexerdiagnostics::LexerDiagnostic> {
+    let scanner = lexer_diagnostics(source, options);
+    let parser = full_moon::parse(source)
+        .map(|ast| loretta::errors::parserdiagnostics::parser_diagnostics(&ast, options, source))
+        .unwrap_or_default();
+    let mut tree: Vec<_> = parser.iter().chain(scanner.iter()).collect();
+    tree.sort_by_key(|d| (d.sort_site, !d.node_level));
+    let mut produced: Vec<_> = tree.into_iter().cloned().collect();
+    produced.extend(scanner.iter().filter(|d| !d.node_level).cloned());
+    produced
+}
+
+#[test]
+fn backtick_hole_diagnostics_are_node_level_and_match_the_reference_counts() {
+    // AUDIT.md Finding 1(b) — the fixed shape: the C# parser replaces the
+    // backtick token with the node and moves the rescan error + the gate
+    // onto it (LanguageParser.InterpolatedString.cs:56-60), so the harness
+    // reports each ONCE (the token pass must not double them). Probed on
+    // the C# oracle (my span probe): 'local x = `a{{b}`' @Lua51 ->
+    // [LUA0035|11|2, LUA0036|10|7]; @Luau -> [LUA0035|11|2];
+    // @FiveM -> [] (the hash string treats braces as content).
+    let options = LuaSyntaxOptions::LUA51;
+    let text = "local x = `a{{b}`";
+    let produced = harness_diagnostics(text, &options);
+    assert_eq!(produced.len(), 2, "two diagnostics: {produced:?}");
+    assert_eq!(
+        produced[0].code,
+        ErrorCode::ErrDoubleBraceInInterpolation,
+        "the rescan error first (the C# attachment order)"
+    );
+    assert_eq!(produced[0].line_col(text), (1, 12));
+    assert_eq!(produced[0].squiggle(text), "a{");
+    assert_eq!(
+        produced[1].code,
+        ErrorCode::ErrInterpolatedStringsNotSupportedInVersion,
+        "the gate second"
+    );
+    assert_eq!(produced[1].line_col(text), (1, 11));
+    assert_eq!(produced[1].squiggle(text), "`a{{b}`");
+
+    let luau = harness_diagnostics(text, &LuaSyntaxOptions::LUAU);
+    assert_eq!(luau.len(), 1, "one diagnostic under Luau: {luau:?}");
+    assert_eq!(luau[0].code, ErrorCode::ErrDoubleBraceInInterpolation);
+
+    let fivem = harness_diagnostics(text, &LuaSyntaxOptions::FIVEM);
+    assert!(
+        fivem.is_empty(),
+        "no hole diagnostics under the FiveM hash string: {fivem:?}"
+    );
+}
+
+#[test]
+fn backtick_hole_error_in_expression_keeps_the_node_shape() {
+    // Probed @Lua51 'local x = `a{b`': C# [LUA0034|11|2, LUA0036|10|5,
+    // LUA0015|13|1, LUA0003|14|1, LUA0036|14|1, LUA0003|14|1, LUA0036|14|1]
+    // — the LUA0015 is the unported parser-recovery family (documented in
+    // the parserdiagnostics header); the rest is the port's shape: the
+    // outer node's [LUA0034, LUA0036] once each, the plain-unfinished
+    // NESTED string's [LUA0003, LUA0036] twice (its token survives).
+    let text = "local x = `a{b`";
+    let produced = harness_diagnostics(text, &LuaSyntaxOptions::LUA51);
+    let codes: Vec<ErrorCode> = produced.iter().map(|d| d.code).collect();
+    assert_eq!(
+        codes,
+        vec![
+            ErrorCode::ErrUnclosedExpressionHole,
+            ErrorCode::ErrInterpolatedStringsNotSupportedInVersion,
+            ErrorCode::ErrUnfinishedString,
+            ErrorCode::ErrInterpolatedStringsNotSupportedInVersion,
+            ErrorCode::ErrUnfinishedString,
+            ErrorCode::ErrInterpolatedStringsNotSupportedInVersion,
+        ],
+        "the port shape (minus the unported LUA0015): {produced:?}"
+    );
+    assert_eq!(produced[0].line_col(text), (1, 12));
+    assert_eq!(produced[0].squiggle(text), "a{");
+    assert_eq!(produced[2].line_col(text), (1, 15));
+    assert_eq!(produced[2].squiggle(text), "`");
+    assert_eq!(produced[2].code, ErrorCode::ErrUnfinishedString);
+}
+
+#[test]
+fn backtick_unfinished_in_expression_emits_the_scanner_pair_once() {
+    // Probed @Lua51 'local x = `abc': C# [LUA0003|13|1, LUA0036|10|4] once
+    // each (the local assignment parses; the node carries the pair).
+    let text = "local x = `abc";
+    let produced = harness_diagnostics(text, &LuaSyntaxOptions::LUA51);
+    assert_eq!(produced.len(), 2, "the scanner pair: {produced:?}");
+    assert_eq!(produced[0].code, ErrorCode::ErrUnfinishedString);
+    assert_eq!(produced[0].line_col(text), (1, 14));
+    assert_eq!(produced[0].squiggle(text), "c");
+    assert_eq!(
+        produced[1].code,
+        ErrorCode::ErrInterpolatedStringsNotSupportedInVersion
+    );
+    assert_eq!(produced[1].line_col(text), (1, 11));
+    assert_eq!(produced[1].squiggle(text), "`abc");
+}
+
+#[test]
+fn five_m_hash_string_backticks_scan_as_short_strings() {
+    // AUDIT.md Finding 1(d) — the FiveM (HashLiteral) preset routes the
+    // backtick through the short-string/hash scanner (Lexer.cs:622-625):
+    // braces are plain content (no hole diagnostics) and the unfinished
+    // span is the whole lexeme. Probed on the C# oracle: 'local x = `a{b`'
+    // @FiveM -> []; '`abc' @FiveM -> [LUA0003|0|4] twice (the token pass
+    // doubles the token-level unfinished) + LUA1012 (unported).
+    let text = "local x = `a{b`";
+    let produced = harness_diagnostics(text, &LuaSyntaxOptions::FIVEM);
+    assert!(
+        produced.is_empty(),
+        "the hash string scans the braces as content: {produced:?}"
+    );
+
+    let text = "`abc";
+    let produced = harness_diagnostics(text, &LuaSyntaxOptions::FIVEM);
+    assert_eq!(produced.len(), 2, "the token-level pair: {produced:?}");
+    assert_eq!(produced[0].code, ErrorCode::ErrUnfinishedString);
+    assert_eq!(produced[0].line_col(text), (1, 1));
+    assert_eq!(produced[0].squiggle(text), "`abc");
+    assert_eq!(produced[1].code, ErrorCode::ErrUnfinishedString);
+    assert_eq!(produced[1].squiggle(text), "`abc");
 }
